@@ -6,6 +6,7 @@ MAINTAINER Sergio Gordillo sergio.gordillo@vizzuality.com
 RUN mkdir /src
 COPY /src /src
 COPY requirements.txt .
+COPY privatekey.pem .
 
 # Get pip to download and install requirements:
 RUN pip install -r requirements.txt
@@ -13,9 +14,6 @@ RUN pip install -r requirements.txt
 # Expose ports
 EXPOSE 8080
 
-# Set the default directory where CMD will execute
-WORKDIR /src
-
 # Launch script
 ENTRYPOINT ["python"]
-CMD ["main.py"]
+CMD ["./src/main.py"]
