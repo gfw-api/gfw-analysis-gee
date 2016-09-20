@@ -12,17 +12,18 @@ os.environ['GATEWAY_TOKEN']='yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3J
 @app.route('/umd-loss-gain', methods=['GET'])
 def get_world():
   """Return world"""
+  # Negative check
   geostore = request.args.get('geostore')
   if not geostore:
     abort(404)
 
-  ## Getting geoJson from Api Gateway
+  # Getting geoJson from Api Gateway if it exists
   url = os.environ['GATEWAY_URL']+'/geostore/'+geostore
   r = requests.get(url)
   if r.status_code != 200:
     return jsonify(r.json())
 
-  ## Executing EE
+  # Defining args
   args = {}
   begin = request.args.get('begin')
   end = request.args.get('end')
@@ -30,23 +31,53 @@ def get_world():
 
   if begin:
     args['begin'] = begin
-
   if end:
     args['end'] = end
-
   if thresh:
     args['thresh'] = thresh
 
   geojson = r.json()['data']['attributes']['geojson']
   args['geojson'] = geojson
+
+  # Calling UMD
   world = umd.execute(args, 'world')
   return jsonify(world)
 
 @app.route('/umd-loss-gain/use/<name>/<id>', methods=['GET'])
 def get_use(name, id):
   """Return use"""
-  ## call umd function
-  return jsonify(id, name);
+  # Negative Check
+  useTable = None
+  if name == 'mining':
+    useTable = 'gfw_mining'
+  elif name == 'oilpalm':
+    useTable = 'gfw_oil_palm'
+  elif name == 'fiber':
+    useTable = 'gfw_wood_fiber';
+  elif name == 'logging':
+    useTable = 'gfw_logging';
+
+  if useTable == None:
+    abort(400)
+
+  # Defining args
+  args = {}
+  begin = request.args.get('begin')
+  end = request.args.get('end')
+  thresh = request.args.get('thresh')
+
+  if begin:
+    args['begin'] = begin
+  if end:
+    args['end'] = end
+  if thresh:
+    args['thresh'] = thresh
+
+  args['use'] = useTable
+  args['useid'] = id
+  # Calling UMD
+  use = umd.execute(args, 'use')
+  return jsonify(use)
 
 @app.route('/umd-loss-gain/wdpa/<id>', methods=['GET'])
 def get_wdpa(id):

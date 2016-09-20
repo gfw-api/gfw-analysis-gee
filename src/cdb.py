@@ -26,42 +26,40 @@ import requests
 ENDPOINT = 'https://wri-01.cartodb.com/api/v2/sql'
 
 def get_format(media_type):
-    """Return CartoDB format for supplied GFW custorm media type."""
-    tokens = media_type.split('.')
-    if len(tokens) == 2:
-        return ''
-    else:
-        return tokens[2].split('+')[0]
+  """Return CartoDB format for supplied GFW custorm media type."""
+  tokens = media_type.split('.')
+  if len(tokens) == 2:
+    return ''
+  else:
+    return tokens[2].split('+')[0]
 
 
 def get_url(query, params):
-    """Return CartoDB query URL for supplied params."""
-    params = copy.copy(params)
-    params['q'] = query
-    clean_params = {}
-    for key, value in params.iteritems():
-        if key in ['api_key', 'format', 'q', 'version']:
-            clean_params[key] = value
-    url = '%s?%s' % (ENDPOINT, urllib.urlencode(clean_params))
+  """Return CartoDB query URL for supplied params."""
+  params = copy.copy(params)
+  params['q'] = query
+  clean_params = {}
+  for key, value in params.iteritems():
+    if key in ['api_key', 'format', 'q', 'version']:
+        clean_params[key] = value
+  url = '%s?%s' % (ENDPOINT, urllib.urlencode(clean_params))
 
-    # TODO: Hack
-    if 'version' in clean_params:
-        url = url.replace('v2', clean_params['version'])
+  # TODO: Hack
+  if 'version' in clean_params:
+    url = url.replace('v2', clean_params['version'])
 
-    return str(url)
+  return str(url)
 
 
 def get_body(query, params):
-    """Return CartoDB payload body for supplied params."""
-    params['q'] = query
-    body = urllib.urlencode(params)
-    return body
+  """Return CartoDB payload body for supplied params."""
+  params['q'] = query
+  body = urllib.urlencode(params)
+  return body
 
 
 def execute(query, params={}):
-    """Exectues supplied query on CartoDB and returns response body as JSON."""
-
-    rpc = urlfetch.create_rpc(deadline=50)
-    payload = get_body(query, params)
-    urlfetch.make_fetch_call(rpc, ENDPOINT, method='POST', payload=payload)
-    return rpc.get_result()
+  """Exectues supplied query on CartoDB and returns response body as JSON."""
+  payload = get_body(query, params)
+  r = requests.post(ENDPOINT, params=payload)
+  return r.json()
