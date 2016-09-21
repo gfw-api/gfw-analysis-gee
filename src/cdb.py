@@ -25,6 +25,7 @@ import requests
 # CartoDB endpoint:
 ENDPOINT = 'https://wri-01.cartodb.com/api/v2/sql'
 
+
 def get_format(media_type):
   """Return CartoDB format for supplied GFW custorm media type."""
   tokens = media_type.split('.')

@@ -22,14 +22,10 @@ import json
 import cdb
 
 def classify_query(args):
-  if 'ifl' in args:
-    return 'ifl'
-  elif 'use' in args:
+  if 'use' in args:
     return 'use'
   elif 'wdpaid' in args:
     return 'wdpa'
-  elif 'latest' in args:
-    return 'latest'
   else:
     return 'use'
 
@@ -40,10 +36,6 @@ def args_params(params, args, min_max_sql):
   else:
     params['additional_select'] = ""
 
-  if args.get('iso'):
-    params['iso'] = args['iso']
-  if args.get('id1'):
-    params['id1'] = args['id1']
   if args.get('geojson'):
     params['geojson'] = args['geojson']
   if args.get('wdpaid'):
@@ -98,22 +90,12 @@ class Sql(object):
       return map(cls.clean, getattr(cls, classification)(params, args))
 
   @classmethod
-  def world(cls, params, args):
-    params = args_params(params, args, cls.MIN_MAX_DATE_SQL)
-    query_type, params = cls.get_query_type(params, args)
-    query = cls.WORLD.format(**params)
-    query = cls.cleanAlert(args, query)
-    download_query = cls.download(query)
-    return query, download_query
-
-  @classmethod
   def wdpa(cls, params, args):
     params = args_params(params, args, cls.MIN_MAX_DATE_SQL)
     query_type, params = cls.get_query_type(params, args)
     query = cls.WDPA.format(**params)
     query = cls.cleanAlert(args, query)
-    download_query = cls.download(cls.WDPA.format(**params))
-    return query, download_query
+    return query, None
 
   @classmethod
   def use(cls, params, args):
@@ -128,60 +110,16 @@ class Sql(object):
     params = args_params(params, args, cls.MIN_MAX_DATE_SQL)
     query_type, params = cls.get_query_type(params, args)
     query = cls.USE.format(**params)
-    download_query = cls.download(cls.USE.format(**params))
-    return query, download_query
-
-  @classmethod
-  def latest(cls, params, args):
-    params['limit'] = args.get('limit') or 3
-    query = cls.LATEST.format(**params)
     return query, None
-
-
-def get_download_urls(query, params):
-  urls = {}
-  args = copy.copy(params)
-  for fmt in ['csv', 'geojson', 'svg', 'kml', 'shp']:
-    args['format'] = fmt
-    urls[fmt] = cdb.get_url(query, args)
-  return urls
 
 
 class CartoDbExecutor():
 
   @classmethod
-  def _query_response(cls, response, params, query):
-    """Return world response."""
-    result = {}
-
-    if response.status_code == 200:
-      rows = json.loads(response.content)['rows']
-      if rows:
-          result['rows'] = rows
-    else:
-      result['error'] = 'CartoDB Error: %s' % response.content
-
-    result['params'] = params
-    if 'geojson' in params:
-      result['params']['geojson'] = json.loads(params['geojson'])
-    if 'dev' in params:
-      result['dev'] = {'sql': query}
-
-    return result
-
-  @classmethod
   def execute(cls, args, sql):
     try:
-        query, download_query = sql.process(args)
-
-        download_url = cdb.get_url(query, args)
-
-        response = cdb.execute(query)
-
-        #response = cls._query_response(response, args, query)
-        #if 'error' in response:
-        #  action = 'error'
-        return response
-
+      query, d = sql.process(args)
+      response = cdb.execute(query)
+      return response
     except Exception, e:
       return 'execute() error', e

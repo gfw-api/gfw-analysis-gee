@@ -1,13 +1,1 @@
-# UMD Endpoints
-
-## Getting Started
-
-## Install
-
-## Code
-
-## Run
-
-## Others
-
-## License
+# GFW-UMD-GEE
