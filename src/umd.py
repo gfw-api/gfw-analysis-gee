@@ -56,6 +56,7 @@ def _get_thresh_image(thresh, asset_id):
   image = image.select(before, after)
   return image
 
+
 def _get_type(geojson):
   if geojson.get('features'):
     return geojson.get('features')[0].get('geometry').get('type')
@@ -63,6 +64,7 @@ def _get_type(geojson):
     return geojson.get('geometry').get('type')
   else:
     return geojson.get('type')
+
 
 def _get_region(geom):
   """Return ee.Geometry from supplied GeoJSON object."""
@@ -73,6 +75,7 @@ def _get_region(geom):
   else:
     region = ee.Geometry.Polygon(poly)
   return region
+
 
 def _ee(geom, thresh, asset_id):
   image = _get_thresh_image(thresh, asset_id)
@@ -125,26 +128,6 @@ class UmdSql(Sql):
   def download(cls, sql):
     """ TODO """
     return ""
-
-  @classmethod
-  def ifl(cls, params, args):
-    params['thresh'] = args['thresh']
-    return super(UmdSql, cls).ifl(params, args)
-
-  @classmethod
-  def ifl_id1(cls, params, args):
-    params['thresh'] = args['thresh']
-    return super(UmdSql, cls).ifl_id1(params, args)
-
-  @classmethod
-  def iso(cls, params, args):
-    params['thresh'] = args['thresh']
-    return super(UmdSql, cls).iso(params, args)
-
-  @classmethod
-  def id1(cls, params, args):
-    params['thresh'] = args['thresh']
-    return super(UmdSql, cls).id1(params, args)
 
   @classmethod
   def use(cls, params, args):
@@ -237,7 +220,6 @@ def _executeUse(args):
     args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
     args['end'] = args['end'] if 'end' in args else '2013-01-01'
     data = _execute_geojson(args)
-    #data['params'].pop('geojson')
   return data
 
 
@@ -247,16 +229,17 @@ def _executeWorld(args):
 
 
 def execute(args, query_type=False):
-  # Check period
+  """Execute wrapper."""
+  # Check period and threshold
   args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
   args['end'] = args['end'] if 'end' in args else '2013-01-01'
-
-  # Set default threshold
   args['thresh'] = int(args['thresh']) if 'thresh' in args else 30
 
-  if query_type == 'use':
+  if query_type == 'world':
+    return _executeWorld(args)
+  elif query_type == 'use':
     return _executeUse(args)
   elif query_type == 'wdpa':
     return _executeWdpa(args)
-  elif query_type == 'world':
-    return _executeWorld(args)
+  else:
+    raise NameError('Invalid umd_execute_query_type')

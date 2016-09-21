@@ -1,5 +1,6 @@
 import os
 import requests
+import logging
 
 from flask import Flask, jsonify, request, abort
 import umd
@@ -15,7 +16,7 @@ def get_world():
   # Negative check
   geostore = request.args.get('geostore')
   if not geostore:
-    abort(404)
+    abort(400)
 
   # Getting geoJson from Api Gateway if it exists
   url = os.environ['GATEWAY_URL']+'/geostore/'+geostore
@@ -82,7 +83,26 @@ def get_use(name, id):
 @app.route('/umd-loss-gain/wdpa/<id>', methods=['GET'])
 def get_wdpa(id):
   """Return wdpa"""
-  pass
+  if id == None:
+    abort(400)
+
+  # Defining args
+  args = {}
+  begin = request.args.get('begin')
+  end = request.args.get('end')
+  thresh = request.args.get('thresh')
+
+  if begin:
+    args['begin'] = begin
+  if end:
+    args['end'] = end
+  if thresh:
+    args['thresh'] = thresh
+
+  args['useid'] = id
+  # Calling UMD
+  wdpa = umd.execute(args, 'wdpa')
+  return jsonify(wdpa)
 
 if __name__ == "__main__":
   app.run(host='0.0.0.0', port=8080, debug=True)
