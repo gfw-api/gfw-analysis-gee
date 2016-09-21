@@ -182,39 +182,15 @@ def _execute_geojson(args):
   return result
 
 
-def _executeWdpa(args):
-  """Query GEE using supplied WDPA id."""
-  action, data = CartoDbExecutor.execute(args, UmdSql)
-  if action == 'error':
-    return action, data
-  rows = data['rows']
-  data.pop('rows')
-  data.pop('download_urls')
-  if rows[0]['geojson']==None:
-    args['geojson'] = rows[0]['geojson']
-    args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
-    args['end'] = args['end'] if 'end' in args else '2013-01-01'
-    data['params'].pop('geojson')
-    data['gain'] = 0
-    data['loss'] = 0
-    data['tree-extent'] = 0
-  elif rows:
-    args['geojson'] = rows[0]['geojson']
-    args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
-    args['end'] = args['end'] if 'end' in args else '2013-01-01'
-    action, data = _execute_geojson(args)
-    data['params'].pop('geojson')
-  return action, data
+def _executeWorld(args):
+  """Query GEE using supplied args with threshold and polygon."""
+  return _execute_geojson(args)
 
 
 def _executeUse(args):
   """Query GEE using supplied concession id."""
-  print args
   data = CartoDbExecutor.execute(args, UmdSql)
-  #if action == 'error':
-  #  return action, data
   rows = data['rows']
-  data.pop('rows')
   if rows:
     args['geojson'] = rows[0]['geojson']
     args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
@@ -223,9 +199,23 @@ def _executeUse(args):
   return data
 
 
-def _executeWorld(args):
-  """Query GEE using supplied args with threshold and polygon."""
-  return _execute_geojson(args)
+def _executeWdpa(args):
+  """Query GEE using supplied WDPA id."""
+  data = CartoDbExecutor.execute(args, UmdSql)
+  rows = data['rows']
+  if rows[0]['geojson']==None:
+    args['geojson'] = rows[0]['geojson']
+    args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
+    args['end'] = args['end'] if 'end' in args else '2013-01-01'
+    data['gain'] = 0
+    data['loss'] = 0
+    data['tree-extent'] = 0
+  elif rows:
+    args['geojson'] = rows[0]['geojson']
+    args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
+    args['end'] = args['end'] if 'end' in args else '2013-01-01'
+    data = _execute_geojson(args)
+  return data
 
 
 def execute(args, query_type=False):
