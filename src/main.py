@@ -1,8 +1,10 @@
 import os
 import requests
+import json
 
 from flask import Flask, jsonify, request, abort
 import umd
+import CTRegisterMicroserviceFlask
 
 app = Flask(__name__)
 
@@ -10,7 +12,14 @@ os.environ['GATEWAY_URL']='http://staging-api.globalforestwatch.org'
 os.environ['GATEWAY_TOKEN']='yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.eUmM_C8WNPBk8EJS3rHo2Zc4wCmYkzyRpRyK8ZzDV2U'
 os.environ['UMD_GEE_API_HOST'] = '0.0.0.0'
 os.environ['UMD_GEE_API_PORT'] = '8080'
-os.environ['DEBUG_MODE'] = 'True'
+os.environ['DEBUG_MODE'] = 'False'
+
+# Helpers
+def load_config_json(name):
+  json_path = os.path.abspath(os.path.join('src', os.pardir))+'/'+name+'.json'
+  with open(json_path) as data_file:
+    info = json.load(data_file)
+  return info
 
 def get_args_from_request(request):
   """Helper function to get arguments"""
@@ -25,7 +34,6 @@ def get_args_from_request(request):
     args['thresh'] = thresh
 
   return args
-
 
 @app.route('/umd-loss-gain', methods=['GET'])
 def get_world():
@@ -49,6 +57,7 @@ def get_world():
   # Calling UMD
   world = umd.execute(args, 'world')
   return jsonify(world) #@TODO JSON API FORMAT
+
 
 @app.route('/umd-loss-gain/use/<name>/<id>', methods=['GET'])
 def get_use(name, id):
@@ -78,6 +87,7 @@ def get_use(name, id):
   use = umd.execute(args, 'use')
   return jsonify(use) #@TODO JSON API FORMAT
 
+
 @app.route('/umd-loss-gain/wdpa/<id>', methods=['GET'])
 def get_wdpa(id):
   """Wdpa Endpoint Controller
@@ -94,7 +104,20 @@ def get_wdpa(id):
   wdpa = umd.execute(args, 'wdpa')
   return jsonify(wdpa) #@TODO JSON API FORMAT
 
+
 if __name__ == "__main__":
+  # Registering microservice
+  info = load_config_json('register')
+  swagger = load_config_json('swagger')
+  CTRegisterMicroserviceFlask.register(
+    app=app,
+    name='gfw-umd-gee',
+    info=info,
+    swagger=swagger,
+    mode=CTRegisterMicroserviceFlask.AUTOREGISTER_MODE,
+    ct_url='http://localhost:9000',
+    url='http://192.168.1.147:8080'
+  )
   app.run(host=os.environ['UMD_GEE_API_HOST'],
           port=int(os.environ['UMD_GEE_API_PORT']),
           debug=os.environ['DEBUG_MODE'] == 'True')
