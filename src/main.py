@@ -1,10 +1,11 @@
 import os
 import requests
 import json
-
-from flask import Flask, jsonify, request, abort
-import umd
 import CTRegisterMicroserviceFlask
+from business import umd
+from models.Error import Error, ErrorSchema
+from models.Umd import Umd, UmdSchema
+from flask import Flask, request, abort, jsonify
 
 app = Flask(__name__)
 
@@ -29,20 +30,51 @@ def get_args_from_request(request):
 
   return args
 
+def is_error(status):
+  first_element = str(status).split()[0][0]
+  if first_element == '4' or first_element == '5':
+    return True
+  else:
+    return False
+
+def generate_error(status, error_message):
+  error = Error(errors=[
+    {
+    'status': status,
+    'detail': error_message
+    }
+  ])
+  response = ErrorSchema().dump(error)
+  return response
+
+def generate_success(data):
+  umd = Umd(id=0,
+            type='world', #@TODO
+            attributes=data)
+  response = UmdSchema().dump(umd)
+  return response
+
+def generate_response(status, data={}, error_message=None):
+  if is_error(status):
+    data = generate_error(status, error_message=error_message)
+  else:
+    data = generate_success(data)
+  return jsonify(data), status
+
 @app.route('/umd-loss-gain', methods=['GET'])
 def get_world():
   """World Endpoint Controller"""
   # Negative check
-  print "he"
   geostore = request.args.get('geostore')
   if not geostore:
-    abort(400)
+    return generate_response(status=400, error_message="geostore not provided")
 
   # Getting geoJson from Api Gateway if it exists
   url = os.environ['GATEWAY_URL']+'/geostore/'+geostore
   r = requests.get(url)
   if r.status_code != 200:
-    return abort(r.status_code)
+    return generate_response(status=r.status_code,
+                             error_message="geostore not found")
 
   # Defining args
   args = get_args_from_request(request)
@@ -51,7 +83,7 @@ def get_world():
 
   # Calling UMD
   world = umd.execute(args, 'world')
-  return jsonify(world) #@TODO JSON API FORMAT
+  return generate_response(status=200, data=world)
 
 
 @app.route('/umd-loss-gain/use/<name>/<id>', methods=['GET'])

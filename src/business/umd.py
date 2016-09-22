@@ -21,9 +21,8 @@ import json
 import ee
 import logging
 import config
-
-from common import CartoDbExecutor
-from common import Sql
+from utils.sql import Sql
+from utils.cdb import CartoDbExecutor
 
 def _get_coords(geojson):
   if geojson.get('features') is not None:

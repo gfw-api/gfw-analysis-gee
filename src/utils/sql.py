@@ -111,15 +111,3 @@ class Sql(object):
     query_type, params = cls.get_query_type(params, args)
     query = cls.USE.format(**params)
     return query, None
-
-
-class CartoDbExecutor():
-
-  @classmethod
-  def execute(cls, args, sql):
-    try:
-      query, d = sql.process(args)
-      response = cdb.execute(query)
-      return response
-    except Exception, e:
-      return 'execute() error', e

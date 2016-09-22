@@ -21,11 +21,11 @@ import copy
 import urllib
 import logging
 import requests
-import os 
+import os
+import sql
 
 # CartoDB endpoint:
 ENDPOINT = 'https://'+os.environ['CARTODB_USER']+'.cartodb.com/api/v2/sql'
-
 
 def get_format(media_type):
   """Return CartoDB format for supplied GFW custorm media type."""
@@ -65,3 +65,15 @@ def execute(query, params={}):
   payload = get_body(query, params)
   r = requests.post(ENDPOINT, params=payload)
   return r.json()
+
+
+class CartoDbExecutor():
+
+  @classmethod
+  def execute(cls, args, sql):
+    try:
+      query, d = sql.process(args)
+      response = execute(query)
+      return response
+    except Exception, e:
+      return 'execute() error', e
