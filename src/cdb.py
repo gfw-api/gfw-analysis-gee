@@ -21,9 +21,10 @@ import copy
 import urllib
 import logging
 import requests
+import os 
 
 # CartoDB endpoint:
-ENDPOINT = 'https://wri-01.cartodb.com/api/v2/sql'
+ENDPOINT = 'https://'+os.environ['CARTODB_USER']+'.cartodb.com/api/v2/sql'
 
 
 def get_format(media_type):

@@ -8,15 +8,9 @@ import CTRegisterMicroserviceFlask
 
 app = Flask(__name__)
 
-os.environ['GATEWAY_URL']='http://staging-api.globalforestwatch.org'
-os.environ['GATEWAY_TOKEN']='yJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.eUmM_C8WNPBk8EJS3rHo2Zc4wCmYkzyRpRyK8ZzDV2U'
-os.environ['UMD_GEE_API_HOST'] = '0.0.0.0'
-os.environ['UMD_GEE_API_PORT'] = '8080'
-os.environ['DEBUG_MODE'] = 'False'
-
 # Helpers
 def load_config_json(name):
-  json_path = os.path.abspath(os.path.join('src', os.pardir))+'/'+name+'.json'
+  json_path = os.path.abspath(os.path.join(os.pardir,'microservice'))+'/'+name+'.json'
   with open(json_path) as data_file:
     info = json.load(data_file)
   return info
@@ -39,6 +33,7 @@ def get_args_from_request(request):
 def get_world():
   """World Endpoint Controller"""
   # Negative check
+  print "he"
   geostore = request.args.get('geostore')
   if not geostore:
     abort(400)
@@ -115,9 +110,9 @@ if __name__ == "__main__":
     info=info,
     swagger=swagger,
     mode=CTRegisterMicroserviceFlask.AUTOREGISTER_MODE,
-    ct_url='http://localhost:9000',
-    url='http://192.168.1.147:8080'
+    ct_url=os.environ['GATEWAY_URL'],
+    url='http://mymachine:'+os.environ['PORT']
   )
-  app.run(host=os.environ['UMD_GEE_API_HOST'],
-          port=int(os.environ['UMD_GEE_API_PORT']),
+  app.run(host='0.0.0.0',
+          port=int(os.environ['PORT']),
           debug=os.environ['DEBUG_MODE'] == 'True')
