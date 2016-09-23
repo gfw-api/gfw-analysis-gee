@@ -6,7 +6,6 @@ class Umd(object):
     self.type = type
     self.attributes = attributes
 
-
 class UmdSchema(Schema):
   id = fields.Integer()
   type = fields.Str()
