@@ -1,4 +1,4 @@
-from models.Error import Error, ErrorSchema
+from models.error import Error, ErrorSchema
 
 def serialize(status, error_message):
   error = Error(status=status, detail=error_message)

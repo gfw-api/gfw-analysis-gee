@@ -1,32 +1,33 @@
 import os
 import requests
-from serializers import Error, Umd
 from flask import request, jsonify, Blueprint
+from serializers import errorserializer, umdserializer
+from validators.umdvalidator import world_validator, use_validator
+from services import umdservice
 from utils.helpers import get_args_from_request, request_is_error
-from services import umd
 
 # Creating endpoints blueprint
-endpoints = Blueprint('endpoints', __name__,)
+umd_endpoints = Blueprint('umd_endpoints', __name__,)
 
 # Serializers Interface
 def generate_response(status, data={}, error_message=None):
  if request_is_error(status):
-   data = Error.serialize(status, error_message=error_message)
+   data = errorserializer.serialize(status, error_message=error_message)
  else:
-   data = Umd.serialize(data)
+   data = umdserializer.serialize(data)
  return data, status
 
 
-@endpoints.route('/umd-loss-gain', methods=['GET'])
+@umd_endpoints.route('/umd-loss-gain', methods=['GET'])
 def get_world():
   """World Endpoint Controller"""
   # Negative check
-  geostore = request.args.get('geostore')
-  if not geostore:
+  if world_validator(request) == False:
     data, status = generate_response(status=400,
                                      error_message="geostore not provided")
     return jsonify(data), status
 
+  geostore = request.args.get('geostore')
   # Getting geoJson from Api Gateway if it exists
   url = os.environ['GATEWAY_URL']+'/geostore/'+geostore
   r = requests.get(url)
@@ -41,29 +42,23 @@ def get_world():
   args['geojson'] = geojson
 
   # Calling UMD
-  world = umd.execute(args, 'world')
+  world = umdservice.execute(args, 'world')
   data, status = generate_response(status=200, data=world)
   return jsonify(data), status
 
 
-@endpoints.route('/umd-loss-gain/use/<name>/<id>', methods=['GET'])
+@umd_endpoints.route('/umd-loss-gain/use/<name>/<id>', methods=['GET'])
 def get_use(name, id):
   """Use Endpoint Controller
   name -- resource name
   id -- use id
   """
   # Negative Check
-  useTable = None
-  if name == 'mining':
-    useTable = 'gfw_mining'
-  elif name == 'oilpalm':
-    useTable = 'gfw_oil_palm'
-  elif name == 'fiber':
-    useTable = 'gfw_wood_fiber';
-  elif name == 'logging':
-    useTable = 'gfw_logging';
-  else:
-    abort(400)
+  useTable = use_validator(name)
+  if useTable == False:
+    data, status = generate_response(status=400,
+                             error_message="use table not valid")
+    return jsonify(data), status
 
   # Defining args
   args = get_args_from_request(request)
@@ -71,22 +66,25 @@ def get_use(name, id):
   args['useid'] = id
 
   # Calling UMD
-  use = umd.execute(args, 'use')
-  return jsonify(use) #@TODO JSON API FORMAT
+  use = umdservice.execute(args, 'use')
+  #@TODO sometimes use is not valid Check for error
+  #gotta change umdservice when ee returns an error
+  data, status = generate_response(status=200, data=use)
+  return jsonify(data), status
 
 
-@endpoints.route('/umd-loss-gain/wdpa/<id>', methods=['GET'])
+@umd_endpoints.route('/umd-loss-gain/wdpa/<id>', methods=['GET'])
 def get_wdpa(id):
   """Wdpa Endpoint Controller
   id -- wdpa id
   """
-  if id == None:
-    abort(400)
-
   # Defining args
   args = get_args_from_request(request)
   args['wdpaid'] = id
 
   # Calling UMD
-  wdpa = umd.execute(args, 'wdpa')
-  return jsonify(wdpa) #@TODO JSON API FORMAT
+  wdpa = umdservice.execute(args, 'wdpa')
+  data, status = generate_response(status=200, data=wdpa)
+  #@TODO sometimes use is not valid Check for error
+  #gotta change umdservice when ee returns an error
+  return jsonify(data), status

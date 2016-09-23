@@ -1,4 +1,4 @@
-from models.Umd import Umd, UmdSchema
+from models.umd import Umd, UmdSchema
 
 def serialize(data):
   umd = Umd(id=0,

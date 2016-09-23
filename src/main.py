@@ -1,12 +1,13 @@
 import os
 import json
 import CTRegisterMicroserviceFlask
-from routes.api.v1.api import endpoints
+from routes.api.v1.umdendpoints import umd_endpoints
 from utils.helpers import load_config_json
 from flask import Flask
 
+
 app = Flask(__name__) # Flask app
-app.register_blueprint(endpoints) # Matching routing (api/v1)
+app.register_blueprint(umd_endpoints) # Matching routing (api/v1)
 
 
 if __name__ == "__main__":
