@@ -1,0 +1,25 @@
+{
+    "name": "gfw-umd-gee",
+    "endpoints": [{
+        "path": "/umd-loss-gain",
+        "method": "GET",
+        "redirect": {
+            "method": "GET",
+            "path": "/umd-loss-gain"
+        }
+    }, {
+        "path": "/umd-loss-gain/use/:name/:id",
+        "method": "GET",
+        "redirect": {
+            "method": "GET",
+            "path": "/umd-loss-gain/use/:name/:id"
+        }
+    },{
+        "path": "/umd-loss-gain/wdpa/:id",
+        "method": "GET",
+        "redirect": {
+            "method": "GET",
+            "path": "/umd-loss-gain/wdpa/:id"
+        }
+    }]
+}
