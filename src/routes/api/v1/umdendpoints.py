@@ -43,11 +43,11 @@ def get_world():
 
   # Calling UMD
   data, error = umdservice.execute(args, 'world')
-  if error != None:
-    pass # do something managing the error
+  if error == 500:
+    data, status = generate_response(status=500,
+                             error_message='ee bad response - '+str(data['error']))
+    return jsonify(data), status
 
-  #@TODO sometimes use is not valid Check for error
-  #gotta change umdservice when ee returns an error
   data, status = generate_response(status=200, data=data, umd_type='world')
   return jsonify(data), status
 
@@ -79,11 +79,9 @@ def get_use(name, id):
     return jsonify(data), status
   elif error == 500:
     data, status = generate_response(status=500,
-                             error_message='ee bad response')
+                             error_message='ee bad response - '+str(data['error']))
     return jsonify(data), status
 
-  #@TODO sometimes use is not valid Check for error
-  #gotta change umdservice when ee returns an error
   data, status = generate_response(status=200, data=data, umd_type='use')
   return jsonify(data), status
 
@@ -105,10 +103,8 @@ def get_wdpa(id):
     return jsonify(data), status
   elif error == 500:
     data, status = generate_response(status=500,
-                             error_message='ee bad response')
+                             error_message='ee bad response - '+str(data['error']))
     return jsonify(data), status
 
-  #@TODO sometimes use is not valid Check for error
-  #gotta change umdservice when ee returns an error
   data, status = generate_response(status=200, data=data, umd_type='wdpa')
   return jsonify(data), status

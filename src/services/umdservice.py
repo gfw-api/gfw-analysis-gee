@@ -154,18 +154,24 @@ def _execute_geojson(args):
   except Exception:
     geojson = args.get('geojson')
 
-  # hansen_all_thresh
-  hansen_all = _ee(geojson, thresh, 'HANSEN/gfw2015_loss_tree_gain_threshold')
-  # gain (UMD doesn't permit disaggregation of forest gain by threshold).
-  gain = hansen_all['gain']
-  logging.info('GAIN: %s' % gain)
-  # tree extent in 2000
-  tree_extent = hansen_all['tree']
-  logging.info('TREE_EXTENT: %s' % tree_extent)
+  try:
+    # hansen_all_thresh
+    hansen_all = _ee(geojson, thresh, 'HANSEN/gfw2015_loss_tree_gain_threshold')
+    # gain (UMD doesn't permit disaggregation of forest gain by threshold).
+    gain = hansen_all['gain']
+    logging.info('GAIN: %s' % gain)
+    # tree extent in 2000
+    tree_extent = hansen_all['tree']
+    logging.info('TREE_EXTENT: %s' % tree_extent)
 
-  # Loss by year
-  loss_by_year = _ee(geojson, thresh, 'HANSEN/gfw_loss_by_year_threshold_2015')
-  logging.info('LOSS_RESULTS: %s' % loss_by_year)
+    # Loss by year
+    loss_by_year = _ee(geojson, thresh, 'HANSEN/gfw_loss_by_year_threshold_2015')
+    logging.info('LOSS_RESULTS: %s' % loss_by_year)
+  except ee.EEException as e:
+    return {'error': e}, 500
+  except:
+    return {'error': 'Internal Error'}, 500
+
 
   # Reduce loss by year for supplied begin and end year
   begin = args.get('begin').split('-')[0]
@@ -177,8 +183,9 @@ def _execute_geojson(args):
   result['gain'] = gain
   result['loss'] = loss
   result['tree-extent'] = tree_extent
+  result['areaHa'] = args['areaHa']
 
-  return result
+  return result, None
 
 
 def _executeWorld(args):
@@ -191,26 +198,23 @@ def _executeUse(args):
   data = CartoDbExecutor.execute(args, UmdSql)
   if 'error' in data:
     return data, 404
+
   rows = data['rows']
-  if rows:
-    args['geojson'] = rows[0]['geojson']
-    data = _execute_geojson(args)
-    data['areaHa'] = rows[0]['area_ha']
-  return data, None
+  args['geojson'] = rows[0]['geojson']
+  args['areaHa'] = rows[0]['area_ha']
+  return _execute_geojson(args)
 
 
 def _executeWdpa(args):
   """Query GEE using supplied WDPA id."""
   data = CartoDbExecutor.execute(args, UmdSql)
-  print data
   if len(data['rows']) == 0:
     return data, 404
+
   rows = data['rows']
-  if rows:
-    args['geojson'] = rows[0]['geojson']
-    data = _execute_geojson(args)
-    data['areaHa'] = rows[0]['area_ha']
-  return data, None
+  args['geojson'] = rows[0]['geojson']
+  args['areaHa'] = rows[0]['area_ha']
+  return _execute_geojson(args)
 
 
 def execute(args, query_type=False):
