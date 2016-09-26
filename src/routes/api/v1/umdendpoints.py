@@ -38,8 +38,8 @@ def get_world():
 
   # Defining args
   args = get_args_from_request(request)
-  geojson = r.json()['data']['attributes']['geojson']
-  args['geojson'] = geojson
+  args['geojson'] = r.json()['data']['attributes']['geojson']
+  args['areaHa'] = r.json()['data']['attributes']['areaHa']
 
   # Calling UMD
   data, error = umdservice.execute(args, 'world')

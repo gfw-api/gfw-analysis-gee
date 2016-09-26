@@ -112,16 +112,16 @@ class UmdSql(Sql):
     SELECT CASE when ST_NPoints(the_geom)<=8000 THEN ST_AsGeoJson(the_geom)
     WHEN ST_NPoints(the_geom) BETWEEN 8000 AND 20000 THEN ST_AsGeoJson(ST_RemoveRepeatedPoints(the_geom, 0.001))
     ELSE ST_AsGeoJson(ST_RemoveRepeatedPoints(the_geom, 0.01))
-    END as geojson
+    END as geojson,  (ST_Area(geography(the_geom))/10000) as area_ha  \
     FROM {use_table}
-    WHERE cartodb_id = {pid}"""
+    WHERE cartodb_id = {pid} """
 
   WDPA = """
     SELECT CASE when marine::numeric = 2 THEN null
     WHEN ST_NPoints(the_geom)<=18000 THEN ST_AsGeoJson(the_geom)
     WHEN ST_NPoints(the_geom) BETWEEN 18000 AND 50000 THEN ST_AsGeoJson(ST_RemoveRepeatedPoints(the_geom, 0.001))
     ELSE ST_AsGeoJson(ST_RemoveRepeatedPoints(the_geom, 0.005))
-    END as geojson FROM wdpa_protected_areas WHERE wdpaid={wdpaid} """
+    END as geojson, (ST_Area(geography(the_geom))/10000) as area_ha FROM wdpa_protected_areas where wdpaid={wdpaid} """
 
   @classmethod
   def download(cls, sql):
@@ -194,30 +194,22 @@ def _executeUse(args):
   rows = data['rows']
   if rows:
     args['geojson'] = rows[0]['geojson']
-    args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
-    args['end'] = args['end'] if 'end' in args else '2013-01-01'
     data = _execute_geojson(args)
+    data['areaHa'] = rows[0]['area_ha']
   return data, None
 
 
 def _executeWdpa(args):
   """Query GEE using supplied WDPA id."""
   data = CartoDbExecutor.execute(args, UmdSql)
+  print data
   if len(data['rows']) == 0:
     return data, 404
   rows = data['rows']
-  if rows[0]['geojson']==None:
+  if rows:
     args['geojson'] = rows[0]['geojson']
-    args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
-    args['end'] = args['end'] if 'end' in args else '2013-01-01'
-    data['gain'] = 0
-    data['loss'] = 0
-    data['tree-extent'] = 0
-  elif rows:
-    args['geojson'] = rows[0]['geojson']
-    args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
-    args['end'] = args['end'] if 'end' in args else '2013-01-01'
     data = _execute_geojson(args)
+    data['areaHa'] = rows[0]['area_ha']
   return data, None
 
 
