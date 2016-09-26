@@ -189,18 +189,22 @@ def _executeWorld(args):
 def _executeUse(args):
   """Query GEE using supplied concession id."""
   data = CartoDbExecutor.execute(args, UmdSql)
+  if 'error' in data:
+    return data, 404
   rows = data['rows']
   if rows:
     args['geojson'] = rows[0]['geojson']
     args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
     args['end'] = args['end'] if 'end' in args else '2013-01-01'
     data = _execute_geojson(args)
-  return data
+  return data, None
 
 
 def _executeWdpa(args):
   """Query GEE using supplied WDPA id."""
   data = CartoDbExecutor.execute(args, UmdSql)
+  if len(data['rows']) == 0:
+    return data, 404
   rows = data['rows']
   if rows[0]['geojson']==None:
     args['geojson'] = rows[0]['geojson']
@@ -214,7 +218,7 @@ def _executeWdpa(args):
     args['begin'] = args['begin'] if 'begin' in args else '2001-01-01'
     args['end'] = args['end'] if 'end' in args else '2013-01-01'
     data = _execute_geojson(args)
-  return data
+  return data, None
 
 
 def execute(args, query_type=False):
