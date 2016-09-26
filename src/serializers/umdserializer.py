@@ -1,8 +1,8 @@
 from models.umd import Umd, UmdSchema
 
-def serialize(data):
+def serialize(data, umd_type='world'):
   umd = Umd(id=0,
-           type='world', #@TODO
+           type=umd_type, #@TODO
            attributes=data)
   response = UmdSchema().dump(umd)
   return {'data': response.data} # particular dict response
