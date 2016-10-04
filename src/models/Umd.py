@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields
 
 class Umd(object):
-  def __init__(self, type, attributes, id=0):
+  def __init__(self, type, attributes, id):
     self.id = id
     self.type = type
     self.attributes = attributes
