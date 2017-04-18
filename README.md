@@ -15,103 +15,21 @@ Follow the next steps to set up the development environment in your machine.
 1. Clone the repo and go to the folder
 
 ```ssh
-git clone https://github.com/Vizzuality/GEF-API
-cd GEF-API
+git clone https://github.com/gfw-api/gfw-umd-gee
+cd gfw-umd-gee
 ```
 
-2. Run the gefapi.sh shell script in development mode.
+2. Run the gfwumd.sh shell script in development mode.
 
 ```ssh
-./gefapi.sh develop
+./gfwumd.sh develop
 ```
 
 If this is the first time you run it, it may take a few minutes.
 
 ### Code structure
 
-The API has been packed in a Python module (gefapi). It creates and exposes a WSGI application. The core functionality
+The API has been packed in a Python module (gfwumd). It creates and exposes a WSGI application. The core functionality
 has been divided in three different layers or submodules (Routes, Services and Models).
 
 There are also some generic submodules that manage the request validations, HTTP errors and the background tasks manager.
-
-### Entities Overview
-
-#### Script
-
-```
-id: <UUID>
-name: <String>
-slug: <String>, unique
-created_at: <Date>
-user_id: <UUID>
-status: <String>
-logs: <- [ScriptLog]
-executions: <- [Execution]
-```
-
-#### Execution
-
-```
-id: <UUID>
-start_date: <Date>
-end_date: <Date>
-status: <String>
-progress: <Integer>
-params: <Dict>
-results: <Dict>
-logs: <- [ExecutionLog]
-script_id: <- Script
-```
-
-#### User
-
-```
-id: <UUID>
-created_at: <Date>
-email: <String>, unique
-password: <String>, encrypted
-role: <String>
-scripts: <- [Script]
-```
-
-## API Endpoints
-
-### Script
-
-```
-GET: /api/v1/script
-GET: /api/v1/script/<script>
-POST: /api/v1/script
-PATCH: /api/v1/script/<script>
-DELETE: /api/v1/script/<script>
-GET: /api/v1/script/<script>/log
-```
-
-### Execution
-
-```
-GET: /api/v1/script/<script>/run
-GET: /api/v1/execution
-GET: /api/v1/execution/<execution>
-PATCH: /api/v1/execution/<execution>
-GET: /api/v1/execution/<execution>/log
-POST: /api/v1/execution/<execution>/log
-```
-
-### User
-
-```
-GET: /api/v1/user
-GET: /api/v1/user/<user>
-GET: /api/v1/user/me
-POST: /api/v1/user
-PATCH: /api/v1/user/<user>
-DELETE: /api/v1/user/<user>
-POST: /api/v1/user/<user>/recover-password
-```
-
-### Auth
-
-```
-POST: /auth
-```
