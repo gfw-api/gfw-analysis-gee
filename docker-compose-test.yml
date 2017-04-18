@@ -1,0 +1,8 @@
+develop:
+  extends:
+    file: base.yml
+    service: base
+  container_name: gfw-umd-gee-test
+  environment:
+    DEBUG: "True"
+  command: test

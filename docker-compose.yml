@@ -1,0 +1,11 @@
+prod:
+  extends:
+    file: base.yml
+    service: base
+  container_name: gfw-umd-gee
+  ports:
+    - "4500:4500"
+  env_file:
+    - prod.env
+  command: start
+  restart: always

@@ -1,18 +1,18 @@
-version: '2'
-services:
-  prod:
-    build: .
-    ports:
-      - "8080:8080"
+develop:
+    extends:
+      file: base.yml
+      service: base
+    container_name: gfw-umd-gee-develop
     environment:
-      PORT: 8080
-      DEBUG_MODE: "True"
-      GATEWAY_URL: http://mymachine:9000
-      GATEWAY_TOKEN: 123
+      ENVIRONMENT: dev
+      DEBUG: "True"
+      CT_URL: http://mymachine:9000
+      CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
+      LOCAL_URL: http://mymachine:4500
+      EE_PRIVATE_KEY: ${EE_PRIVATE_KEY}
+      API_VERSION: v1
       CARTODB_USER: wri-01
-    restart: always
-    container_name: gfw-umd-forset-api-gee-develop
-    command: "develop"
+    command: develop
     volumes:
-      - "./src:/src"
-      - "./microservice:/microservice"
+      - ./gfwumd:/opt/gfw-umd-gee/gfwumd
+    restart: always

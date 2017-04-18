@@ -1,0 +1,5 @@
+base:
+  build: .
+  environment:
+    PORT: 4500
+  container_name: gfw-umd
