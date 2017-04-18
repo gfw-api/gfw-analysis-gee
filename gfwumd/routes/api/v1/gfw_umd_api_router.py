@@ -1,57 +1,74 @@
-"""Api Router"""
+"""API ROUTER"""
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
 import logging
-
-import requests
+import datetime
 
 from flask import jsonify, request
 from CTRegisterMicroserviceFlask import request_to_microservice
 from gfwumd.routes.api.v1 import endpoints, error
 from gfwumd.services import UmdService
 from gfwumd.validators import validate_world, validate_use
-from gfwumd.errors import HansenError
+from gfwumd.errors import HansenError, CartoError
+from gfwumd.serializers import serialize_analysis
 
 
 def set_params():
-    thresh = request.args.get('thresh', 30)
-    if request.args.get('period'):
-        begin = period.split(',')[0]
-        end = period.split(',')[1]
+    """-"""
+    threshold = request.args.get('thresh', 30)
+    begin = request.args.get('begin', '2001-01-01')
+    end = request.args.get('end', '2013-01-01')
+    period = request.args.get('period', None)
+    if period and len(period.split(',')) > 1:
+        first = period.split(',')[0]
+        second = period.split(',')[1]
+        try:
+            if len(first.split('-')) > 2 and len(second.split('-')) > 2:
+                datetime.datetime(year=first.split('-')[0], month=first.split('-')[1], day=first.split('-')[2])
+                datetime.datetime(year=second.split('-')[0], month=second.split('-')[1], day=second.split('-')[2])
+                begin = first
+                end = second
+            else:
+                pass
+        except Exception:
+            pass
     else:
-        begin = request.args.get('begin', '2001-01-01')
-        end = request.args.get('end', '2013-01-01')
-    return thresh, begin, end
+        pass
+    return threshold, begin, end
 
 
-@endpoints.route('/', methods=['GET'])
+@endpoints.route('/world', strict_slashes=False, methods=['GET', 'POST'])
 @validate_world
 def get_world():
     """World Endpoint"""
     logging.info('[ROUTER]: Getting world')
-    geostore = request.args.get('geostore')
+    geostore = request.args.get('geostore', None)
+    if geostore:
+        config = {
+            'uri': '/geostore/'+geostore,
+            'method': 'GET'
+        }
+        response = request_to_microservice(config)
+        if not response or response.get('errors'):
+            return error(status=404, detail='Geostore not found')
+        geostore = response.get('data', None).get('attributes', None)
+        geojson = geostore.get('geojson', None)
+    else:
+        geojson = request.get_json().get('geojson')
 
-    config = {
-        'uri': '/geostore/'+geostore,
-        'method': 'GET'
-    }
-    response = request_to_microservice(config)
-    if not response:
-        return error(status=404, detail='Geostore not found')
-    geostore = response.get('data', None).get('attributes', None)
+    if not geojson:
+        return error(status=400, detail='Geostore is required')
 
-    geojson = geostore.get('geojson', None)
-    thresh, begin, end = set_params()
+    area_ha = geostore.get('areaHa', None)
+    threshold, begin, end = set_params()
 
-    # Calling UMD
     try:
         data = UmdService.get_world(
             geojson=geojson,
-            thresh=thresh,
+            threshold=threshold,
             begin=begin,
             end=end)
     except HansenError as e:
@@ -61,53 +78,55 @@ def get_world():
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
-    return jsonify(data=data), 200
+    data['area_ha'] = area_ha
+    return jsonify(data=[serialize_analysis(data, 'world')]), 200
 
 
-@endpoints.route('/use/<name>/<id>', methods=['GET'])
+@endpoints.route('/use/<name>/<id>', strict_slashes=False, methods=['GET'])
 @validate_use
 def get_use(name, id):
     """Use Endpoint"""
-    useTable = use_validator(name)
-    if useTable == False:
-        data, status = generate_response(status=400, error_message='use table not valid')
-        return jsonify(data), status
+    threshold, begin, end = set_params()
 
-    # Defining args
-    args = get_args_from_request(request)
-    args['use'] = useTable
-    args['useid'] = id
+    try:
+        data = UmdService.get_use(
+            name=name,
+            id=id,
+            threshold=threshold,
+            begin=begin,
+            end=end)
+    except HansenError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=500, detail=e.message)
+    except CartoError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=400, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: '+str(e))
+        return error(status=500, detail='Generic Error')
 
-    # Calling UMD
-    data, error = umdservice.execute(args, 'use')
-    if error == 404:
-        data, status = generate_response(status=404, error_message='use not found - '+data['error'][0])
-        return jsonify(data), status
-    elif error == 500:
-        data, status = generate_response(status=500, error_message='ee bad response - '+str(data['error']))
-        return jsonify(data), status
-
-    data, status = generate_response(status=200, data=data, umd_type='use')
-    return jsonify(data), status
+    return jsonify(data=[serialize_analysis(data, 'use')]), 200
 
 
-@endpoints.route('/umd-loss-gain/wdpa/<id>', methods=['GET'])
+@endpoints.route('/wdpa/<id>', strict_slashes=False, methods=['GET'])
 def get_wdpa(id):
-    """Wdpa Endpoint Controller
-    id -- wdpa id
-    """
-    # Defining args
-    args = get_args_from_request(request)
-    args['wdpaid'] = id
+    """Use Endpoint"""
+    threshold, begin, end = set_params()
 
-    # Calling UMD
-    data, error = umdservice.execute(args, 'wdpa')
-    if error == 404:
-        data, status = generate_response(status=404, error_message='wdpa '+ id +' not found')
-        return jsonify(data), status
-    elif error == 500:
-        data, status = generate_response(status=500, error_message='ee bad response - '+str(data['error']))
-        return jsonify(data), status
+    try:
+        data = UmdService.get_wdpa(
+            id=id,
+            threshold=threshold,
+            begin=begin,
+            end=end)
+    except HansenError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=500, detail=e.message)
+    except CartoError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=400, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: '+str(e))
+        return error(status=500, detail='Generic Error')
 
-    data, status = generate_response(status=200, data=data, umd_type='wdpa')
-    return jsonify(data), status
+    return jsonify(data=[serialize_analysis(data, 'wdpa')]), 200

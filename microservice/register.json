@@ -1,25 +1,25 @@
 {
-    "name": "gfw-umd-gee",
-    "endpoints": [{
-        "path": "/umd-loss-gain",
-        "method": "GET",
-        "redirect": {
-            "method": "GET",
-            "path": "/umd-loss-gain"
-        }
-    }, {
-        "path": "/umd-loss-gain/use/:name/:id",
-        "method": "GET",
-        "redirect": {
-            "method": "GET",
-            "path": "/umd-loss-gain/use/:name/:id"
-        }
+	"name": "gfw umd",
+	"endpoints": [{
+		"path": "/v1/umd-loss-gain",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/umd-loss-gain/world"
+		}
     },{
-        "path": "/umd-loss-gain/wdpa/:id",
-        "method": "GET",
-        "redirect": {
-            "method": "GET",
-            "path": "/umd-loss-gain/wdpa/:id"
-        }
+		"path": "/v1/umd-loss-gain/:name/:id",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/umd-loss-gain/:name/:id"
+		}
+    },{
+		"path": "/v1/umd-loss-gain/wdpa/:id",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/umd-loss-gain/wdpa/:id"
+		}
     }]
 }

@@ -1,5 +1,7 @@
 base:
   build: .
+  ports:
+    - "4500:4500"
   environment:
     PORT: 4500
   container_name: gfw-umd

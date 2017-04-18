@@ -1,6 +1,10 @@
+"""HANSEN SERVICE"""
 
-from gfwumd.errors import HansenError
+import logging
+
 import ee
+from gfwumd.errors import HansenError
+from gfwumd.config import SETTINGS
 
 
 def get_region(geom):
@@ -38,9 +42,9 @@ def squaremeters_to_ha(value):
     return float('{0:4.2f}'.format(tmp))
 
 
-class GeeService(object):
+class HansenService(object):
 
-    @classmethod
+    @staticmethod
     def hansen_all(threshold, geojson, begin, end):
         """For a given threshold and geometry return a dictionary of ha area.
         The threshold is used to identify which band of loss and tree to select.
@@ -62,7 +66,7 @@ class GeeService(object):
         """
         try:
             d = {}
-            asset_id = 'projects/wri-datalab/HansenComposite_14-15'
+            asset_id = SETTINGS.get('gee').get('asset_id')
             begin = int(begin.split('-')[0][2:])
             end = int(end.split('-')[0][2:])
             region = get_region(geojson)
@@ -76,7 +80,7 @@ class GeeService(object):
             # Identify 2000 forest cover at given threshold
             tree_area = gfw_data.select(cover_band).gt(0).multiply(
                             ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
-            d['tree-extent'] = squaremeters_to_ha(tree_area[cover_band])
+            d['tree_extent'] = squaremeters_to_ha(tree_area[cover_band])
             # Identify tree gain over data collection period
             gain = gfw_data.select('gain').divide(255.0).multiply(
                             ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
@@ -88,4 +92,5 @@ class GeeService(object):
             d['loss'] = squaremeters_to_ha(loss_total[loss_band])
             return d
         except Exception as error:
-            raise HansenError(message='Generic GEE Error in Hansen analysis')
+            logging.error(str(error))
+            raise HansenError(message='Error in Hansen Analysis')

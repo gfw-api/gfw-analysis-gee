@@ -1,3 +1,4 @@
+"""-"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -9,10 +10,10 @@ from flask import Blueprint, jsonify
 # GENERIC Error
 
 def error(status=400, detail='Bad Request'):
-    return jsonify({
+    return jsonify(errors=[{
         'status': status,
         'detail': detail
-    }), status
+    }]), status
 
 endpoints = Blueprint('endpoints', __name__)
 import gfwumd.routes.api.v1.gfw_umd_api_router

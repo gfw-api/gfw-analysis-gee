@@ -1,4 +1,4 @@
-"""GEF API ERRORS"""
+"""ERRORS"""
 
 
 class Error(Exception):
@@ -14,4 +14,8 @@ class Error(Exception):
 
 
 class HansenError(Error):
+    pass
+
+
+class CartoError(Error):
     pass

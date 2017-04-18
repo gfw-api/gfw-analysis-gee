@@ -14,5 +14,5 @@ develop:
       CARTODB_USER: wri-01
     command: develop
     volumes:
-      - ./gfwumd:/opt/gfw-umd-gee/gfwumd
+      - ./gfwumd:/opt/gfwumd/gfwumd
     restart: always
