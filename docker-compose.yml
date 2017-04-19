@@ -1,0 +1,13 @@
+prod:
+  image: vizzuality/gfw-umd-gee:1.0.0${STAGING}
+  ports:
+    - "4500"
+  env_file:
+    - prod.env
+  command: start
+  dns: ${DNS_SERVER}
+  restart: always
+  log_driver: "syslog"
+  log_opt:
+      syslog-address: ${SYSLOG_ADDRESS}
+      tag: gfw-umd-gee${STAGING}
