@@ -1,5 +1,5 @@
 prod:
-  image: vizzuality/gwf-umd-gee:1.0.0${STAGING}
+  image: vizzuality/gfw-umd-gee:1.0.0${STAGING}
   ports:
     - "4500"
   env_file:
@@ -10,4 +10,4 @@ prod:
   log_driver: "syslog"
   log_opt:
       syslog-address: ${SYSLOG_ADDRESS}
-      tag: dataset${STAGING}
+      tag: gfw-umd-gee${STAGING}
