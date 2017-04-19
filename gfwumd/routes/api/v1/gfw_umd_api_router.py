@@ -40,13 +40,14 @@ def set_params():
     return threshold, begin, end
 
 
-@endpoints.route('/world', strict_slashes=False, methods=['GET', 'POST'])
+@endpoints.route('/', strict_slashes=False, methods=['GET', 'POST'])
 @validate_world
 def get_world():
     """World Endpoint"""
     logging.info('[ROUTER]: Getting world')
-    geostore = request.args.get('geostore', None)
-    if geostore:
+    geostore = None
+    if request.args and 'geostore' in request.args:
+        geostore = request.args.get('geostore', None)
         config = {
             'uri': '/geostore/'+geostore,
             'method': 'GET'
@@ -56,13 +57,14 @@ def get_world():
             return error(status=404, detail='Geostore not found')
         geostore = response.get('data', None).get('attributes', None)
         geojson = geostore.get('geojson', None)
+        area_ha = geostore.get('areaHa', None)
     else:
         geojson = request.get_json().get('geojson')
+        area_ha = None
 
     if not geojson:
         return error(status=400, detail='Geostore is required')
 
-    area_ha = geostore.get('areaHa', None)
     threshold, begin, end = set_params()
 
     try:
