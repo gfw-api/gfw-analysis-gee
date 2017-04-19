@@ -15,11 +15,11 @@
 			"path": "/api/v1/umd-loss-gain"
 		}
     },{
-		"path": "/v1/umd-loss-gain/:name/:id",
+		"path": "/v1/umd-loss-gain/use/:name/:id",
 		"method": "GET",
 		"redirect": {
 			"method": "GET",
-			"path": "/api/v1/umd-loss-gain/:name/:id"
+			"path": "/api/v1/umd-loss-gain/use/:name/:id"
 		}
     },{
 		"path": "/v1/umd-loss-gain/wdpa/:id",
