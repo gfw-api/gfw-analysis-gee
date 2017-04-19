@@ -1,11 +1,13 @@
 prod:
-  extends:
-    file: base.yml
-    service: base
-  container_name: gfw-umd-gee
+  image: vizzuality/gwf-umd-gee:1.0.0${STAGING}
   ports:
-    - "4500:4500"
+    - "4500"
   env_file:
     - prod.env
   command: start
+  dns: ${DNS_SERVER}
   restart: always
+  log_driver: "syslog"
+  log_opt:
+      syslog-address: ${SYSLOG_ADDRESS}
+      tag: dataset${STAGING}

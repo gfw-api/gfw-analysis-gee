@@ -1,4 +1,4 @@
-develop:
+test:
   extends:
     file: base.yml
     service: base
