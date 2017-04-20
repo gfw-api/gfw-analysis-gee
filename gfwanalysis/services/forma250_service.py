@@ -1,4 +1,4 @@
-"""HANSEN SERVICE"""
+"""FORMA250GFW SERVICE"""
 
 import logging
 
@@ -12,7 +12,18 @@ class Forma250Service(object):
 
     @staticmethod
     def forma250_all(geojson, start_date, end_date):
-        """Forma info goes here
+        """Forma250 microservice class. This service uses the latest image in
+        'projects/wri-datalab/FormaGlobalGFW' image collection. The bands of
+        that image contain 'alert_delta': the percent of clearing per pixel that occured
+        within the last 3 months, 'alert_near_term_delta': the percent of clearing
+        which occured within the last 1 month, 'alert_date': the first date when
+        the delta passed a threshold of an ecogroup. 'alert_clearing': the %
+        clearing in pixel over the past year, and 'alert_accuracy': the error of
+        clearing based on historical performance.
+        We use the alert_date to identify pixels of alert_delta that correspond
+        to a specific date range. Mask out the rest. And then calculate both a
+        weighted area in ha (weighted by the fractional percent alert_delta), and also
+        a simple count of pixels where clearing occured over a date range.
         """
         try:
             max_pixels = 9999999999
