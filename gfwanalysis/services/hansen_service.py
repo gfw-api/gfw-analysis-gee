@@ -3,8 +3,8 @@
 import logging
 
 import ee
-from gfwumd.errors import HansenError
-from gfwumd.config import SETTINGS
+from gfwanalysis.errors import HansenError
+from gfwanalysis.config import SETTINGS
 
 
 def get_region(geom):
@@ -66,7 +66,7 @@ class HansenService(object):
         """
         try:
             d = {}
-            asset_id = SETTINGS.get('gee').get('asset_id')
+            asset_id = SETTINGS.get('gee').get('assets').get('hansen')
             begin = int(begin.split('-')[0][2:])
             end = int(end.split('-')[0][2:])
             region = get_region(geojson)

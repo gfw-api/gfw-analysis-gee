@@ -3,8 +3,8 @@
 import logging
 
 import requests
-from gfwumd.errors import CartoError
-from gfwumd.config import SETTINGS
+from gfwanalysis.errors import CartoError
+from gfwanalysis.config import SETTINGS
 
 USE = """
         SELECT CASE when ST_NPoints(the_geom)<=8000 THEN ST_AsGeoJson(the_geom) \

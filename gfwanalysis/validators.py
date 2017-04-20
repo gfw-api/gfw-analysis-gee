@@ -3,7 +3,7 @@
 from functools import wraps
 from flask import request
 
-from gfwumd.routes.api.v1 import error
+from gfwanalysis.routes.api.v1 import error
 
 
 def validate_world(func):

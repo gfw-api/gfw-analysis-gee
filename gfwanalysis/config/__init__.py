@@ -5,7 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import os
-from gfwumd.config import base, staging, prod
+from gfwanalysis.config import base, staging, prod
 
 SETTINGS = base.SETTINGS
 

@@ -1,4 +1,4 @@
-"""The GFW UMD API MODULE"""
+"""The GFW ANALYSIS API MODULE"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -12,9 +12,9 @@ import ee
 from oauth2client.service_account import ServiceAccountCredentials
 
 from flask import Flask
-from gfwumd.config import SETTINGS
-from gfwumd.routes.api.v1 import endpoints, error
-from gfwumd.utils.files import load_config_json
+from gfwanalysis.config import SETTINGS
+from gfwanalysis.routes.api.v1 import endpoints, error
+from gfwanalysis.utils.files import load_config_json
 import CTRegisterMicroserviceFlask
 
 logging.basicConfig(
