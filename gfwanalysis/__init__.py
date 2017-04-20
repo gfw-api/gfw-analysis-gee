@@ -38,7 +38,7 @@ ee.data.setDeadline(60000)
 app = Flask(__name__)
 
 # Routing
-app.register_blueprint(endpoints, url_prefix='/api/v1/umd-loss-gain')
+app.register_blueprint(endpoints, url_prefix='/api/v1')
 
 # CT
 info = load_config_json('register')

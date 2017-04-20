@@ -2,8 +2,8 @@
 
 import json
 
-from gfwanalysis.services import HansenService, CartoService
-from gfwanalysis.errors import HansenError, CartoError
+from gfwanalysis.services import HansenService, CartoService, Forma250Service
+from gfwanalysis.errors import HansenError, CartoError, FormaError
 
 
 class AnalysisService(object):
@@ -78,3 +78,16 @@ class AnalysisService(object):
 
         hansen['area_ha'] = area_ha
         return hansen
+
+    @staticmethod
+    def get_forma(geojson, begin='2016-01-01', end='2017-01-01'):
+        """Query Forma"""
+        try:
+            return Forma250Service.forma250_all(
+                geojson,
+                begin,
+                end)
+        except FormaError as e:
+            raise e
+        except Exception as e:
+            raise e

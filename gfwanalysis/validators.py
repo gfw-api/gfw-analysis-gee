@@ -28,3 +28,14 @@ def validate_use(func):
             return error(status=400, detail='Name not valid')
         return func(*args, **kwargs)
     return wrapper
+
+
+def validate_forma(func):
+    """Forma Validation"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        geostore = request.args.get('geostore')
+        if not geostore:
+            return error(status=400, detail='Geostore is required')
+        return func(*args, **kwargs)
+    return wrapper
