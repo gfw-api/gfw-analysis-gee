@@ -2,7 +2,7 @@ develop:
     extends:
       file: base.yml
       service: base
-    container_name: gfw-umd-gee-develop
+    container_name: gfw-analysis-gee-develop
     environment:
       ENVIRONMENT: dev
       DEBUG: "True"
@@ -14,5 +14,5 @@ develop:
       CARTODB_USER: wri-01
     command: develop
     volumes:
-      - ./gfwumd:/opt/gfwumd/gfwumd
+      - ./gfwanalysis:/opt/gfwanalysis/gfwanalysis
     restart: always

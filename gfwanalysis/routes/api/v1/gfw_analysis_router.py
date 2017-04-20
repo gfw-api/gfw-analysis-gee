@@ -9,11 +9,11 @@ import datetime
 
 from flask import jsonify, request
 from CTRegisterMicroserviceFlask import request_to_microservice
-from gfwumd.routes.api.v1 import endpoints, error
-from gfwumd.services import UmdService
-from gfwumd.validators import validate_world, validate_use
-from gfwumd.errors import HansenError, CartoError
-from gfwumd.serializers import serialize_analysis
+from gfwanalysis.routes.api.v1 import endpoints, error
+from gfwanalysis.services import AnalysisService
+from gfwanalysis.validators import validate_world, validate_use
+from gfwanalysis.errors import HansenError, CartoError
+from gfwanalysis.serializers import serialize_analysis
 
 
 def set_params():
@@ -68,7 +68,7 @@ def get_world():
     threshold, begin, end = set_params()
 
     try:
-        data = UmdService.get_world(
+        data = AnalysisService.get_umd_world(
             geojson=geojson,
             threshold=threshold,
             begin=begin,
@@ -91,7 +91,7 @@ def get_use(name, id):
     threshold, begin, end = set_params()
 
     try:
-        data = UmdService.get_use(
+        data = AnalysisService.get_umd_use(
             name=name,
             id=id,
             threshold=threshold,
@@ -116,7 +116,7 @@ def get_wdpa(id):
     threshold, begin, end = set_params()
 
     try:
-        data = UmdService.get_wdpa(
+        data = AnalysisService.get_umd_wdpa(
             id=id,
             threshold=threshold,
             begin=begin,

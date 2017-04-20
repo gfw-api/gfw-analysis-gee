@@ -1,8 +1,8 @@
 FROM python:3.6-alpine
 MAINTAINER Sergio Gordillo sergio.gordillo@vizzuality.com
 
-ENV NAME gfwumd
-ENV USER gfwumd
+ENV NAME gfwanalysis
+ENV USER gfwanalysis
 
 RUN apk update && apk upgrade && \
    apk add --no-cache --update bash git openssl-dev build-base alpine-sdk \

@@ -1,7 +1,7 @@
 """Main Script"""
 
 import os
-from gfwumd import app
+from gfwanalysis import app
 
 
 # This is only used when running locally. When running live, Gunicorn runs

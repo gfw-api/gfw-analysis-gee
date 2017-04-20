@@ -16,4 +16,4 @@ def error(status=400, detail='Bad Request'):
     }]), status
 
 endpoints = Blueprint('endpoints', __name__)
-import gfwumd.routes.api.v1.gfw_umd_api_router
+import gfwanalysis.routes.api.v1.gfw_analysis_router

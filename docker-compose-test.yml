@@ -2,7 +2,7 @@ test:
   extends:
     file: base.yml
     service: base
-  container_name: gfw-umd-gee-test
+  container_name: gfw-analysis-gee-test
   environment:
     DEBUG: "True"
   command: test
