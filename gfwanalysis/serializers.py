@@ -22,6 +22,6 @@ def serialize_forma(analysis, type):
         'type': type,
         'attributes': {
             'areaHa': analysis.get('area_ha', None),
-            'alert_counts': analysis.get('alert_counts', None)
+            'alertCounts': analysis.get('alert_counts', None)
         }
     }
