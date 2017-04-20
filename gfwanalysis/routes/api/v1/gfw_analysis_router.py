@@ -81,7 +81,7 @@ def get_world():
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
-    return jsonify(data=[serialize_analysis(data, 'world')]), 200
+    return jsonify(data=serialize_analysis(data, 'world')), 200
 
 
 @endpoints.route('/use/<name>/<id>', strict_slashes=False, methods=['GET'])
@@ -107,7 +107,7 @@ def get_use(name, id):
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
-    return jsonify(data=[serialize_analysis(data, 'use')]), 200
+    return jsonify(data=serialize_analysis(data, 'use')), 200
 
 
 @endpoints.route('/wdpa/<id>', strict_slashes=False, methods=['GET'])
@@ -131,4 +131,4 @@ def get_wdpa(id):
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
-    return jsonify(data=[serialize_analysis(data, 'wdpa')]), 200
+    return jsonify(data=serialize_analysis(data, 'wdpa')), 200
