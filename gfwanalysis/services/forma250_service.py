@@ -46,7 +46,7 @@ class Forma250Service(object):
                         ee.Image.pixelArea()).reduceRegion(**reduce_sum_args).getInfo()
             alert_area_ha = squaremeters_to_ha(area_m2['alert_delta'])
             tmp_counts = date_mask.gt(0).reduceRegion(**reduce_sum_args).getInfo()
-            alert_counts = int(tmp_counts['alert_delta'])
+            alert_counts = int(tmp_counts['alert_date'])
             #logging.info(f"Number of alerts over time period = {alert_counts}")
             #logging.info(f"Estimated area loss over time period = {alert_area_ha} ha")
             return {'area_ha':alert_area_ha, 'alert_counts':alert_counts}
