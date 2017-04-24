@@ -81,7 +81,7 @@ def get_world():
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
-    return jsonify(data=serialize_umd(data, 'world')), 200
+    return jsonify(data=serialize_umd(data, 'umd')), 200
 
 
 @endpoints.route('/umd-loss-gain/use/<name>/<id>', strict_slashes=False, methods=['GET'])
@@ -107,7 +107,7 @@ def get_use(name, id):
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
-    return jsonify(data=serialize_umd(data, 'use')), 200
+    return jsonify(data=serialize_umd(data, 'umd')), 200
 
 
 @endpoints.route('/umd-loss-gain/wdpa/<id>', strict_slashes=False, methods=['GET'])
@@ -131,10 +131,10 @@ def get_wdpa(id):
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
-    return jsonify(data=serialize_umd(data, 'wdpa')), 200
+    return jsonify(data=serialize_umd(data, 'umd')), 200
 
 
-@endpoints.route('/forma250GFW', strict_slashes=False, methods=['GET'])
+@endpoints.route('/forma250gfw', strict_slashes=False, methods=['GET'])
 @validate_forma
 def get_forma():
     """World Endpoint"""
@@ -164,4 +164,27 @@ def get_forma():
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
-    return jsonify(data=serialize_forma(data, 'forma250GFW')), 200
+    return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
+
+
+@endpoints.route('/forma250gfw/wdpa/<id>', strict_slashes=False, methods=['GET'])
+def get_forma_wdpa(id):
+    """WDPA Forma Endpoint"""
+    threshold, begin, end = set_params()
+
+    try:
+        data = AnalysisService.get_forma_wdpa(
+            id=id,
+            begin=begin,
+            end=end)
+    except FormaError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=500, detail=e.message)
+    except CartoError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=400, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: '+str(e))
+        return error(status=500, detail='Generic Error')
+
+    return jsonify(data=serialize_forma(data, 'forma250gfw')), 200

@@ -29,11 +29,18 @@
 			"path": "/api/v1/umd-loss-gain/wdpa/:id"
 		}
     },{
-		"path": "/v1/forma250GFW",
+		"path": "/v1/forma250gfw",
 		"method": "GET",
 		"redirect": {
 			"method": "GET",
-			"path": "/api/v1/forma250GFW"
+			"path": "/api/v1/forma250gfw"
+		}
+    },{
+		"path": "/v1/forma250gfw/wdpa/:id",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/forma250gfw/wdpa/:id"
 		}
     }]
 }
