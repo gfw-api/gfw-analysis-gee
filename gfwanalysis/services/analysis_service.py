@@ -93,6 +93,32 @@ class AnalysisService(object):
             raise e
 
     @staticmethod
+    def get_forma_use(name, id, begin='2016-01-01', end='2017-01-01'):
+        """Query GEE using supplied concession id."""
+        try:
+            data = CartoService.get_use_geojson(name, id)
+        except CartoError as e:
+            raise e
+        except Exception as e:
+            raise e
+        if not data:
+            raise CartoError(message='Not Found')
+
+        geojson = json.loads(data.get('rows')[0].get('geojson'))
+        try:
+            forma = Forma250Service.forma250_all(
+                geojson,
+                begin,
+                end
+            )
+        except FormaError as e:
+            raise e
+        except Exception as e:
+            raise e
+
+        return forma
+
+    @staticmethod
     def get_forma_wdpa(id, begin='2016-01-01', end='2017-01-01'):
         """Query GEE using supplied concession id."""
         try:

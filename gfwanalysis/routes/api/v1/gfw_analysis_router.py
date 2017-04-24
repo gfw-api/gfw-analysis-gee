@@ -167,6 +167,31 @@ def get_forma():
     return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
 
 
+@endpoints.route('/forma250gfw/use/<name>/<id>', strict_slashes=False, methods=['GET'])
+@validate_use
+def get_use_forma(name, id):
+    """Use Endpoint"""
+    threshold, begin, end = set_params()
+
+    try:
+        data = AnalysisService.get_forma_use(
+            name=name,
+            id=id,
+            begin=begin,
+            end=end)
+    except FormaError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=500, detail=e.message)
+    except CartoError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=400, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: '+str(e))
+        return error(status=500, detail='Generic Error')
+
+    return jsonify(data=serialize_forma(data, 'forma')), 200
+
+
 @endpoints.route('/forma250gfw/wdpa/<id>', strict_slashes=False, methods=['GET'])
 def get_forma_wdpa(id):
     """WDPA Forma Endpoint"""
