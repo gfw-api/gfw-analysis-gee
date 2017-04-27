@@ -16,12 +16,13 @@ def serialize_umd(analysis, type):
 
 
 def serialize_forma(analysis, type):
-    """."""
+    """Convert the output of the forma250 analysis to json"""
     return {
         'id': None,
         'type': type,
         'attributes': {
             'areaHa': analysis.get('area_ha', None),
+            'areaHaLoss': analysis.get('area_ha_loss', None),
             'alertCounts': analysis.get('alert_counts', None)
         }
     }
