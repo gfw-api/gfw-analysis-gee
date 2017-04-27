@@ -49,7 +49,10 @@ class Forma250Service(object):
             alert_counts = int(tmp_counts['alert_date'])
             #logging.info(f"Number of alerts over time period = {alert_counts}")
             #logging.info(f"Estimated area loss over time period = {alert_area_ha} ha")
-            return {'area_ha':alert_area_ha, 'alert_counts':alert_counts}
+            #
+            # Need to pass the area from the geojson object to area_ha, and also add the
+            # 'area_ha_loss' key/value into the json that is passed to the front-end.
+            return {'area_ha':None, 'area_ha_loss':alert_area_ha, 'alert_counts':alert_counts}
         except Exception as error:
             logging.error(str(error))
             raise FormaError(message='Error in Forma250 Analysis')

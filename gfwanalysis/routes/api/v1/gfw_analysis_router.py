@@ -149,21 +149,20 @@ def get_forma():
         return error(status=404, detail='Geostore not found')
     geostore = response.get('data', None).get('attributes', None)
     geojson = geostore.get('geojson', None)
-
+    geoarea = geostore.get('areaHa')
     threshold, begin, end = set_params()
-
     try:
         data = AnalysisService.get_forma(
             geojson=geojson,
             begin=begin,
             end=end)
+        data['area_ha'] = geoarea
     except FormaError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
-
     return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
 
 
@@ -212,4 +211,68 @@ def get_forma_wdpa(id):
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
+    return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
+
+
+
+
+@endpoints.route('/forma250gfw/<iso>', strict_slashes=False, methods=['GET'])
+@validate_forma
+def get_forma_iso():
+    """Forma250 with ISO code Endpoint"""
+    logging.info('[ROUTER]: Getting forma250/iso')
+    config = {
+        'uri': '/geostore/admin/'+iso,
+        'method': 'GET'
+    }
+    response = request_to_microservice(config)
+    if not response or response.get('errors'):
+        return error(status=404, detail='Geostore not found')
+    geostore = response.get('data', None).get('attributes', None)
+    geojson = geostore.get('geojson', None)
+    geoarea = geostore.get('areaHa')
+    threshold, begin, end = set_params()
+    try:
+        data = AnalysisService.get_forma(
+            geojson=geojson,
+            begin=begin,
+            end=end)
+        data['area_ha'] = geoarea
+    except FormaError as e:
+        logging.error('[ROUTER]: ' + e.message)
+        return error(status=500, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: ' + str(e))
+        return error(status=500, detail='Generic Error')
+    return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
+
+
+@endpoints.route('/forma250gfw/<iso>/<admin>', strict_slashes=False, methods=['GET'])
+@validate_forma
+def get_forma_iso():
+    """Forma250 with ISO/Admin (sub-nation) code Endpoint"""
+    logging.info('[ROUTER]: Getting forma250/iso')
+    config = {
+        'uri': ''.join(['/geostore/admin/',str(iso),'/',str(admin)]),
+        'method': 'GET'
+    }
+    response = request_to_microservice(config)
+    if not response or response.get('errors'):
+        return error(status=404, detail='Geostore not found')
+    geostore = response.get('data', None).get('attributes', None)
+    geojson = geostore.get('geojson', None)
+    geoarea = geostore.get('areaHa')
+    threshold, begin, end = set_params()
+    try:
+        data = AnalysisService.get_forma(
+            geojson=geojson,
+            begin=begin,
+            end=end)
+        data['area_ha'] = geoarea
+    except FormaError as e:
+        logging.error('[ROUTER]: ' + e.message)
+        return error(status=500, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: ' + str(e))
+        return error(status=500, detail='Generic Error')
     return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
