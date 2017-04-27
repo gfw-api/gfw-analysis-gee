@@ -49,5 +49,19 @@
 			"method": "GET",
 			"path": "/api/v1/forma250gfw/use/:name/:id"
 		}
+    },{
+		"path": "/v1/forma250gfw/:iso",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/forma250gfw/:iso"
+		}
+    },{
+		"path": "/v1/forma250gfw/:iso/:admin",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/forma250gfw/:iso/:admin"
+		}
     }]
 }
