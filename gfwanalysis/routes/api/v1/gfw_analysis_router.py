@@ -214,7 +214,7 @@ def get_forma_wdpa(id):
     return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
 
 
-@endpoints.route('/forma250gfw/<iso>', strict_slashes=False, methods=['GET'])
+@endpoints.route('/forma250gfw/admin/<iso>', strict_slashes=False, methods=['GET'])
 def get_forma_iso(iso):
     """Forma250 with ISO code Endpoint"""
     logging.info('[ROUTER]: Getting forma250/iso')
@@ -244,7 +244,7 @@ def get_forma_iso(iso):
     return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
 
 
-@endpoints.route('/forma250gfw/<iso>/<admin>', strict_slashes=False, methods=['GET'])
+@endpoints.route('/forma250gfw/admin/<iso>/<admin>', strict_slashes=False, methods=['GET'])
 def get_forma_iso_admin(iso, admin):
     """Forma250 with ISO/Admin (sub-nation) code Endpoint"""
     logging.info('[ROUTER]: Getting forma250/iso')
