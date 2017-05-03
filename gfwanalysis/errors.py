@@ -19,3 +19,7 @@ class HansenError(Error):
 
 class CartoError(Error):
     pass
+
+
+class FormaError(Error):
+    pass

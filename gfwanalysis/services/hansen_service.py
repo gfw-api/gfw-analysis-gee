@@ -5,7 +5,7 @@ import logging
 import ee
 from gfwanalysis.errors import HansenError
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.spatial import get_region, squaremeters_to_ha
+from gfwanalysis.utils.generic import get_region, squaremeters_to_ha
 
 
 class HansenService(object):

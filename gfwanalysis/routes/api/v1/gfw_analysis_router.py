@@ -11,9 +11,9 @@ from flask import jsonify, request
 from CTRegisterMicroserviceFlask import request_to_microservice
 from gfwanalysis.routes.api.v1 import endpoints, error
 from gfwanalysis.services import AnalysisService
-from gfwanalysis.validators import validate_world, validate_use
-from gfwanalysis.errors import HansenError, CartoError
-from gfwanalysis.serializers import serialize_analysis
+from gfwanalysis.validators import validate_world, validate_use, validate_forma
+from gfwanalysis.errors import HansenError, CartoError, FormaError
+from gfwanalysis.serializers import serialize_umd, serialize_forma
 
 
 def set_params():
@@ -27,8 +27,8 @@ def set_params():
         second = period.split(',')[1]
         try:
             if len(first.split('-')) > 2 and len(second.split('-')) > 2:
-                datetime.datetime(year=first.split('-')[0], month=first.split('-')[1], day=first.split('-')[2])
-                datetime.datetime(year=second.split('-')[0], month=second.split('-')[1], day=second.split('-')[2])
+                datetime.datetime(year=int(first.split('-')[0]), month=int(first.split('-')[1]), day=int(first.split('-')[2]))
+                datetime.datetime(year=int(second.split('-')[0]), month=int(second.split('-')[1]), day=int(second.split('-')[2]))
                 begin = first
                 end = second
             else:
@@ -40,7 +40,7 @@ def set_params():
     return threshold, begin, end
 
 
-@endpoints.route('/', strict_slashes=False, methods=['GET', 'POST'])
+@endpoints.route('/umd-loss-gain', strict_slashes=False, methods=['GET', 'POST'])
 @validate_world
 def get_world():
     """World Endpoint"""
@@ -81,10 +81,10 @@ def get_world():
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
-    return jsonify(data=serialize_analysis(data, 'world')), 200
+    return jsonify(data=serialize_umd(data, 'umd')), 200
 
 
-@endpoints.route('/use/<name>/<id>', strict_slashes=False, methods=['GET'])
+@endpoints.route('/umd-loss-gain/use/<name>/<id>', strict_slashes=False, methods=['GET'])
 @validate_use
 def get_use(name, id):
     """Use Endpoint"""
@@ -107,10 +107,10 @@ def get_use(name, id):
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
-    return jsonify(data=serialize_analysis(data, 'use')), 200
+    return jsonify(data=serialize_umd(data, 'umd')), 200
 
 
-@endpoints.route('/wdpa/<id>', strict_slashes=False, methods=['GET'])
+@endpoints.route('/umd-loss-gain/wdpa/<id>', strict_slashes=False, methods=['GET'])
 def get_wdpa(id):
     """Use Endpoint"""
     threshold, begin, end = set_params()
@@ -131,4 +131,144 @@ def get_wdpa(id):
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
-    return jsonify(data=serialize_analysis(data, 'wdpa')), 200
+    return jsonify(data=serialize_umd(data, 'umd')), 200
+
+
+@endpoints.route('/forma250gfw', strict_slashes=False, methods=['GET'])
+@validate_forma
+def get_forma():
+    """World Endpoint"""
+    logging.info('[ROUTER]: Getting forma')
+    geostore = request.args.get('geostore', None)
+    config = {
+        'uri': '/geostore/'+geostore,
+        'method': 'GET'
+    }
+    response = request_to_microservice(config)
+    if not response or response.get('errors'):
+        return error(status=404, detail='Geostore not found')
+    geostore = response.get('data', None).get('attributes', None)
+    geojson = geostore.get('geojson', None)
+    geoarea = geostore.get('areaHa')
+    threshold, begin, end = set_params()
+    try:
+        data = AnalysisService.get_forma(
+            geojson=geojson,
+            begin=begin,
+            end=end)
+        data['area_ha'] = geoarea
+    except FormaError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=500, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: '+str(e))
+        return error(status=500, detail='Generic Error')
+    return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
+
+
+@endpoints.route('/forma250gfw/use/<name>/<id>', strict_slashes=False, methods=['GET'])
+@validate_use
+def get_use_forma(name, id):
+    """Use Endpoint"""
+    threshold, begin, end = set_params()
+
+    try:
+        data = AnalysisService.get_forma_use(
+            name=name,
+            id=id,
+            begin=begin,
+            end=end)
+    except FormaError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=500, detail=e.message)
+    except CartoError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=400, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: '+str(e))
+        return error(status=500, detail='Generic Error')
+
+    return jsonify(data=serialize_forma(data, 'forma')), 200
+
+
+@endpoints.route('/forma250gfw/wdpa/<id>', strict_slashes=False, methods=['GET'])
+def get_forma_wdpa(id):
+    """WDPA Forma Endpoint"""
+    threshold, begin, end = set_params()
+
+    try:
+        data = AnalysisService.get_forma_wdpa(
+            id=id,
+            begin=begin,
+            end=end)
+    except FormaError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=500, detail=e.message)
+    except CartoError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=400, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: '+str(e))
+        return error(status=500, detail='Generic Error')
+
+    return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
+
+
+@endpoints.route('/forma250gfw/admin/<iso>', strict_slashes=False, methods=['GET'])
+def get_forma_iso(iso):
+    """Forma250 with ISO code Endpoint"""
+    logging.info('[ROUTER]: Getting forma250/iso')
+    config = {
+        'uri': '/geostore/admin/'+iso,
+        'method': 'GET'
+    }
+    response = request_to_microservice(config)
+    if not response or response.get('errors'):
+        return error(status=404, detail='Geostore not found')
+    geostore = response.get('data', None).get('attributes', None)
+    geojson = geostore.get('geojson', None)
+    geoarea = geostore.get('areaHa')
+    threshold, begin, end = set_params()
+    try:
+        data = AnalysisService.get_forma(
+            geojson=geojson,
+            begin=begin,
+            end=end)
+        data['area_ha'] = geoarea
+    except FormaError as e:
+        logging.error('[ROUTER]: ' + e.message)
+        return error(status=500, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: ' + str(e))
+        return error(status=500, detail='Generic Error')
+    return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
+
+
+@endpoints.route('/forma250gfw/admin/<iso>/<admin>', strict_slashes=False, methods=['GET'])
+def get_forma_iso_admin(iso, admin):
+    """Forma250 with ISO/Admin (sub-nation) code Endpoint"""
+    logging.info('[ROUTER]: Getting forma250/iso')
+    config = {
+        'uri': ''.join(['/geostore/admin/', str(iso), '/', str(admin)]),
+        'method': 'GET'
+    }
+    response = request_to_microservice(config)
+    if not response or response.get('errors'):
+        return error(status=404, detail='Geostore not found')
+    geostore = response.get('data', None).get('attributes', None)
+    geojson = geostore.get('geojson', None)
+    geoarea = geostore.get('areaHa')
+    threshold, begin, end = set_params()
+    try:
+        data = AnalysisService.get_forma(
+            geojson=geojson,
+            begin=begin,
+            end=end)
+        data['area_ha'] = geoarea
+    except FormaError as e:
+        logging.error('[ROUTER]: ' + e.message)
+        return error(status=500, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: ' + str(e))
+        return error(status=500, detail='Generic Error')
+    return jsonify(data=serialize_forma(data, 'forma250gfw')), 200

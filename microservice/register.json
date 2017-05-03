@@ -28,5 +28,40 @@
 			"method": "GET",
 			"path": "/api/v1/umd-loss-gain/wdpa/:id"
 		}
+    },{
+		"path": "/v1/forma250gfw",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/forma250gfw"
+		}
+    },{
+		"path": "/v1/forma250gfw/wdpa/:id",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/forma250gfw/wdpa/:id"
+		}
+    },{
+		"path": "/v1/forma250gfw/use/:name/:id",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/forma250gfw/use/:name/:id"
+		}
+    },{
+		"path": "/v1/forma250gfw/admin/:iso",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/forma250gfw/admin/:iso"
+		}
+    },{
+		"path": "/v1/forma250gfw/admin/:iso/:admin",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/forma250gfw/admin/:iso/:admin"
+		}
     }]
 }
