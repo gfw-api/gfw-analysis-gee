@@ -10,21 +10,22 @@ class AnalysisService(object):
     """."""
 
     @staticmethod
-    def get_umd_world(geojson, threshold=30, begin='2001-01-01', end='2013-01-01'):
+    def get_umd_world(geojson, threshold=30, begin='2001-01-01', end='2013-01-01', aggregate_values=True):
         """Query GEE using supplied args with threshold and polygon."""
         try:
             return HansenService.hansen_all(
                 threshold,
                 geojson,
                 begin,
-                end)
+                end,
+                aggregate_values)
         except HansenError as e:
             raise e
         except Exception as e:
             raise e
 
     @staticmethod
-    def get_umd_use(name, id, threshold=30, begin='2001-01-01', end='2013-01-01'):
+    def get_umd_use(name, id, threshold=30, begin='2001-01-01', end='2013-01-01', aggregate_values=True):
         """Query GEE using supplied concession id."""
         try:
             data = CartoService.get_use_geojson(name, id)
@@ -42,7 +43,8 @@ class AnalysisService(object):
                 threshold=threshold,
                 geojson=geojson,
                 begin=begin,
-                end=end)
+                end=end,
+                aggregate_values=aggregate_values)
         except HansenError as e:
             raise e
         except Exception as e:
@@ -52,7 +54,7 @@ class AnalysisService(object):
         return hansen
 
     @staticmethod
-    def get_umd_wdpa(id, threshold=30, begin='2001-01-01', end='2013-01-01'):
+    def get_umd_wdpa(id, threshold=30, begin='2001-01-01', end='2013-01-01', aggregate_values=True):
         """Query GEE using supplied concession id."""
         try:
             data = CartoService.get_wdpa_geojson(id)
@@ -70,7 +72,8 @@ class AnalysisService(object):
                 threshold=threshold,
                 geojson=geojson,
                 begin=begin,
-                end=end)
+                end=end,
+                aggregate_values=aggregate_values)
         except HansenError as e:
             raise e
         except Exception as e:
