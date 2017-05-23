@@ -16,7 +16,7 @@ SETTINGS = {
         'privatekey_file': BASE_DIR + '/privatekey.pem',
         'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_15',
-            'forma250GFW': 'projects/wri-datalab/FormaGlobalGFW'
+            'forma250GFW': 'projects/wri-datalab/FORMA250'
         }
     },
     'carto': {
