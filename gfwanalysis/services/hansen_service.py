@@ -11,7 +11,7 @@ from gfwanalysis.utils.generic import get_region, squaremeters_to_ha
 class HansenService(object):
 
     @staticmethod
-    def hansen_all(threshold, geojson, begin, end):
+    def hansen_all(threshold, geojson, begin, end, aggregate_values=True):
         """For a given threshold and geometry return a dictionary of ha area.
         The threshold is used to identify which band of loss and tree to select.
         asset_id should be 'projects/wri-datalab/HansenComposite_14-15'
@@ -51,11 +51,21 @@ class HansenService(object):
             gain = gfw_data.select('gain').divide(255.0).multiply(
                             ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
             d['gain'] = squaremeters_to_ha(gain['gain'])
-            # Identify area lost from begin year up untill end year
-            tmp_img = gfw_data.select(loss_band)
-            loss_area_img = tmp_img.gte(begin).And(tmp_img.lte(end)).multiply(ee.Image.pixelArea())
-            loss_total = loss_area_img.reduceRegion(**reduce_args).getInfo()
-            d['loss'] = squaremeters_to_ha(loss_total[loss_band])
+            if aggregate_values:
+                # Identify one loss area from begin year up untill end year
+                tmp_img = gfw_data.select(loss_band)
+                loss_area_img = tmp_img.gte(begin).And(tmp_img.lte(end)).multiply(ee.Image.pixelArea())
+                loss_total = loss_area_img.reduceRegion(**reduce_args).getInfo()
+                d['loss'] = squaremeters_to_ha(loss_total[loss_band])
+            else:
+                # Identify loss area per year from beginning year to end year
+                d['loss'] = {}
+                tmp_img = gfw_data.select(loss_band)
+                for year in range(begin, end+1):
+                    year_loss = tmp_img.updateMask(tmp_img.eq(year)).divide(year).multiply(
+                                ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
+                    tmp_loss_value = year_loss['loss_{}'.format(str(threshold))]
+                    d['loss']['{}'.format(year + 2000)] = squaremeters_to_ha(tmp_loss_value)
             return d
         except Exception as error:
             logging.error(str(error))

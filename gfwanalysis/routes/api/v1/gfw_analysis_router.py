@@ -67,12 +67,18 @@ def get_world():
 
     threshold, begin, end = set_params()
 
+    if request.args.get('aggregate_values', '').lower() == 'false':
+        aggregate_values = False
+    else:
+        aggregate_values = True
+
     try:
         data = AnalysisService.get_umd_world(
             geojson=geojson,
             threshold=threshold,
             begin=begin,
-            end=end)
+            end=end,
+            aggregate_values=aggregate_values)
     except HansenError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
@@ -90,13 +96,19 @@ def get_use(name, id):
     """Use Endpoint"""
     threshold, begin, end = set_params()
 
+    if request.args.get('aggregate_values', '').lower() == 'false':
+        aggregate_values = False
+    else:
+        aggregate_values = True
+
     try:
         data = AnalysisService.get_umd_use(
             name=name,
             id=id,
             threshold=threshold,
             begin=begin,
-            end=end)
+            end=end,
+            aggregate_values=aggregate_values)
     except HansenError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
@@ -115,12 +127,18 @@ def get_wdpa(id):
     """Use Endpoint"""
     threshold, begin, end = set_params()
 
+    if request.args.get('aggregate_values', '').lower() == 'false':
+        aggregate_values = False
+    else:
+        aggregate_values = True
+
     try:
         data = AnalysisService.get_umd_wdpa(
             id=id,
             threshold=threshold,
             begin=begin,
-            end=end)
+            end=end,
+            aggregate_values=aggregate_values)
     except HansenError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
