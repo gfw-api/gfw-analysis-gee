@@ -9,7 +9,7 @@ import logging
 from flask import jsonify, request, Blueprint
 from gfwanalysis.routes.api import error, set_params
 from gfwanalysis.services.hansen_service import HansenService
-from gfwanalysis.validators import validate_world, validate_use
+from gfwanalysis.validators import validate_geostore, validate_use
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa
 from gfwanalysis.errors import HansenError
 from gfwanalysis.serializers import serialize_umd
@@ -17,8 +17,8 @@ from gfwanalysis.serializers import serialize_umd
 hansen_endpoints_v1 = Blueprint('hansen_endpoints_v1', __name__)
 
 
-def get_hansen(geojson, area_ha):
-    """get_hansen"""
+def analyze(geojson, area_ha):
+    """Analyze Hansen"""
     geojson = geojson or request.get_json().get('geojson', None)
     area_ha = area_ha or 0
 
@@ -51,26 +51,26 @@ def get_hansen(geojson, area_ha):
 
 
 @hansen_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
-@validate_world
+@validate_geostore
 @get_geo_by_hash
-def get_world(geojson, area_ha):
-    """World Endpoint"""
-    logging.info('[ROUTER]: Getting world')
-    return get_hansen(geojson, area_ha)
+def get_by_geostore(geojson, area_ha):
+    """Analyze by geostore"""
+    logging.info('[ROUTER]: Getting umd by world')
+    return analyze(geojson, area_ha)
 
 
 @hansen_endpoints_v1.route('/use/<name>/<id>', strict_slashes=False, methods=['GET'])
 @validate_use
 @get_geo_by_use
-def get_use(name, id, geojson, area_ha):
-    """Use Endpoint"""
-    logging.info('[ROUTER]: Getting use')
-    return get_hansen(geojson, area_ha)
+def get_by_use(name, id, geojson, area_ha):
+    """Analyze by use"""
+    logging.info('[ROUTER]: Getting umd by use')
+    return analyze(geojson, area_ha)
 
 
 @hansen_endpoints_v1.route('/wdpa/<id>', strict_slashes=False, methods=['GET'])
 @get_geo_by_wdpa
-def get_wdpa(id, geojson, area_ha):
-    """Wdpa Endpoint"""
-    logging.info('[ROUTER]: Getting wdpa')
-    return get_hansen(geojson, area_ha)
+def get_by_wdpa(id, geojson, area_ha):
+    """Analyze by wdpa"""
+    logging.info('[ROUTER]: Getting umd by wdpa')
+    return analyze(geojson, area_ha)

@@ -6,7 +6,7 @@ from flask import request
 from gfwanalysis.routes.api import error
 
 
-def validate_world(func):
+def validate_geostore(func):
     """World Validation"""
     @wraps(func)
     def wrapper(*args, **kwargs):
