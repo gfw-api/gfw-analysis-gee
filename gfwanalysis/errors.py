@@ -21,5 +21,9 @@ class FormaError(Error):
     pass
 
 
+class BiomassLossError(Error):
+    pass
+
+
 class GeostoreNotFound(Error):
     pass

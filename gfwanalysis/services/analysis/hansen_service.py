@@ -5,13 +5,13 @@ import logging
 import ee
 from gfwanalysis.errors import HansenError
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.generic import get_region, squaremeters_to_ha
+from gfwanalysis.utils.geo import get_region, squaremeters_to_ha
 
 
 class HansenService(object):
 
     @staticmethod
-    def hansen_all(threshold, geojson, begin, end, aggregate_values=True):
+    def analyze(threshold, geojson, begin, end, aggregate_values=True):
         """For a given threshold and geometry return a dictionary of ha area.
         The threshold is used to identify which band of loss and tree to select.
         asset_id should be 'projects/wri-datalab/HansenComposite_14-15'

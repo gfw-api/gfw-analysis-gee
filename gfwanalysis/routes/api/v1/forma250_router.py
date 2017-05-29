@@ -8,7 +8,7 @@ import logging
 
 from flask import jsonify, request, Blueprint
 from gfwanalysis.routes.api import error, set_params
-from gfwanalysis.services.forma250_service import Forma250Service
+from gfwanalysis.services.analysis.forma250_service import Forma250Service
 from gfwanalysis.validators import validate_geostore, validate_use
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational
@@ -30,7 +30,7 @@ def analyze(geojson, area_ha):
     threshold, begin, end = set_params()
 
     try:
-        data = Forma250Service.forma250_all(
+        data = Forma250Service.analyze(
             geojson=geojson,
             start_date=begin,
             end_date=end)

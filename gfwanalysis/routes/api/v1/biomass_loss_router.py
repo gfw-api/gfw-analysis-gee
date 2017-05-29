@@ -8,18 +8,19 @@ import logging
 
 from flask import jsonify, request, Blueprint
 from gfwanalysis.routes.api import error, set_params
-from gfwanalysis.services.analysis.hansen_service import HansenService
+from gfwanalysis.services.analysis.biomass_loss_service import BiomassLossService
 from gfwanalysis.validators import validate_geostore, validate_use
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational
-from gfwanalysis.errors import HansenError
-from gfwanalysis.serializers import serialize_umd
+from gfwanalysis.errors import BiomassLossError
+from gfwanalysis.serializers import serialize_biomass
 
-hansen_endpoints_v1 = Blueprint('hansen_endpoints_v1', __name__)
+biomass_loss_endpoints_v1 = Blueprint('biomass_loss_endpoints_v1', __name__)
 
 
 def analyze(geojson, area_ha):
-    """Analyze Hansen"""
+    """Analyze BiomassLoss"""
+    logging.info('[ROUTER]: Getting biomassloss')
     geojson = geojson or request.get_json().get('geojson', None)
     area_ha = area_ha or 0
 
@@ -28,19 +29,13 @@ def analyze(geojson, area_ha):
 
     threshold, begin, end = set_params()
 
-    if request.args.get('aggregate_values', '').lower() == 'false':
-        aggregate_values = False
-    else:
-        aggregate_values = True
-
     try:
-        data = HansenService.analyze(
+        data = BiomassLossService.analyze(
             geojson=geojson,
             threshold=threshold,
             begin=begin,
-            end=end,
-            aggregate_values=aggregate_values)
-    except HansenError as e:
+            end=end)
+    except BiomassLossError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
@@ -48,30 +43,30 @@ def analyze(geojson, area_ha):
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
-    return jsonify(data=serialize_umd(data, 'umd')), 200
+    return jsonify(data=serialize_biomass(data, 'biomasses')), 200
 
 
-@hansen_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
+@biomass_loss_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
 @validate_geostore
 @get_geo_by_hash
 def get_by_geostore(geojson, area_ha):
-    """Analyze by geostore"""
-    logging.info('[ROUTER]: Getting umd by world')
+    """By Geostore Endpoint"""
+    logging.info('[ROUTER]: Getting biomassloss by geostore')
     return analyze(geojson, area_ha)
 
 
-@hansen_endpoints_v1.route('/use/<name>/<id>', strict_slashes=False, methods=['GET'])
+@biomass_loss_endpoints_v1.route('/use/<name>/<id>', strict_slashes=False, methods=['GET'])
 @validate_use
 @get_geo_by_use
 def get_by_use(name, id, geojson, area_ha):
-    """Analyze by use"""
-    logging.info('[ROUTER]: Getting umd by use')
+    """Use Endpoint"""
+    logging.info('[ROUTER]: Getting biomassloss by use')
     return analyze(geojson, area_ha)
 
 
-@hansen_endpoints_v1.route('/wdpa/<id>', strict_slashes=False, methods=['GET'])
+@biomass_loss_endpoints_v1.route('/wdpa/<id>', strict_slashes=False, methods=['GET'])
 @get_geo_by_wdpa
 def get_by_wdpa(id, geojson, area_ha):
-    """Analyze by wdpa"""
-    logging.info('[ROUTER]: Getting umd by wdpa')
+    """Wdpa Endpoint"""
+    logging.info('[ROUTER]: Getting biomassloss by wdpa')
     return analyze(geojson, area_ha)
