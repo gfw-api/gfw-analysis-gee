@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import datetime
 
-from flask import jsonify
+from flask import jsonify, request
 
 # GENERIC Error
 
@@ -17,7 +17,7 @@ def error(status=500, detail='Generic Error'):
     return jsonify(errors=[error]), status
 
 
-def set_params(request):
+def set_params():
     """-"""
     threshold = request.args.get('thresh', 30)
     begin = request.args.get('begin', '2001-01-01')
