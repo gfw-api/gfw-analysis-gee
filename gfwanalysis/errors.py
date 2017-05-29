@@ -17,9 +17,9 @@ class HansenError(Error):
     pass
 
 
-class CartoError(Error):
+class FormaError(Error):
     pass
 
 
-class FormaError(Error):
+class GeostoreNotFound(Error):
     pass

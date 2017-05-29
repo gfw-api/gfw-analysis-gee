@@ -13,7 +13,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 from flask import Flask
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.routes.api.v1 import endpoints, error
+from gfwanalysis.routes.api import error
+from gfwanalysis.routes.api.v1 import hansen_endpoints_v1, forma250_endpoints_v1
 from gfwanalysis.utils.files import load_config_json
 import CTRegisterMicroserviceFlask
 
@@ -38,7 +39,8 @@ ee.data.setDeadline(60000)
 app = Flask(__name__)
 
 # Routing
-app.register_blueprint(endpoints, url_prefix='/api/v1')
+app.register_blueprint(hansen_endpoints_v1, url_prefix='/api/v1/umd-loss-gain')
+app.register_blueprint(forma250_endpoints_v1, url_prefix='/api/v1/forma250gfw')
 
 # CT
 info = load_config_json('register')
