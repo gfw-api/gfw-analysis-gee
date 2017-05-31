@@ -27,7 +27,6 @@ def serialize_forma(analysis, type):
         }
     }
 
-
 def serialize_biomass(analysis, type):
     """Convert the output of the biomass_loss analysis to json"""
     return {
@@ -43,3 +42,13 @@ def serialize_biomass(analysis, type):
             'areaHa': analysis.get('area_ha', None)
         }
     }
+
+def serialize_landsat_url(analysis, type):
+    """Convert output of landsat_tiles to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes':{
+            "url": analysis.get('url', None)
+            }
+        }

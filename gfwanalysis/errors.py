@@ -16,6 +16,8 @@ class Error(Exception):
 class HansenError(Error):
     pass
 
+class LandsatTilesError(Error):
+    pass
 
 class FormaError(Error):
     pass
