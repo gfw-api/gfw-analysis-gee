@@ -49,8 +49,8 @@ class LandsatTiles(object):
         try:
             d = {}
             if int(year) in [2015, 2016]:
-                image = pansharpened_L8_image(year)
-                d['url'] = tile_url(image)
+                image = LandsatTiles.pansharpened_L8_image(year)
+                d['url'] = LandsatTiles.tile_url(image)
             else:
                 logging.warning("Bad: URL for tiles for year={0} requested".format(year))
                 d['url'] = None
