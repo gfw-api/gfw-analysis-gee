@@ -99,11 +99,11 @@
 			"path": "/api/v1/biomass-loss/use/:name/:id"
 		}
     },{
-			"path": "/v1/landsat-tiles/:year",
+		"path": "/v1/landsat-tiles/:year",
+		"method": "GET",
+		"redirect": {
 			"method": "GET",
-			"redirect": {
-				"method": "GET",
-				"path": "/api/v1/landsat-tiles/:year"
-			}
-			}]
+			"path": "/api/v1/landsat-tiles/:year"
+		}
+	}]
 }
