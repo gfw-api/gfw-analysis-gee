@@ -5,13 +5,13 @@ import logging
 import ee
 from gfwanalysis.errors import FormaError
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.generic import get_region, squaremeters_to_ha
+from gfwanalysis.utils.geo import get_region, squaremeters_to_ha
 
 
 class Forma250Service(object):
 
     @staticmethod
-    def forma250_all(geojson, start_date, end_date):
+    def analyze(geojson, start_date, end_date):
         """Forma250 microservice class. This service uses the latest image in
         'projects/wri-datalab/FormaGlobalGFW' image collection. The bands of
         that image contain 'alert_delta': the percent of clearing per pixel that occured
@@ -52,7 +52,7 @@ class Forma250Service(object):
             #
             # Need to pass the area from the geojson object to area_ha, and also add the
             # 'area_ha_loss' key/value into the json that is passed to the front-end.
-            return {'area_ha_loss':alert_area_ha, 'alert_counts':alert_counts}
+            return {'area_ha_loss': alert_area_ha, 'alert_counts': alert_counts}
         except Exception as error:
             logging.error(str(error))
             raise FormaError(message='Error in Forma250 Analysis')

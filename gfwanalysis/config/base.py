@@ -16,7 +16,11 @@ SETTINGS = {
         'privatekey_file': BASE_DIR + '/privatekey.pem',
         'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_15',
-            'forma250GFW': 'projects/wri-datalab/FormaGlobalGFW'
+            'forma250GFW': 'projects/wri-datalab/FORMA250',
+            'biomassloss': {
+                'hansen_loss_thresh': 'HANSEN/gfw_loss_by_year_threshold_2015',
+                'biomass_2000': 'users/davethau/whrc_carbon_test/carbon'
+            }
         }
     },
     'carto': {

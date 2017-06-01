@@ -1,19 +1,4 @@
-"""-"""
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-from flask import Blueprint, jsonify
-
-
-# GENERIC Error
-
-def error(status=400, detail='Bad Request'):
-    return jsonify(errors=[{
-        'status': status,
-        'detail': detail
-    }]), status
-
-endpoints = Blueprint('endpoints', __name__)
-import gfwanalysis.routes.api.v1.gfw_analysis_router
+from gfwanalysis.routes.api.v1.hansen_router import hansen_endpoints_v1
+from gfwanalysis.routes.api.v1.forma250_router import forma250_endpoints_v1
+from gfwanalysis.routes.api.v1.biomass_loss_router import biomass_loss_endpoints_v1
+from gfwanalysis.routes.api.v1.landsat_router import landsat_tiles_endpoints_v1

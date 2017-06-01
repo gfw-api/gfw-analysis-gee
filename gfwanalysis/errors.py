@@ -16,10 +16,16 @@ class Error(Exception):
 class HansenError(Error):
     pass
 
+class LandsatTilesError(Error):
+    pass
 
-class CartoError(Error):
+class FormaError(Error):
     pass
 
 
-class FormaError(Error):
+class BiomassLossError(Error):
+    pass
+
+
+class GeostoreNotFound(Error):
     pass

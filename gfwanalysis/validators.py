@@ -3,10 +3,10 @@
 from functools import wraps
 from flask import request
 
-from gfwanalysis.routes.api.v1 import error
+from gfwanalysis.routes.api import error
 
 
-def validate_world(func):
+def validate_geostore(func):
     """World Validation"""
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -26,16 +26,5 @@ def validate_use(func):
         name = request.view_args.get('name')
         if name not in names:
             return error(status=400, detail='Name not valid')
-        return func(*args, **kwargs)
-    return wrapper
-
-
-def validate_forma(func):
-    """Forma Validation"""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        geostore = request.args.get('geostore')
-        if not geostore:
-            return error(status=400, detail='Geostore is required')
         return func(*args, **kwargs)
     return wrapper
