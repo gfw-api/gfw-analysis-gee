@@ -21,9 +21,6 @@ biomass_loss_endpoints_v1 = Blueprint('biomass_loss_endpoints_v1', __name__)
 def analyze(geojson, area_ha):
     """Analyze BiomassLoss"""
     logging.info('[ROUTER]: Getting biomassloss')
-    geojson = geojson or request.get_json().get('geojson', None)
-    area_ha = area_ha or 0
-
     if not geojson:
         return error(status=400, detail='Geojson is required')
 

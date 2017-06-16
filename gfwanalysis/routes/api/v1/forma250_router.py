@@ -21,9 +21,6 @@ forma250_endpoints_v1 = Blueprint('forma250_endpoints_v1', __name__)
 def analyze(geojson, area_ha):
     """Analyze forma250"""
     logging.info('[ROUTER]: Getting forma')
-    geojson = geojson or request.get_json().get('geojson', None)
-    area_ha = area_ha or 0
-
     if not geojson:
         return error(status=400, detail='Geojson is required')
 
