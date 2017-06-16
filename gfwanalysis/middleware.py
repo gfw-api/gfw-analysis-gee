@@ -20,8 +20,12 @@ def get_geo_by_hash(func):
                 geojson, area_ha = GeostoreService.get(geostore)
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
-            kwargs["geojson"] = geojson
-            kwargs["area_ha"] = area_ha
+        elif request.method == 'POST':
+            geojson = request.get_json().get('geojson', None) if request.get_json() else None
+            area_ha = request.get_json().get('area_ha', None) if request.get_json() else None
+
+        kwargs["geojson"] = geojson
+        kwargs["area_ha"] = area_ha
         return func(*args, **kwargs)
     return wrapper
 
