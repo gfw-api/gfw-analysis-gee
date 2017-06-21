@@ -39,7 +39,7 @@ class HansenService(object):
             reduce_args = {'reducer': ee.Reducer.sum().unweighted(),
                            'geometry': region,
                            'bestEffort': True,
-                           'scale': 90}
+                           'scale': 30}
             gfw_data = ee.Image(asset_id)
             loss_band = 'loss_{0}'.format(threshold)
             cover_band = 'tree_{0}'.format(threshold)
