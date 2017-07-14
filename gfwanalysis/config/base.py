@@ -16,6 +16,7 @@ SETTINGS = {
         'privatekey_file': BASE_DIR + '/privatekey.pem',
         'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_15',
+            'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'forma250GFW': 'projects/wri-datalab/FORMA250',
             'biomassloss': {
                 'hansen_loss_thresh': 'HANSEN/gfw_loss_by_year_threshold_2015',

@@ -16,6 +16,9 @@ class Error(Exception):
 class HansenError(Error):
     pass
 
+class HistogramError(Error):
+    pass
+
 class LandsatTilesError(Error):
     pass
 
