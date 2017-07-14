@@ -6,6 +6,7 @@ import ee
 from gfwanalysis.errors import HistogramError
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.utils.geo import get_region
+from gfwanalysis.utils.landcover_lookup import lookup
 
 
 class HistogramService(object):
@@ -40,21 +41,25 @@ class HistogramService(object):
 
             area_stats = combine_image.reduceRegion(**reduce_args).getInfo()[loss_band_name]
 
-            return HistogramService.process_response(begin, end, area_stats)
+            decoded_response = HistogramService.decode_response(begin, end, area_stats)
+
+            add_lulc_names = lookup('globcover', decoded_response)
+
+            return {'histogram': add_lulc_names}
 
         except Exception as error:
             logging.error(str(error))
             raise HistogramError(message='Error in Histogram Analysis')
 
     @staticmethod
-    def process_response(begin, end, gee_response):
+    def decode_response(begin, end, gee_response):
         requested_years = range(int(begin + 2000), int(end + 2000) + 1)
 
         globcover_vals = [11, 14, 20, 30, 40, 50, 60, 70, 90, 100, 110, 120,
                           130, 140, 150, 160, 170, 180, 190, 200, 210, 220, 230]
 
         empty_year_dict = {year: 0 for year in requested_years}
-        final_dict = {val: empty_year_dict.copy() for val in globcover_vals}
+        final_dict = {str(val): empty_year_dict.copy() for val in globcover_vals}
 
         for combine_value, count in gee_response.items():
 
@@ -62,9 +67,9 @@ class HistogramService(object):
 
                 # NB with python3 can use // to get the regular integer division
                 year = 2000 + int(combine_value) // 500
-                globcover = int(combine_value) % 500
+                globcover = str(int(combine_value) % 500)
 
                 if year in requested_years:
                     final_dict[globcover][year] = count
 
-        return {'histogram': final_dict}
+        return final_dict

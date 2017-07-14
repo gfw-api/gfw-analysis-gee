@@ -26,6 +26,17 @@ def serialize_histogram(analysis, type):
         }
     }
 
+def serialize_landcover(analysis, type):
+    """."""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'landcover': analysis.get('landcover', None),
+            'areaHa': analysis.get('area_ha', None),
+        }
+    }
+
 
 def serialize_forma(analysis, type):
     """Convert the output of the forma250 analysis to json"""

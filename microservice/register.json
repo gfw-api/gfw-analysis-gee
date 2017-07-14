@@ -99,6 +99,20 @@
 			"path": "/api/v1/histogram-analysis"
 		}
     },{
+		"path": "/v1/landcover",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/landcover"
+		}
+    },{
+		"path": "/v1/landcover",
+		"method": "POST",
+		"redirect": {
+			"method": "POST",
+			"path": "/api/v1/landcover"
+		}
+    },{
 		"path": "/v1/biomass-loss/wdpa/:id",
 		"method": "GET",
 		"redirect": {
