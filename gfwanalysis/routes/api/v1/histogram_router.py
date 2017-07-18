@@ -7,7 +7,7 @@ from __future__ import print_function
 import logging
 
 from flask import jsonify, request, Blueprint
-from gfwanalysis.routes.api import error, set_params
+from gfwanalysis.routes.api import error, set_params, get_layer
 from gfwanalysis.services.analysis.histogram_service import HistogramService
 from gfwanalysis.validators import validate_geostore, validate_use
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
@@ -24,20 +24,22 @@ def analyze(geojson, area_ha):
         return error(status=400, detail='Geojson is required')
 
     threshold, begin, end = set_params()
+    layer = get_layer()
 
     try:
         data = HistogramService.analyze(
             geojson=geojson,
             threshold=threshold,
             begin=begin,
-            end=end)
+            end=end,
+            layer=layer)
     except Exception as e:
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
-    
-    return jsonify(data=serialize_histogram(data, 'histogram')), 200
+
+    return jsonify(data=serialize_histogram(data, layer)), 200
 
 
 @histogram_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])

@@ -21,7 +21,7 @@ def serialize_histogram(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'histogram': analysis.get('histogram', None),
+            'histogram': analysis.get('result', None),
             'areaHa': analysis.get('area_ha', None),
         }
     }
@@ -32,7 +32,7 @@ def serialize_landcover(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'landcover': analysis.get('landcover', None),
+            'landcover': analysis.get('result', None),
             'areaHa': analysis.get('area_ha', None),
         }
     }
