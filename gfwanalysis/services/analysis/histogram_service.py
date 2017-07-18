@@ -30,7 +30,7 @@ class HistogramService(object):
             loss_band = ee.Image(hansen_asset_id).select(loss_band_name)
 
             lulc_asset_id = SETTINGS['gee']['assets'][layer]
-            band_name = SETTINGS['gee']['lulc_band'][layer]
+            band_name = SETTINGS['gee']['lulc_band'].get(layer, 'b1')
 
             lulc_band = ee.Image(lulc_asset_id).select(band_name)
             masked_lulc = lulc_band.updateMask(loss_band.mask())

@@ -18,6 +18,7 @@ SETTINGS = {
             'hansen': 'projects/wri-datalab/HansenComposite_15',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
+            'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
             'forma250GFW': 'projects/wri-datalab/FORMA250',
             'biomassloss': {
                 'hansen_loss_thresh': 'HANSEN/gfw_loss_by_year_threshold_2015',
@@ -25,8 +26,7 @@ SETTINGS = {
             }
         },
         'lulc_band': {
-            'globcover': 'landcover',
-            'foraf': 'b1'
+            'globcover': 'landcover'
         }
     },
     'carto': {

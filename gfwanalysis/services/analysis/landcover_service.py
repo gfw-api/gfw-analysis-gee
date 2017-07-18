@@ -22,7 +22,7 @@ class LandcoverService(object):
 
         try:
             lulc_asset_id = SETTINGS['gee']['assets'][layer]
-            band_name = SETTINGS['gee']['lulc_band'][layer]
+            band_name = SETTINGS['gee']['lulc_band'].get(layer, 'b1')
 
             logging.info(lulc_asset_id)
             logging.info(band_name)

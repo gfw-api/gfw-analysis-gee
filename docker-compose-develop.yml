@@ -6,9 +6,9 @@ develop:
     environment:
       ENVIRONMENT: dev
       DEBUG: "True"
-      CT_URL: http://mymachine:9000
+      CT_URL: http://192.168.80.164:9000
       CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
-      LOCAL_URL: http://mymachine:4500
+      LOCAL_URL: http://192.168.80.164:4500
       EE_PRIVATE_KEY: ${EE_PRIVATE_KEY}
       API_VERSION: v1
       CARTODB_USER: wri-01

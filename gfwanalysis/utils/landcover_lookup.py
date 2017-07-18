@@ -61,6 +61,21 @@ def get_lookup(layer):
         '18': 'Bare areas',
         '19': 'Artificial surfaces and associated areas',
         '20': 'Water Bodies'
+        },
+
+    'liberia':  {
+        '0': 'NoData',
+        '1': 'Forest >80%',
+        '2': 'Forest 30 - 80%',
+        '3': 'Forest <30%',
+        '4': 'Mangrove & Swamps',
+        '5': 'Settlements',
+        '7': 'Surface Water Bodies',
+        '8': 'Grassland',
+        '9': 'Shrub',
+        '10': 'Bare soil',
+        '11': 'Ecosystem complex (rock & sand)',
+        '25': 'Clouds'
         }
     }
 

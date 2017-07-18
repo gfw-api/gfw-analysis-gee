@@ -42,7 +42,7 @@ def set_params():
 
 def get_layer():
     layer = request.args.get('layer', 'globcover').lower()
-    valid_layers = ['globcover', 'foraf']
+    valid_layers = ['globcover', 'foraf', 'liberia']
 
     if layer not in valid_layers:
         msg = 'Unknown landcover layer {} specified, valid ' \
