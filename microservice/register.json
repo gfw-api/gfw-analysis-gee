@@ -85,18 +85,18 @@
 			"path": "/api/v1/biomass-loss"
 		}
     },{
-		"path": "/v1/histogram-analysis",
+		"path": "/v1/loss-by-landcover",
 		"method": "GET",
 		"redirect": {
 			"method": "GET",
-			"path": "/api/v1/histogram-analysis"
+			"path": "/api/v1/loss-by-landcover"
 		}
     },{
-		"path": "/v1/histogram-analysis",
+		"path": "/v1/loss-by-landcover",
 		"method": "POST",
 		"redirect": {
 			"method": "POST",
-			"path": "/api/v1/histogram-analysis"
+			"path": "/api/v1/loss-by-landcover"
 		}
     },{
 		"path": "/v1/landcover",

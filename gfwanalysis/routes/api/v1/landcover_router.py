@@ -12,8 +12,8 @@ from gfwanalysis.services.analysis.landcover_service import LandcoverService
 from gfwanalysis.validators import validate_geostore, validate_use
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational
-from gfwanalysis.errors import HansenError
 from gfwanalysis.serializers import serialize_landcover
+from gfwanalysis.utils.landcover_lookup import get_landcover_types
 
 landcover_endpoints_v1 = Blueprint('landcover_endpoints_v1', __name__)
 
@@ -22,6 +22,10 @@ def analyze(geojson, area_ha):
     """Analyze landcover"""
 
     layer = get_layer()
+    if not layer:
+        logging.debug(get_landcover_types())
+        return error(status=400, detail='Layer type must ' \
+                    'be one of {}'.format(', '.join(get_landcover_types())))
 
     if not geojson:
         return error(status=400, detail='Geojson is required')

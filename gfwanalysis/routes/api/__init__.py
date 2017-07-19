@@ -5,6 +5,7 @@ from __future__ import print_function
 import datetime
 
 from flask import jsonify, request
+from gfwanalysis.utils.landcover_lookup import get_landcover_types
 
 # GENERIC Error
 
@@ -42,13 +43,9 @@ def set_params():
 
 def get_layer():
     layer = request.args.get('layer', 'globcover').lower()
-    valid_layers = ['globcover', 'foraf', 'liberia']
+    valid_layers = get_landcover_types()
 
-    if layer not in valid_layers:
-        msg = 'Unknown landcover layer {} specified, valid ' \
-              'values are {}'.format(layer, ', '.join(valid_layers))
-
-        return error(status=400, detail=msg)
-
-    else:
+    if layer in valid_layers:
         return layer
+    else:
+        return None

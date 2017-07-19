@@ -45,7 +45,7 @@ app.register_blueprint(hansen_endpoints_v1, url_prefix='/api/v1/umd-loss-gain')
 app.register_blueprint(forma250_endpoints_v1, url_prefix='/api/v1/forma250gfw')
 app.register_blueprint(biomass_loss_endpoints_v1, url_prefix='/api/v1/biomass-loss')
 app.register_blueprint(landsat_tiles_endpoints_v1, url_prefix='/api/v1/landsat-tiles')
-app.register_blueprint(histogram_endpoints_v1, url_prefix='/api/v1/histogram-analysis')
+app.register_blueprint(histogram_endpoints_v1, url_prefix='/api/v1/loss-by-landcover')
 app.register_blueprint(landcover_endpoints_v1, url_prefix='/api/v1/landcover')
 
 # CT

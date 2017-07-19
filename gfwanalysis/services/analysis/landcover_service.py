@@ -3,7 +3,7 @@
 import logging
 
 import ee
-from gfwanalysis.errors import HistogramError
+from gfwanalysis.errors import LandcoverError
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.utils.geo import get_region
 from gfwanalysis.utils.landcover_lookup import lookup
@@ -43,4 +43,4 @@ class LandcoverService(object):
 
         except Exception as error:
             logging.error(str(error))
-            raise HistogramError(message='Error in Landcover Analysis')
+            raise LandcoverError(message='Error in Landcover Analysis')

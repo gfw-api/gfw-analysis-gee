@@ -12,8 +12,8 @@ from gfwanalysis.services.analysis.histogram_service import HistogramService
 from gfwanalysis.validators import validate_geostore, validate_use
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational
-from gfwanalysis.errors import HansenError
 from gfwanalysis.serializers import serialize_histogram
+from gfwanalysis.utils.landcover_lookup import get_landcover_types
 
 histogram_endpoints_v1 = Blueprint('histogram_endpoints_v1', __name__)
 
@@ -25,6 +25,10 @@ def analyze(geojson, area_ha):
 
     threshold, begin, end = set_params()
     layer = get_layer()
+    if not layer:
+        logging.debug(get_landcover_types())
+        return error(status=400, detail='Layer type must ' \
+                    'be one of {}'.format(', '.join(get_landcover_types())))
 
     try:
         data = HistogramService.analyze(

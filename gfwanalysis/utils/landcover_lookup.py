@@ -2,18 +2,30 @@ import logging
 
 
 def lookup(layer, result_dict):
+    lkp = all_lulc_dict[layer]
 
-    lkp = get_lookup(layer)
+    output_dict = {}
+    logging.info('adding landcover names')
+    logging.info(result_dict)
 
-    return add_landcover_names(result_dict, lkp)
+    for key, val in result_dict.items():
+
+        if key != 'null':
+            logging.info(key, val)
+            landcover_name = lkp[key]
+            output_dict[key] = {'pixelCount': val,
+                                'className': landcover_name}
+
+    return output_dict
 
 def valid_lulc_codes(layer):
+    return [int(x) for x in all_lulc_dict[layer].keys()]
 
-    return [int(x) for x in get_lookup(layer).keys()]
+def get_landcover_types():
+    return list(all_lulc_dict.keys())
 
-def get_lookup(layer):
 
-    all_lulc_dict = {
+all_lulc_dict = {
     'globcover': {
         '11': 'Post-flooding or irrigated croplands',
         '14': 'Rainfed croplands',
@@ -76,19 +88,15 @@ def get_lookup(layer):
         '10': 'Bare soil',
         '11': 'Ecosystem complex (rock & sand)',
         '25': 'Clouds'
-        }
+        },
+
+    'ifl2000': {
+        '1': 'Intact Forest Landscape 2000'
+        },
+
+    'mangroves': {
+        '1': 'Landsat Mangroves 2000'
     }
 
-    return all_lulc_dict[layer]
 
-def add_landcover_names(result_dict, lkp):
-
-    output_dict = {}
-    print('adding landcover names')
-
-    for key, val in result_dict.items():
-        logging.info(key, val)
-        landcover_name = lkp[key]
-        output_dict[key] = {'pixelCount': val, 'landcover': landcover_name}
-
-    return output_dict
+}
