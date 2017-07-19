@@ -17,22 +17,30 @@ def serialize_umd(analysis, type):
 
 def serialize_histogram(analysis, type):
     """."""
+    if len(analysis['result'].keys()) == 1:
+        single_key = list(analysis['result'].keys())[0]
+        analysis['result'] = analysis['result'][single_key]
+
     return {
         'id': None,
         'type': type,
         'attributes': {
-            'histogram': analysis.get('histogram', None),
+            'histogram': analysis.get('result', None),
             'areaHa': analysis.get('area_ha', None),
         }
     }
 
 def serialize_landcover(analysis, type):
     """."""
+    if len(analysis['result'].keys()) == 1:
+        single_key = list(analysis['result'].keys())[0]
+        analysis['result'] = analysis['result'][single_key]
+
     return {
         'id': None,
         'type': type,
         'attributes': {
-            'landcover': analysis.get('landcover', None),
+            'landcover': analysis.get('result', None),
             'areaHa': analysis.get('area_ha', None),
         }
     }
