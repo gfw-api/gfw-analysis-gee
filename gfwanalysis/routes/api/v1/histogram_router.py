@@ -26,7 +26,6 @@ def analyze(geojson, area_ha):
     threshold, begin, end = set_params()
     layer = get_layer()
     if not layer:
-        logging.debug(get_landcover_types())
         return error(status=400, detail='Layer type must ' \
                     'be one of {}'.format(', '.join(get_landcover_types())))
 
