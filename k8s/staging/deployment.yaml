@@ -25,11 +25,11 @@ spec:
           - start
         env:
           - name: PORT
-            value: "4050"
+            value: "4500"
           - name: ENVIRONMENT
             value: staging
           - name: LOCAL_URL
-            value: http://{name}.default.svc.cluster.local:4050
+            value: http://{name}.default.svc.cluster.local:4500
           - name: CT_URL
             valueFrom:
                 secretKeyRef:
@@ -57,6 +57,6 @@ spec:
                   key: EE_PRIVATE_KEY
 
         ports:
-          - containerPort: 4050
+          - containerPort: 4500
 
       restartPolicy: Always
