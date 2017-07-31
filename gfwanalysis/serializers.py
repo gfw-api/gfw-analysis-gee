@@ -15,6 +15,31 @@ def serialize_umd(analysis, type):
     }
 
 
+def serialize_histogram(analysis, type):
+    """."""
+
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'histogram': analysis.get('result', None),
+            'areaHa': analysis.get('area_ha', None),
+        }
+    }
+
+def serialize_landcover(analysis, type):
+    """."""
+
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'landcover': analysis.get('result', None),
+            'areaHa': analysis.get('area_ha', None),
+        }
+    }
+
+
 def serialize_forma(analysis, type):
     """Convert the output of the forma250 analysis to json"""
     return {

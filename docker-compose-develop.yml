@@ -4,6 +4,7 @@ develop:
       service: base
     container_name: gfw-analysis-gee-develop
     environment:
+      CT_REGISTER_MODE: auto
       ENVIRONMENT: dev
       DEBUG: "True"
       CT_URL: http://mymachine:9000
