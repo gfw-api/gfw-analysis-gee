@@ -48,7 +48,7 @@ class LandsatTiles(object):
         """
         try:
             d = {}
-            if int(year) in [2015, 2016]:
+            if int(year) in [2013, 2014, 2015, 2016]:
                 image = LandsatTiles.pansharpened_L8_image(year)
                 d['url'] = LandsatTiles.tile_url(image)
             else:
