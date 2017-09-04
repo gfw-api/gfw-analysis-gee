@@ -11,9 +11,9 @@ from gfwanalysis.routes.api import error
 from gfwanalysis.services.analysis.sentinel_tiles import SentinelTiles
 from gfwanalysis.errors import LandsatTilesError
 from gfwanalysis.serializers import serialize_sentinel_url
+from gfwanalysis.middleware import get_sentinel_params
 
-sentinel_tiles_endpoints_v1 = Blueprint('sentinel_tiles_endpoints_v1', __name__)
-
+sentinel_tiles_endpoints_v1 = Blueprint('sentinel_tiles_endpoints_v1', __name__) 
 
 def analyze(lat, lon, start, end):
     """Generate Sentinel tile url for a requested lat lon point and time prd
@@ -23,6 +23,7 @@ def analyze(lat, lon, start, end):
     start ='2017-03-01'
     end ='2017-03-10'
     """
+    logging.info("Analyze function")
     try:
         data = SentinelTiles.proxy_sentinel(lat=lat, lon=lon,
                                             start=start, end=end)
@@ -35,8 +36,9 @@ def analyze(lat, lon, start, end):
     return jsonify(data=serialize_sentinel_url(data, 'sentinel_tiles_url')), 200
 
 
-@sentinel_tiles_endpoints_v1.route('/<lat>/<lon>/<start>/<end>', strict_slashes=False, methods=['GET'])
-def get_by_geostore(year):
+@sentinel_tiles_endpoints_v1.route('/', strict_slashes=False, methods=['GET'])
+@get_sentinel_params
+def get_by_geostore(lat, lon, start, end):
     """Analyze by geostore"""
     logging.info('[ROUTER]: Getting url for tiles for Sentinel')
     return analyze(lat=lat, lon=lon, start=start, end=end)
