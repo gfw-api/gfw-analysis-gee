@@ -21,6 +21,7 @@ def get_sentinel_params(func):
         kwargs["lon"]   = lon
         kwargs["start"] = start
         kwargs["end"]   = end
+        return func(*args, **kwargs)
     return wrapper
 
 def get_geo_by_hash(func):

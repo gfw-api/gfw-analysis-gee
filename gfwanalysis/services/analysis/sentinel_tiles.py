@@ -16,14 +16,17 @@ class SentinelTiles(object):
 
     @staticmethod
     def tile_url(image, viz_params=None):
+        logging.info("TILE_URL function")
         """Create a target url for tiles for an image.
         """
         if viz_params:
             d = image.getMapId(viz_params)
+            logging.info(d)
         else:
             d = image.getMapId()
         base_url = 'https://earthengine.googleapis.com'
         url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
+        logging.info(url)
         return url
 
     @staticmethod
@@ -51,19 +54,22 @@ class SentinelTiles(object):
         end = '2017-03-01'
         """
         try:
-            point = ee.Geometry.Point(lat, lon)
+            point = ee.Geometry.Point(float(lat), float(lon))
             S2 = ee.ImageCollection('COPERNICUS/S2'
                                    ).filterDate(
                                     start, end).filterBounds(
                                     point).sort('CLOUD_PIXEL_PERCENTAGE', True).first()
             S2 = ee.Image(S2)
             d = S2.getInfo()       # grab a dictionary of the image metadata
+            # logging.debug(d)
             S2 = S2.divide(10000)  # Convert to Top of the atmosphere reflectance
             S2 = S2.visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0) # Convert to styled RGB image
-            image_tiles = tile_url(S2)
+            image_tiles = SentinelTiles.tile_url(S2)
+            logging.info(image_tiles)
             boundary = ee.Feature(ee.Geometry.LinearRing(d.get('properties').get("system:footprint").get('coordinates')))
-            boundary_tiles = tile_url(boundary, {'color': '4eff32'})
-            meta = get_image_metadata(d)
+            boundary_tiles = SentinelTiles.tile_url(boundary, {'color': '4eff32'})
+            meta = SentinelTiles.get_image_metadata(d)
+            logging.info(meta)
             output = {}
             output = {'boundary_tiles': boundary_tiles,
                       'image_tiles': image_tiles,

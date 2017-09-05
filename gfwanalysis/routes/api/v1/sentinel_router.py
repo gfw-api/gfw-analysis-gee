@@ -9,7 +9,7 @@ import logging
 from flask import jsonify, Blueprint
 from gfwanalysis.routes.api import error
 from gfwanalysis.services.analysis.sentinel_tiles import SentinelTiles
-from gfwanalysis.errors import LandsatTilesError
+from gfwanalysis.errors import SentinelTilesError
 from gfwanalysis.serializers import serialize_sentinel_url
 from gfwanalysis.middleware import get_sentinel_params
 
@@ -23,7 +23,6 @@ def analyze(lat, lon, start, end):
     start ='2017-03-01'
     end ='2017-03-10'
     """
-    logging.info("Analyze function")
     try:
         data = SentinelTiles.proxy_sentinel(lat=lat, lon=lon,
                                             start=start, end=end)
