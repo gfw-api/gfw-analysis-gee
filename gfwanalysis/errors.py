@@ -25,6 +25,10 @@ class LandcoverError(Error):
 class LandsatTilesError(Error):
     pass
 
+class SentinelTilesError(Error):
+    pass
+
+
 class FormaError(Error):
     pass
 

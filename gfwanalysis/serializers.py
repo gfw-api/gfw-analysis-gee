@@ -77,3 +77,16 @@ def serialize_landsat_url(analysis, type):
             "url": analysis.get('url', None)
             }
         }
+
+def serialize_sentinel_url(analysis, type):
+    """Convert output of landsat_tiles to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes':{
+            "url_image": analysis.get('image_tiles', None),
+            "url_boundary": analysis.get('boundary_tiles', None),
+            "date_time": analysis.get('metadata', None).get('date_time', None),
+            "product_id": analysis.get('metadata', None).get('product_id', None),
+            }
+        }

@@ -7,6 +7,22 @@ from gfwanalysis.routes.api import error
 from gfwanalysis.services.geostore_service import GeostoreService
 from gfwanalysis.errors import GeostoreNotFound
 
+def get_sentinel_params(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'GET':
+            lat   = request.args.get('lat')
+            lon   = request.args.get('lon')
+            start = request.args.get('start')
+            end   = request.args.get('end')
+            if not lat or not lon or not start or not end:
+                return error(status=400, detail='Some parameters are needed')
+        kwargs["lat"]   = lat
+        kwargs["lon"]   = lon
+        kwargs["start"] = start
+        kwargs["end"]   = end
+        return func(*args, **kwargs)
+    return wrapper
 
 def get_geo_by_hash(func):
     """Get geodata"""
