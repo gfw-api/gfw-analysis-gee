@@ -22,7 +22,7 @@ def set_params():
     """-"""
     threshold = request.args.get('thresh', 30)
     begin = request.args.get('begin', '2001-01-01')
-    end = request.args.get('end', '2015-12-31')
+    end = request.args.get('end', '2016-12-31')
     period = request.args.get('period', None)
     if period and len(period.split(',')) > 1:
         first = period.split(',')[0]
