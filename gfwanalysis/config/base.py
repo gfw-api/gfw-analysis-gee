@@ -21,6 +21,8 @@ SETTINGS = {
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
             'ifl2000': 'projects/wri-datalab/gfw-api/ifl-world',
             'mangroves': 'LANDSAT/MANGROVE_FORESTS/2000',
+            'primary-forest': 'projects/wri-datalab/gfw-api/primary-forest',
+            'gfw-landcover-2015': 'projects/wri-datalab/gfw-api/globcover-2015-reclassified',
             'forma250GFW': 'projects/wri-datalab/FORMA250',
             'biomassloss': {
                 'hansen_loss_thresh': 'HANSEN/gfw_loss_by_year_threshold_2015',
