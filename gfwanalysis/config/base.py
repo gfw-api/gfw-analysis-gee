@@ -15,12 +15,14 @@ SETTINGS = {
         'service_account': '390573081381-lm51tabsc8q8b33ik497hc66qcmbj11d@developer.gserviceaccount.com',
         'privatekey_file': BASE_DIR + '/privatekey.pem',
         'assets': {
-            'hansen': 'projects/wri-datalab/HansenComposite_15',
+            'hansen': 'projects/wri-datalab/HansenComposite_16',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
             'ifl2000': 'projects/wri-datalab/gfw-api/ifl-world',
             'mangroves': 'LANDSAT/MANGROVE_FORESTS/2000',
+            'primary-forest': 'projects/wri-datalab/gfw-api/primary-forest',
+            'gfw-landcover-2015': 'projects/wri-datalab/gfw-api/globcover-2015-reclassified',
             'forma250GFW': 'projects/wri-datalab/FORMA250',
             'biomassloss': {
                 'hansen_loss_thresh': 'HANSEN/gfw_loss_by_year_threshold_2015',

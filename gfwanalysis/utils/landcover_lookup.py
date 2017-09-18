@@ -75,6 +75,19 @@ all_lulc_dict = {
         '20': 'Water Bodies'
         },
 
+    'gfw-landcover-2015':  {
+        '1': 'Agriculture',
+        '2': 'Forest',
+        '3': 'Grassland',
+        '4': 'Wetland',
+        '5': 'Settlement',
+        '6': 'Shrubland',
+        '7': 'Sparse vegetation',
+        '8': 'Bare',
+        '9': 'Water',
+        '10': 'Permanent snow and ice'
+        },
+
     'liberia':  {
         '0': 'NoData',
         '1': 'Forest >80%',
@@ -92,6 +105,11 @@ all_lulc_dict = {
 
     'ifl2000': {
         '1': 'Intact Forest Landscape 2000'
+        },
+
+    'primary-forest': {
+        '0': 'Not Primary Forest',
+        '1': 'Primary Forest'
         },
 
     'mangroves': {

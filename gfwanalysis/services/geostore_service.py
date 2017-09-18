@@ -11,14 +11,31 @@ class GeostoreService(object):
     def execute(config):
         try:
             response = request_to_microservice(config)
-            if not response or response.get('errors'):
-                raise GeostoreNotFound
-            geostore = response.get('data', None).get('attributes', None)
-            geojson = geostore.get('geojson', None)
-            area_ha = geostore.get('areaHa', None)
         except Exception as e:
-            raise GeostoreNotFound(message=str(e))
+            raise Exception(str(e))
+        if response.get('errors'):
+            error = response.get('errors')[0]
+            if error.get('status') == 404:
+                raise GeostoreNotFound(message='')
+            else:
+                raise Exception(error.get('detail'))
+
+        geostore = response.get('data', None).get('attributes', None)
+        geojson = geostore.get('geojson', None)
+        area_ha = geostore.get('areaHa', None)
+
         return geojson, area_ha
+
+    @staticmethod
+    def create(geojson):
+        config = {
+            'uri': '/geostore',
+            'method': 'POST',
+            'body': {
+                'geojson': geojson
+            }
+        }
+        return GeostoreService.execute(config)
 
     @staticmethod
     def get(geostore):
