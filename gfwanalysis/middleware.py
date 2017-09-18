@@ -7,22 +7,24 @@ from gfwanalysis.routes.api import error
 from gfwanalysis.services.geostore_service import GeostoreService
 from gfwanalysis.errors import GeostoreNotFound
 
+
 def get_sentinel_params(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
-            lat   = request.args.get('lat')
-            lon   = request.args.get('lon')
+            lat = request.args.get('lat')
+            lon = request.args.get('lon')
             start = request.args.get('start')
-            end   = request.args.get('end')
+            end = request.args.get('end')
             if not lat or not lon or not start or not end:
                 return error(status=400, detail='Some parameters are needed')
-        kwargs["lat"]   = lat
-        kwargs["lon"]   = lon
+        kwargs["lat"] = lat
+        kwargs["lon"] = lon
         kwargs["start"] = start
-        kwargs["end"]   = end
+        kwargs["end"] = end
         return func(*args, **kwargs)
     return wrapper
+
 
 def get_geo_by_hash(func):
     """Get geodata"""
@@ -38,7 +40,10 @@ def get_geo_by_hash(func):
                 return error(status=404, detail='Geostore not found')
         elif request.method == 'POST':
             geojson = request.get_json().get('geojson', None) if request.get_json() else None
-            area_ha = request.get_json().get('area_ha', None) if request.get_json() else None
+            try:
+                geojson, area_ha = GeostoreService.create(geojson)
+            except Exception as e:
+                return error(status=500, detail=str(e))
 
         kwargs["geojson"] = geojson
         kwargs["area_ha"] = area_ha
