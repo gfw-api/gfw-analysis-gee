@@ -58,7 +58,7 @@ class SentinelTiles(object):
             S2 = ee.ImageCollection('COPERNICUS/S2'
                                    ).filterDate(
                                     start, end).filterBounds(
-                                    point).sort('CLOUD_PIXEL_PERCENTAGE', True).first()
+                                    point).sort('CLOUDY_PIXEL_PERCENTAGE', True).first()
             S2 = ee.Image(S2)
             d = S2.getInfo()       # grab a dictionary of the image metadata
             # logging.debug(d)
