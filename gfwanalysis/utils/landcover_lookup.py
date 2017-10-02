@@ -1,22 +1,36 @@
 import logging
 
 
-def lookup(layer, result_dict):
+def lookup(layer, result_dict, count_pixels):
     lkp = all_lulc_dict[layer]
 
-    output_dict = {}
+    if count_pixels:
+        area_type = 'pixelCount'
+    else:
+        area_type = 'areaHectares'
+
+    output_list = []
     logging.info('adding landcover names')
     logging.info(result_dict)
 
     for key, val in result_dict.items():
 
         if key != 'null':
-            logging.info(key, val)
             landcover_name = lkp[key]
-            output_dict[key] = {'pixelCount': val,
-                                'className': landcover_name}
 
-    return output_dict
+            result_dict = {'resultType': area_type,
+                        'className': landcover_name,
+                        'classVal': key}
+
+            # unpack year dict into array of dicts
+            if isinstance(val, dict):
+                val = [{'year': year, 'result': result} for year, result in val.items()]
+
+            result_dict['result'] = val
+
+            output_list.append(result_dict)
+
+    return output_list
 
 def valid_lulc_codes(layer):
     return [int(x) for x in all_lulc_dict[layer].keys()]

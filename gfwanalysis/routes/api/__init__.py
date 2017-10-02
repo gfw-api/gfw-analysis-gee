@@ -53,3 +53,17 @@ def get_layer():
         return layer
     else:
         return None
+
+def return_pixel_count():
+
+    if request.method == 'GET':
+        pixel_count = request.args.get('pixel_count', None)
+    else:
+        pixel_count = request.get_json().get('pixel_count', None) if request.get_json() else None
+
+    if pixel_count and pixel_count.lower() == 'true':
+        pixel_count = True
+    else:
+        pixel_count = False
+
+    return pixel_count
