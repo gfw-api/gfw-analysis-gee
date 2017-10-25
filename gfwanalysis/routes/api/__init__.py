@@ -42,10 +42,28 @@ def set_params():
     return threshold, begin, end
 
 def get_layer():
-    layer = request.args.get('layer', 'globcover').lower()
     valid_layers = get_landcover_types()
+
+    if request.method == 'GET':
+        layer = request.args.get('layer', 'globcover').lower()
+    else:
+        layer = request.get_json().get('layer', 'globcover').lower() if request.get_json() else None
 
     if layer in valid_layers:
         return layer
     else:
         return None
+
+def return_pixel_count():
+
+    if request.method == 'GET':
+        pixel_count = request.args.get('pixel_count', None)
+    else:
+        pixel_count = request.get_json().get('pixel_count', None) if request.get_json() else None
+
+    if pixel_count and pixel_count.lower() == 'true':
+        pixel_count = True
+    else:
+        pixel_count = False
+
+    return pixel_count

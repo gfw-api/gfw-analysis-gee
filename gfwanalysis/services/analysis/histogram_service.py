@@ -7,12 +7,13 @@ from gfwanalysis.errors import HistogramError
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.utils.geo import get_region
 from gfwanalysis.utils.landcover_lookup import lookup, valid_lulc_codes
+from gfwanalysis.utils.parse_gee_response import flatten_area_hist
 
 
 class HistogramService(object):
 
     @staticmethod
-    def analyze(threshold, geojson, begin, end, layer):
+    def analyze(threshold, geojson, begin, end, layer, count_pixels):
         """Take a user specified raster (currently only globcover) and a threshold,
         and return a dictionary of loss pixel count per year and per raster
         type for a given geometry.
@@ -36,17 +37,30 @@ class HistogramService(object):
             masked_lulc = lulc_band.updateMask(loss_band.mask())
             combine_image = loss_band.multiply(500).add(masked_lulc)
 
-            reduce_args = {'reducer': ee.Reducer.frequencyHistogram().unweighted(),
+            if count_pixels:
+                reducer = ee.Reducer.frequencyHistogram().unweighted()
+
+            else:
+                reducer = ee.Reducer.frequencyHistogram().unweighted().group()
+                combine_image = combine_image.addBands([ee.Image.pixelArea()])
+
+            reduce_args = {'reducer': reducer,
                            'geometry': get_region(geojson),
                            'scale': 27.829872698318393,
                            'bestEffort': False,
                            'maxPixels': 1e10}
 
-            area_stats = combine_image.reduceRegion(**reduce_args).getInfo()[loss_band_name]
+            area_stats = combine_image.reduceRegion(**reduce_args).getInfo()
+
+            if count_pixels:
+                area_stats = area_stats[loss_band_name]
+
+            else:
+                area_stats = flatten_area_hist(area_stats)
 
             decoded_response = HistogramService.decode_response(begin, end, area_stats, layer)
 
-            add_lulc_names = lookup(layer, decoded_response)
+            add_lulc_names = lookup(layer, decoded_response, count_pixels)
 
             return {'result': add_lulc_names}
 

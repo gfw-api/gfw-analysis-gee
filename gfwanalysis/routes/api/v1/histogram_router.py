@@ -1,13 +1,9 @@
 """API ROUTER"""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import logging
 
 from flask import jsonify, request, Blueprint
-from gfwanalysis.routes.api import error, set_params, get_layer
+from gfwanalysis.routes.api import error, set_params, get_layer, return_pixel_count
 from gfwanalysis.services.analysis.histogram_service import HistogramService
 from gfwanalysis.validators import validate_geostore, validate_use
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
@@ -25,6 +21,8 @@ def analyze(geojson, area_ha):
 
     threshold, begin, end = set_params()
     layer = get_layer()
+    count_pixels = return_pixel_count()
+
     if not layer:
         logging.debug(get_landcover_types())
         return error(status=400, detail='Layer type must ' \
@@ -36,7 +34,8 @@ def analyze(geojson, area_ha):
             threshold=threshold,
             begin=begin,
             end=end,
-            layer=layer)
+            layer=layer,
+            count_pixels=count_pixels)
     except Exception as e:
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
