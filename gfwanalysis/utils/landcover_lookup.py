@@ -154,7 +154,13 @@ all_lulc_dict = {
         '5': 'Swamp',
         '6': 'Timber plantation',
         '7': 'Primary forest',
-        '8': 'Water bodies'
+        '8': 'Water bodies',
+        '9': 'Bare land',
+        '10': 'Coastal fish pond',
+        '11': 'Rubber plantation',
+        '12': 'Agriculture',
+        '13': 'Secondary forest',
+        '14': r'Grassland/shrub'
     }
 
 }
