@@ -67,3 +67,19 @@ def get_by_wdpa(id, geojson, area_ha):
     """Wdpa Endpoint"""
     logging.info('[ROUTER]: Getting biomassloss by wdpa')
     return analyze(geojson, area_ha)
+
+
+@biomass_loss_endpoints_v1.route('/admin/<iso>', strict_slashes=False, methods=['GET'])
+@get_geo_by_national
+def get_by_national(iso, geojson, area_ha):
+    """National Endpoint"""
+    logging.info('[ROUTER]: Getting biomassloss by national')
+    return analyze(geojson, area_ha)
+
+
+@biomass_loss_endpoints_v1.route('/admin/<iso>/<id1>', strict_slashes=False, methods=['GET'])
+@get_geo_by_subnational
+def get_by_subnational(iso, id1, geojson, area_ha):
+    """Subnational Endpoint"""
+    logging.info('[ROUTER]: Getting biomassloss by subnational')
+    return analyze(geojson, area_ha)

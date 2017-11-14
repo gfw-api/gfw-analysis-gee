@@ -128,7 +128,39 @@ all_lulc_dict = {
 
     'mangroves': {
         '1': 'Landsat Mangroves 2000'
-    }
+    },
 
+    'idn-landcover': {
+        '0': 'Secondary forest',
+        '1': 'Primary forest',
+        '2': 'Timber plantation',
+        '3': 'Agriculture',
+        '4': 'Settlement',
+        '5': 'Swamp',
+        '6': 'Grassland/shrub',
+        '7': 'Bare land',
+        '8': 'Estate crop plantation',
+        '9': 'Body of water',
+        '10': 'Fish pond',
+        '11': 'Mining'
+    },
+
+    'sea-landcover': {
+        '0': 'Mining',
+        '1': 'Mixed tree crops',
+        '2': 'No data',
+        '3': 'Oil palm plantation',
+        '4': 'Settlements',
+        '5': 'Swamp',
+        '6': 'Timber plantation',
+        '7': 'Primary forest',
+        '8': 'Water bodies',
+        '9': 'Bare land',
+        '10': 'Coastal fish pond',
+        '11': 'Rubber plantation',
+        '12': 'Agriculture',
+        '13': 'Secondary forest',
+        '14': r'Grassland/shrub'
+    }
 
 }

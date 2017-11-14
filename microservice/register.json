@@ -127,6 +127,20 @@
 			"path": "/api/v1/biomass-loss/use/:name/:id"
 		}
     },{
+		"path": "/v1/biomass-loss/admin/:iso",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/biomass-loss/admin/:iso"
+		}
+    },{
+		"path": "/v1/biomass-loss/admin/:iso/:id1",
+		"method": "GET",
+		"redirect": {
+			"method": "GET",
+			"path": "/api/v1/biomass-loss/admin/:iso/:id1"
+		}
+    },{
 		"path": "/v1/landsat-tiles/:year",
 		"method": "GET",
 		"redirect": {
