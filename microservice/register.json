@@ -154,5 +154,12 @@
 			"method": "GET",
 			"path": "/api/v1/sentinel-tiles/"
 		}
+		},{
+			"path": "/v1/highres-tiles/",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/highres-tiles/"
+			}
 	}]
 }

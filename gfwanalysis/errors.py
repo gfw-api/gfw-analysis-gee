@@ -28,6 +28,8 @@ class LandsatTilesError(Error):
 class SentinelTilesError(Error):
     pass
 
+class HighResTilesError(Error):
+    pass
 
 class FormaError(Error):
     pass
