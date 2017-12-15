@@ -62,7 +62,6 @@ CTRegisterMicroserviceFlask.register(
     url=os.getenv('LOCAL_URL')
 )
 
-
 @app.errorhandler(403)
 def forbidden(e):
     return error(status=403, detail='Forbidden')
