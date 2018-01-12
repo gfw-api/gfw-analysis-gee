@@ -31,6 +31,9 @@ class SentinelTilesError(Error):
 class HighResTilesError(Error):
     pass
 
+class RecentTilesError(Error):
+    pass
+
 class FormaError(Error):
     pass
 
