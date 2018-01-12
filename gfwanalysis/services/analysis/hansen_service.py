@@ -33,6 +33,7 @@ class HansenService(object):
         try:
             d = {}
             asset_id = SETTINGS.get('gee').get('assets').get('hansen')
+            extent_2010_asset = SETTINGS.get('gee').get('assets').get('hansen_2010_extent')
             begin = int(begin.split('-')[0][2:])
             end = int(end.split('-')[0][2:])
             region = get_region(geojson)
@@ -47,6 +48,11 @@ class HansenService(object):
             tree_area = gfw_data.select(cover_band).gt(0).multiply(
                             ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
             d['tree_extent'] = squaremeters_to_ha(tree_area[cover_band])
+            # Identify 2010 forest cover at given threshold
+            extent2010_image = ee.Image(extent_2010_asset)
+            extent2010_area = extent2010_image.gt(float(threshold)).multiply(
+                                ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
+            d['tree_extent2010'] = squaremeters_to_ha(extent2010_area['b1'])
             # Identify tree gain over data collection period
             gain = gfw_data.select('gain').divide(255.0).multiply(
                             ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
