@@ -1,4 +1,5 @@
 """Serializers"""
+import logging
 
 
 def serialize_umd(analysis, type):
@@ -10,6 +11,7 @@ def serialize_umd(analysis, type):
             'loss': analysis.get('loss', None),
             'gain': analysis.get('gain', None),
             'treeExtent': analysis.get('tree_extent', None),
+            'treeExtent2010': analysis.get('tree_extent2010', None),
             'areaHa': analysis.get('area_ha', None),
         }
     }
@@ -90,3 +92,26 @@ def serialize_sentinel_url(analysis, type):
             "product_id": analysis.get('metadata', None).get('product_id', None),
             }
         }
+
+##### CHECK THIS. For loop for element retrieval.
+def serialize_highres_url(analysis, type):
+    """Convert output of images to json"""
+    output = []
+
+    for e in range (0, len(analysis)):
+        temp_output = {
+            'id': None,
+            'type': type,
+            'attributes':{
+                'source': analysis[e].get('metadata', None).get('source', None),
+                'cloud_score': analysis[e].get('metadata', None).get('cloud_score', None),
+                'date_time': analysis[e].get('metadata', None).get('date_time', None),
+                'metadata': analysis[e].get('metadata', None),
+                'tile_url': analysis[e].get('tile_url', None),
+                'thumbnail_url': analysis[e].get('thumbnail_url', None),
+                'boundary_tiles': analysis[e].get('boundary_tiles', None)
+            }
+        }
+        output.append(temp_output)
+
+    return output

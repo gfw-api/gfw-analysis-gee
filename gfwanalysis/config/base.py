@@ -16,6 +16,7 @@ SETTINGS = {
         'privatekey_file': BASE_DIR + '/privatekey.pem',
         'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_16',
+            'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
