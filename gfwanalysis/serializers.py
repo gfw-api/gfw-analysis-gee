@@ -115,7 +115,7 @@ def serialize_highres_url(analysis, type):
 
     return output
 
-def serialize_recent_url(analysis, type):
+def serialize_recent_data(analysis, type):
     logging.info("[SERIALISER] initiating...")
     """Convert output of images to json"""
     output = []
@@ -125,12 +125,46 @@ def serialize_recent_url(analysis, type):
             'id': None,
             'type': type,
             'attributes':{
-                'source': analysis[e].get('id', None),
+                'spacecraft': analysis[e].get('spacecraft', None),
+                'source': analysis[e].get('source', None),
                 'cloud_score': analysis[e].get('cloud_score', None),
                 'date_time': analysis[e].get('date', None),
                 'tile_url': analysis[e].get('tile_url', None),
                 'thumbnail_url': analysis[e].get('thumb_url', None),
                 'boundary_tiles': analysis[e].get('boundary', None)
+            }
+        }
+        output.append(temp_output)
+    logging.info("[SERIALISER] Complete!")
+    return output
+
+def serialize_recent_url(analysis, type):
+    logging.info("[SERIALISER] initiating...")
+    """Convert output of images to json"""
+    output = []
+    
+    if type == 'recent_thumbs_url':
+        
+        for e in range (0, len(analysis)):
+            temp_output = {
+                'id': None,
+                'type': type,
+                'attributes':{
+                    'source': analysis[e].get('source', None),
+                    'thumbnail_url': analysis[e].get('thumb_url', None)
+            }
+        }
+        output.append(temp_output)
+        
+    elif type == 'recent_tiles_url':
+
+        for e in range (0, len(analysis)):
+            temp_output = {
+                'id': None,
+                'type': type,
+                'attributes':{
+                    'source': analysis[e].get('source', None),
+                    'tile_url': analysis[e].get('tile_url', None)
             }
         }
         output.append(temp_output)

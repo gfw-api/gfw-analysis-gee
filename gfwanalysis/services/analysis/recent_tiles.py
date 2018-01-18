@@ -17,91 +17,49 @@ class RecentTiles(object):
     Note that the URLs from Earth Engine expire every 3 days.
     """
 
-    # # @staticmethod
-    # async def async_fetch(f, data_array, fetch_type=None):
-    #     logging.info("[RECENT>ASYNC_FETCH] function initiated")
-    #     """Takes collection data array and implements batch fetches
-    #     """
-    #     if fetch_type == 'first':
-    #         r1 = 0
-    #         r2 = 1
-            
-    #     elif fetch_type == 'rest':
-    #         r1 = 1
-    #         r2 = len(data_array)
-            
-    #     else:
-    #         r1 = 0
-    #         r2 = len(data_array)
-            
-    #     futures = [
-    #         loop.run_in_executor(
-    #             None, 
-    #             funct.partial(f, data_array[i]), 
-    #         )
-    #         for i in range(r1,r2)
-    #     ]
-    #     for response in await asyncio.gather(*futures):
-    #         pass
-
-
-    # @staticmethod
-    # def recent_tiles(col_data, viz_params=None):
-    #     logging.info("[RECENT>TILE] function initiated")
-    #     """Takes collection data array and fetches tiles
-    #     """
-
-    #     im = ee.Image(col_data['id']).divide(10000).visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)
-        
-    #     if viz_params:
-    #         m_id = im.getMapId(viz_params)
-    #         logging.info(m_id)
-    #     else:
-    #         m_id = im.getMapId()
-
-    #     base_url = 'https://earthengine.googleapis.com'
-    #     url = (base_url + '/map/' + m_id['mapid'] + '/{z}/{x}/{y}?token=' + m_id['token'])
-    #     logging.info(url)
-
-    #     col_data['tile_url'] = url
-
-    #     # return col_data ???
-
     ###TEST: http://localhost:9000/v1/recent-tiles?lat=-16.644&lon=28.266&start=2017-01-01&end=2017-02-01
 
     @staticmethod
-    def async_fetch(f, data_array, fetch_type=None):
+    async def async_fetch(loop, f, data_array, fetch_type=None):
         logging.info("[RECENT>ASYNC_FETCH] function initiated")
         """Takes collection data array and implements batch fetches
         """
-        
+        asyncio.set_event_loop(loop)
+
         if fetch_type == 'first':
             r1 = 0
             r2 = 1
-            
+
         elif fetch_type == 'rest':
             r1 = 1
             r2 = len(data_array)
-            
+
         else:
             r1 = 0
             r2 = len(data_array)
- 
-        for i in range(r1,r2):
-            f(data_array[i])
-
         
-        return data_array
+        # Set up list of futures (promises)
+        futures = [
+            loop.run_in_executor(
+                None, 
+                funct.partial(f, data_array[i]), 
+            )
+            for i in range(r1,r2)
+        ]
+        # Fulfill promises 
+        for response in await asyncio.gather(*futures):
+            pass
 
+        return data_array
 
     @staticmethod
     def recent_tiles(col_data, viz_params=None):
         logging.info("[RECENT>TILE] function initiated")
         """Takes collection data array and fetches tiles
         """
+        logging.info(f"[RECENT>TILE] {col_data}")
+        im = ee.Image(col_data['source']).divide(10000).visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)
 
-        im = ee.Image(col_data['id']).divide(10000).visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)
-        
         if viz_params:
             m_id = im.getMapId(viz_params)
             logging.info(m_id)
@@ -122,7 +80,7 @@ class RecentTiles(object):
         """Takes collection data array and fetches thumbs
         """
 
-        im = ee.Image(col_data['id']).divide(10000).visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)
+        im = ee.Image(col_data['source']).divide(10000).visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)
 
         m_id = im.getMapId()
 
@@ -130,14 +88,11 @@ class RecentTiles(object):
         logging.info(thumbnail)
 
         col_data['thumb_url'] = thumbnail
- 
+
         return col_data
 
     @staticmethod
     def recent_data(lat, lon, start, end):
-
-        # logging.info("[RECENT] initiating loop")
-        # loop = asyncio.get_event_loop()
 
         logging.info("[RECENT>DATA] function initiated")
 
@@ -163,19 +118,16 @@ class RecentTiles(object):
 
                 tmp_ = {
 
-                    'id': c['id'],
+                    'source': c['id'],
                     'cloud_score': c['properties']['CLOUDY_PIXEL_PERCENTAGE'],
                     'boundary': boundary_url,
-                    'source': c['properties']['SPACECRAFT_NAME'],
+                    'spacecraft': c['properties']['SPACECRAFT_NAME'],
                     'product_id': c['properties']['PRODUCT_ID'],
                     'date': date_time
 
                 }
                 data.append(tmp_)
 
-            #Get first tile
-            # loop.run_until_complete(async_fetch(recent_tiles, data, 'first'))
-            
             return data
 
         except:

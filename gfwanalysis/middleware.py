@@ -53,7 +53,7 @@ def get_recent_params(func):
             start = request.args.get('start')
             end = request.args.get('end')
             if not lat or not lon or not start or not end:
-                return error(status=400, detail='Some parameters are needed')
+                return error(status=400, detail='[RECENT] Some parameters are needed')
         kwargs["lat"] = lat
         kwargs["lon"] = lon
         kwargs["start"] = start
@@ -66,16 +66,11 @@ def get_recent_tiles(func):
     def wrapper(*args, **kwargs):
 
         if request.method == 'GET':
-            lat = request.args.get('lat')
-            lon = request.args.get('lon')
-            start = request.args.get('start')
-            end = request.args.get('end')
-            if not lat or not lon or not start or not end:
-                return error(status=400, detail='Some parameters are needed')
-        kwargs["lat"] = lat
-        kwargs["lon"] = lon
-        kwargs["start"] = start
-        kwargs["end"] = end
+            data_array = request.args.get('data_array')
+            if not data_array:
+                return error(status=400, detail='[TILES] Some parameters are needed')
+        kwargs["data_array"] = data_array
+
         return func(*args, **kwargs)
     return wrapper
 
@@ -84,16 +79,11 @@ def get_recent_thumbs(func):
     def wrapper(*args, **kwargs):
 
         if request.method == 'GET':
-            lat = request.args.get('lat')
-            lon = request.args.get('lon')
-            start = request.args.get('start')
-            end = request.args.get('end')
-            if not lat or not lon or not start or not end:
-                return error(status=400, detail='Some parameters are needed')
-        kwargs["lat"] = lat
-        kwargs["lon"] = lon
-        kwargs["start"] = start
-        kwargs["end"] = end
+            data_array = request.args.get('data_array')
+            if not data_array:
+                return error(status=400, detail='[THUMBS] Some parameters are needed')
+        kwargs["data_array"] = data_array
+
         return func(*args, **kwargs)
     return wrapper
 
