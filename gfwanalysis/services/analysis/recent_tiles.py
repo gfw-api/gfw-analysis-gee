@@ -98,7 +98,7 @@ class RecentTiles(object):
 
         try:
             point = ee.Geometry.Point(float(lat), float(lon))
-            S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point).sort('CLOUD_PIXEL_PERCENTAGE',True)
+            S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point).sort('CLOUDY_PIXEL_PERCENTAGE',True)
 
             collection = S2.toList(30).getInfo()
             data = []
