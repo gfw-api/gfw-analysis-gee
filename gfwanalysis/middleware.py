@@ -2,6 +2,7 @@
 
 from functools import wraps
 from flask import request
+import logging
 
 from gfwanalysis.routes.api import error
 from gfwanalysis.services.geostore_service import GeostoreService
@@ -65,8 +66,8 @@ def get_recent_tiles(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        if request.method == 'GET':
-            data_array = request.args.get('data_array')
+        if request.method == 'POST':
+            data_array = request.get_json().get('source_data')
             if not data_array:
                 return error(status=400, detail='[TILES] Some parameters are needed')
         kwargs["data_array"] = data_array
@@ -78,8 +79,8 @@ def get_recent_thumbs(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
-        if request.method == 'GET':
-            data_array = request.args.get('data_array')
+        if request.method == 'POST':
+            data_array = request.get_json().get('source_data')
             if not data_array:
                 return error(status=400, detail='[THUMBS] Some parameters are needed')
         kwargs["data_array"] = data_array

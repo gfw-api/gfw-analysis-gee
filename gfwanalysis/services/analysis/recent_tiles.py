@@ -21,7 +21,6 @@ class RecentTiles(object):
 
     @staticmethod
     async def async_fetch(loop, f, data_array, fetch_type=None):
-        logging.info("[RECENT>ASYNC_FETCH] function initiated")
         """Takes collection data array and implements batch fetches
         """
         asyncio.set_event_loop(loop)
@@ -50,11 +49,14 @@ class RecentTiles(object):
         for response in await asyncio.gather(*futures):
             pass
 
+        return_results = []
+        for f in range(0,len(futures)):
+            data_array[f] = futures[f].result()
+
         return data_array
 
     @staticmethod
     def recent_tiles(col_data, viz_params=None):
-        logging.info("[RECENT>TILE] function initiated")
         """Takes collection data array and fetches tiles
         """
         logging.info(f"[RECENT>TILE] {col_data}")
@@ -68,7 +70,6 @@ class RecentTiles(object):
 
         base_url = 'https://earthengine.googleapis.com'
         url = (base_url + '/map/' + m_id['mapid'] + '/{z}/{x}/{y}?token=' + m_id['token'])
-        logging.info(url)
 
         col_data['tile_url'] = url
 
@@ -76,7 +77,6 @@ class RecentTiles(object):
 
     @staticmethod
     def recent_thumbs(col_data):
-        logging.info("[RECENT>THUMB] function initiated")
         """Takes collection data array and fetches thumbs
         """
 

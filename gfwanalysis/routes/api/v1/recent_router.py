@@ -9,15 +9,13 @@ import asyncio
 import requests
 import functools as funct
 
-from flask import jsonify, Blueprint
+from flask import jsonify, Blueprint, request
 from gfwanalysis.routes.api import error
 from gfwanalysis.services.analysis.recent_tiles import RecentTiles
 from gfwanalysis.errors import RecentTilesError
 from gfwanalysis.serializers import serialize_recent_url
 from gfwanalysis.serializers import serialize_recent_data
-from gfwanalysis.middleware import get_recent_params
-from gfwanalysis.middleware import get_recent_tiles
-from gfwanalysis.middleware import get_recent_thumbs
+from gfwanalysis.middleware import get_recent_params, get_recent_tiles, get_recent_thumbs
 
 recent_tiles_endpoints_v1 = Blueprint('recent_tiles_endpoints_v1', __name__) 
 
@@ -30,18 +28,14 @@ def analyze_recent_data(lat, lon, start, end):
     start ='2017-03-01'
     end ='2017-03-10'
     """
-    logging.info("[ANALYSIS>DATA] function initiated")
-    
+
     loop = asyncio.new_event_loop()
-    logging.info("[ANALYSIS>LOOP] loop initiated")
     
     try:
         #Get data
         data = RecentTiles.recent_data(lat=lat, lon=lon, start=start, end=end)
         #Get first tile
         data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data, 'first'))
-
-        logging.info("[ANALYSIS>DATA] Complete!")
     except RecentTilesError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
@@ -54,15 +48,11 @@ def analyze_recent_tiles(data_array):
     """Takes an array of JSON objects with a 'source' key for each tile url 
     to be returned. Returns an array of 'source' names and 'tile_url' values.
     """
-    logging.info("[ANALYSIS>TILES] function initiated")
-    # data_array = data_array.get('data_array')
 
     loop = asyncio.new_event_loop()
-    logging.info("[ANALYSIS>LOOP] loop initiated")
     
     try:
         data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data_array))
-        logging.info("[ANALYSIS>DATA] Complete!")
     except RecentTilesError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
@@ -75,15 +65,11 @@ def analyze_recent_thumbs(data_array):
     """Takes an array of JSON objects with a 'source' key for each tile url 
     to be returned. Returns an array of 'source' names and 'thumb_url' values.
     """
-    logging.info("[ANALYSIS>TILES] function initiated")
-    # data_array = data_array.get('data_array')
 
     loop = asyncio.new_event_loop()
-    logging.info("[ANALYSIS>LOOP] loop initiated")
-    
+     
     try:
         data = loop.run_until_complete(RecentTiles.async_fetch(loop,RecentTiles.recent_thumbs, data_array))
-        logging.info("[ANALYSIS>DATA] Complete!")
     except RecentTilesError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
@@ -97,24 +83,24 @@ def analyze_recent_thumbs(data_array):
 def get_by_geostore(lat, lon, start, end):
 
     """Analyze by geostore"""
-    logging.info('[ROUTER]: Getting url(s) for tiles for Recent Sentinel Images')
+    logging.info('[ROUTER]: Getting data for tiles for Recent Sentinel Images')
     data = analyze_recent_data(lat=lat, lon=lon, start=start, end=end)   
     return data
 
-@recent_tiles_endpoints_v1.route('/tiles', strict_slashes=False, methods=['GET'])
+@recent_tiles_endpoints_v1.route('/tiles', strict_slashes=False, methods=['POST'])
 @get_recent_tiles
 def get_by_tile(data_array):
-
     """Analyze by geostore"""
-    logging.info('[ROUTER]: Getting url(s) for tiles for Recent Sentinel Images')
-    data = analyze_recent_tiles(data_array)   
+    logging.info('[ROUTER]: Getting tile url(s) for tiles for Recent Sentinel Images')
+    logging.debug(request.get_json())
+    data = analyze_recent_tiles(data_array=data_array)   
     return data
 
-@recent_tiles_endpoints_v1.route('/thumbs', strict_slashes=False, methods=['GET'])
+@recent_tiles_endpoints_v1.route('/thumbs', strict_slashes=False, methods=['POST'])
 @get_recent_thumbs
 def get_by_thumb(data_array):
 
     """Analyze by geostore"""
-    logging.info('[ROUTER]: Getting url(s) for tiles for Recent Sentinel Images')
+    logging.info('[ROUTER]: Getting thumb url(s) for tiles for Recent Sentinel Images')
     data = analyze_recent_thumbs(data_array=data_array)   
     return data
