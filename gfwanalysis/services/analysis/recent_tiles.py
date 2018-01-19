@@ -6,7 +6,7 @@ import requests
 import functools as funct
 
 import ee
-from gfwanalysis.errors import LandsatTilesError
+from gfwanalysis.errors import RecentTilesError
 from gfwanalysis.config import SETTINGS
 
 
@@ -17,7 +17,7 @@ class RecentTiles(object):
     Note that the URLs from Earth Engine expire every 3 days.
     """
 
-    ###TEST: http://localhost:9000/v1/recent-tiles?lat=-16.644&lon=28.266&start=2017-01-01&end=2017-02-01
+    ### TEST: http://localhost:9000/v1/recent-tiles?lat=-16.644&lon=28.266&start=2017-01-01&end=2017-02-01
 
     @staticmethod
     async def async_fetch(loop, f, data_array, fetch_type=None):
@@ -36,21 +36,21 @@ class RecentTiles(object):
         else:
             r1 = 0
             r2 = len(data_array)
-        
+
         # Set up list of futures (promises)
         futures = [
             loop.run_in_executor(
-                None, 
-                funct.partial(f, data_array[i]), 
+                None,
+                funct.partial(f, data_array[i]),
             )
-            for i in range(r1,r2)
+            for i in range(r1, r2)
         ]
-        # Fulfill promises 
+        # Fulfill promises
         for response in await asyncio.gather(*futures):
             pass
 
         return_results = []
-        for f in range(0,len(futures)):
+        for f in range(0, len(futures)):
             data_array[f] = futures[f].result()
 
         return data_array
@@ -96,7 +96,7 @@ class RecentTiles(object):
 
         logging.info("[RECENT>DATA] function initiated")
 
-        try:            
+        try:
             point = ee.Geometry.Point(float(lat), float(lon))
             S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point).sort('CLOUD_PIXEL_PERCENTAGE',True)
 
@@ -131,5 +131,4 @@ class RecentTiles(object):
             return data
 
         except:
-            raise ValueError('Recent Images service failed to return image.')
-
+            raise RecentTilesError('Recent Images service failed to return image.')

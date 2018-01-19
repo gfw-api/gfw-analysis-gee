@@ -163,16 +163,16 @@
 			}
 	},{
 		"path": "/v1/recent-tiles/tiles",
-		"method": "GET",
+		"method": "POST",
 		"redirect": {
-			"method": "GET",
+			"method": "POST",
 			"path": "/api/v1/recent-tiles/tiles"
 		}
 	},{
 		"path": "/v1/recent-tiles/thumbs",
-		"method": "GET",
+		"method": "POST",
 		"redirect": {
-			"method": "GET",
+			"method": "POST",
 			"path": "/api/v1/recent-tiles/thumbs"
 		}
 	}]

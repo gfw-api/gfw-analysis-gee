@@ -17,7 +17,8 @@ from gfwanalysis.serializers import serialize_recent_url
 from gfwanalysis.serializers import serialize_recent_data
 from gfwanalysis.middleware import get_recent_params, get_recent_tiles, get_recent_thumbs
 
-recent_tiles_endpoints_v1 = Blueprint('recent_tiles_endpoints_v1', __name__) 
+recent_tiles_endpoints_v1 = Blueprint('recent_tiles_endpoints_v1', __name__)
+
 
 def analyze_recent_data(lat, lon, start, end):
     """Returns metadata and *first* tile url from GEE for all Sentinel images
@@ -28,9 +29,8 @@ def analyze_recent_data(lat, lon, start, end):
     start ='2017-03-01'
     end ='2017-03-10'
     """
-
     loop = asyncio.new_event_loop()
-    
+
     try:
         #Get data
         data = RecentTiles.recent_data(lat=lat, lon=lon, start=start, end=end)
@@ -44,13 +44,14 @@ def analyze_recent_data(lat, lon, start, end):
         return error(status=500, detail='Generic Error')
     return jsonify(data=serialize_recent_data(data, 'recent_tiles_data')), 200
 
+
 def analyze_recent_tiles(data_array):
-    """Takes an array of JSON objects with a 'source' key for each tile url 
+    """Takes an array of JSON objects with a 'source' key for each tile url
     to be returned. Returns an array of 'source' names and 'tile_url' values.
     """
 
     loop = asyncio.new_event_loop()
-    
+
     try:
         data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data_array))
     except RecentTilesError as e:
@@ -61,15 +62,14 @@ def analyze_recent_tiles(data_array):
         return error(status=500, detail='Generic Error')
     return jsonify(data=serialize_recent_url(data, 'recent_tiles_url')), 200
 
+
 def analyze_recent_thumbs(data_array):
-    """Takes an array of JSON objects with a 'source' key for each tile url 
+    """Takes an array of JSON objects with a 'source' key for each tile url
     to be returned. Returns an array of 'source' names and 'thumb_url' values.
     """
-
     loop = asyncio.new_event_loop()
-     
     try:
-        data = loop.run_until_complete(RecentTiles.async_fetch(loop,RecentTiles.recent_thumbs, data_array))
+        data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_thumbs, data_array))
     except RecentTilesError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
@@ -78,29 +78,29 @@ def analyze_recent_thumbs(data_array):
         return error(status=500, detail='Generic Error')
     return jsonify(data=serialize_recent_url(data, 'recent_thumbs_url')), 200
 
+
 @recent_tiles_endpoints_v1.route('/', strict_slashes=False, methods=['GET'])
 @get_recent_params
 def get_by_geostore(lat, lon, start, end):
-
     """Analyze by geostore"""
     logging.info('[ROUTER]: Getting data for tiles for Recent Sentinel Images')
-    data = analyze_recent_data(lat=lat, lon=lon, start=start, end=end)   
+    data = analyze_recent_data(lat=lat, lon=lon, start=start, end=end)
     return data
+
 
 @recent_tiles_endpoints_v1.route('/tiles', strict_slashes=False, methods=['POST'])
 @get_recent_tiles
 def get_by_tile(data_array):
     """Analyze by geostore"""
     logging.info('[ROUTER]: Getting tile url(s) for tiles for Recent Sentinel Images')
-    logging.debug(request.get_json())
-    data = analyze_recent_tiles(data_array=data_array)   
+    data = analyze_recent_tiles(data_array=data_array)
     return data
+
 
 @recent_tiles_endpoints_v1.route('/thumbs', strict_slashes=False, methods=['POST'])
 @get_recent_thumbs
 def get_by_thumb(data_array):
-
     """Analyze by geostore"""
     logging.info('[ROUTER]: Getting thumb url(s) for tiles for Recent Sentinel Images')
-    data = analyze_recent_thumbs(data_array=data_array)   
+    data = analyze_recent_thumbs(data_array=data_array)
     return data
