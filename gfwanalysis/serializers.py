@@ -11,6 +11,7 @@ def serialize_umd(analysis, type):
             'loss': analysis.get('loss', None),
             'gain': analysis.get('gain', None),
             'treeExtent': analysis.get('tree_extent', None),
+            'treeExtent2010': analysis.get('tree_extent2010', None),
             'areaHa': analysis.get('area_ha', None),
         }
     }

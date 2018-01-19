@@ -65,7 +65,6 @@ app.register_blueprint(landcover_endpoints_v1, url_prefix='/api/v1/landcover')
 #     url=os.getenv('LOCAL_URL')
 # )
 
-
 @app.errorhandler(403)
 def forbidden(e):
     return error(status=403, detail='Forbidden')
