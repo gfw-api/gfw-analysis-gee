@@ -115,3 +115,59 @@ def serialize_highres_url(analysis, type):
         output.append(temp_output)
 
     return output
+
+def serialize_recent_data(analysis, type):
+    logging.info("[SERIALISER] initiating...")
+    """Convert output of images to json"""
+    output = []
+
+    for e in range (0, len(analysis)):
+        temp_output = {
+            'id': None,
+            'type': type,
+            'attributes':{
+                'instrument': analysis[e].get('spacecraft', None),
+                'source': analysis[e].get('source', None),
+                'cloud_score': analysis[e].get('cloud_score', None),
+                'date_time': analysis[e].get('date', None),
+                'tile_url': analysis[e].get('tile_url', None),
+                'thumbnail_url': analysis[e].get('thumb_url', None),
+                'boundary_url': analysis[e].get('boundary', None)
+            }
+        }
+        output.append(temp_output)
+    return output
+
+def serialize_recent_url(analysis, type):
+    logging.info("[SERIALISER] Initiating")
+    """Convert output of images to json"""
+    tmp_output = []
+    output = {}
+    
+    if type == 'recent_thumbs_url':
+
+        output['id'] = None
+        output['type'] = type
+        
+        for e in range (0, len(analysis)):
+            temp_obj = {
+                    'source': analysis[e].get('source', None),
+                    'thumbnail_url': analysis[e].get('thumb_url', None)
+            }
+            tmp_output.append(temp_obj)
+        output['attributes'] = tmp_output
+        
+    elif type == 'recent_tiles_url':
+
+        output['id'] = None
+        output['type'] = type
+
+        for e in range (0, len(analysis)):
+            temp_obj = {
+                    'source_id': analysis[e].get('source', None),
+                    'tile_url': analysis[e].get('tile_url', None)
+            }
+            tmp_output.append(temp_obj)            
+        output['attributes'] = tmp_output
+
+    return output

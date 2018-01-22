@@ -155,11 +155,25 @@
 			"path": "/api/v1/sentinel-tiles/"
 		}
 		},{
-			"path": "/v1/highres-tiles/",
+			"path": "/v1/recent-tiles/",
 			"method": "GET",
 			"redirect": {
 				"method": "GET",
-				"path": "/api/v1/highres-tiles/"
+				"path": "/api/v1/recent-tiles/"
 			}
+	},{
+		"path": "/v1/recent-tiles/tiles",
+		"method": "POST",
+		"redirect": {
+			"method": "POST",
+			"path": "/api/v1/recent-tiles/tiles"
+		}
+	},{
+		"path": "/v1/recent-tiles/thumbs",
+		"method": "POST",
+		"redirect": {
+			"method": "POST",
+			"path": "/api/v1/recent-tiles/thumbs"
+		}
 	}]
 }
