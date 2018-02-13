@@ -5,13 +5,14 @@ bind = '0.0.0.0:4500'
 backlog = 2048
 
 worker_class = 'gevent'
-workers = 2
+workers = 4
 threads = 1
-worker_connections = 1000
-timeout = 30
+worker_connections = 500
+timeout = 60
 keepalive = 2
 max_requests = 1000
-max_requests_jitter = 50
+max_requests_jitter = 500
+graceful_timeout = 60
 
 spew = False
 
