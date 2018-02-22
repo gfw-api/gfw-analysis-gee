@@ -32,7 +32,7 @@ class LandsatTiles(object):
     def pansharpened_L8_image(year):
         collection = ee.ImageCollection('LANDSAT/LC8_L1T').filterDate(
                             "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year))
-        composite = ee.Algorithms.SimpleLandsatComposite(collection=collection,
+        composite = ee.Algorithms.Landsat.simpleComposite(collection=collection,
                             percentile=50, maxDepth=80, cloudScoreRange=1, asFloat=True)
         hsv2 = composite.select(['B4', 'B3', 'B2']).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
