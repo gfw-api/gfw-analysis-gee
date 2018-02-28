@@ -116,11 +116,19 @@ class RecentTiles(object):
                 date_time = ''.join([date_info[0:4],'-',date_info[4:6],'-',date_info[6:8],' ',
                             date_info[9:11],':',date_info[11:13],':',date_info[13:15],"Z"])
 
+                bbox = c['properties']['system:footprint']['coordinates']
+
                 tmp_ = {
 
                     'source': c['id'],
                     'cloud_score': c['properties']['CLOUDY_PIXEL_PERCENTAGE'],
                     'boundary': boundary_url,
+                    'bbox': {
+                            "geometry": {
+                            "type": "Polygon",
+                            "coordinates": bbox
+                            }
+                          },
                     'spacecraft': c['properties']['SPACECRAFT_NAME'],
                     'product_id': c['properties']['PRODUCT_ID'],
                     'date': date_time
