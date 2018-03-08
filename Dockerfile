@@ -8,6 +8,10 @@ RUN apk update && apk upgrade && \
    apk add --no-cache --update bash git openssl-dev build-base alpine-sdk \
    libffi-dev postgresql-dev gcc python3-dev musl-dev
 
+# add GEOS for shapely
+RUN echo "http://mirror.leaseweb.com/alpine/edge/testing/" >> /etc/apk/repositories
+RUN apk add --no-cache geos-dev
+
 RUN addgroup $USER && adduser -s /bin/bash -D -G $USER $USER
 
 RUN easy_install pip && pip install --upgrade pip
