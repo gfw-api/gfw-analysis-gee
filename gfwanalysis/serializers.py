@@ -123,8 +123,6 @@ def serialize_recent_data(analysis, type):
 
     for e in range (0, len(analysis)):
         temp_output = {
-            'id': None,
-            'type': type,
             'attributes':{
                 'instrument': analysis[e].get('spacecraft', None),
                 'source': analysis[e].get('source', None),
@@ -132,12 +130,15 @@ def serialize_recent_data(analysis, type):
                 'date_time': analysis[e].get('date', None),
                 'tile_url': analysis[e].get('tile_url', None),
                 'thumbnail_url': analysis[e].get('thumb_url', None),
-                'boundary_url': analysis[e].get('boundary', None),
-                'bbox': analysis[e].get('bbox', None)
+                'boundary_url': analysis[e].get('boundary', None)
             }
         }
         output.append(temp_output)
-    return output
+    return {'bbox': analysis[0].get('bbox', None), 
+            'tiles': output,
+            'id': None,
+            'type': type
+            }
 
 def serialize_recent_url(analysis, type):
     logging.info("[SERIALISER] Initiating")

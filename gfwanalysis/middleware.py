@@ -6,6 +6,7 @@ import logging
 
 from gfwanalysis.routes.api import error
 from gfwanalysis.services.geostore_service import GeostoreService
+from gfwanalysis.services.area_service import AreaService
 from gfwanalysis.errors import GeostoreNotFound
 
 
@@ -103,7 +104,7 @@ def get_geo_by_hash(func):
         elif request.method == 'POST':
             geojson = request.get_json().get('geojson', None) if request.get_json() else None
             try:
-                geojson, area_ha = GeostoreService.create(geojson)
+                area_ha = AreaService.tabulate_area(geojson)
             except Exception as e:
                 return error(status=500, detail=str(e))
 
