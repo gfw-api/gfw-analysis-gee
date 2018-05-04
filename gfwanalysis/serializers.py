@@ -130,11 +130,12 @@ def serialize_recent_data(analysis, type):
                 'date_time': analysis[e].get('date', None),
                 'tile_url': analysis[e].get('tile_url', None),
                 'thumbnail_url': analysis[e].get('thumb_url', None),
-                'boundary_url': analysis[e].get('boundary', None)
+                'boundary_url': analysis[e].get('boundary', None),
+                'bbox': analysis[e].get('bbox', None)
             }
         }
         output.append(temp_output)
-    return {'bbox': analysis[0].get('bbox', None), 
+    return {
             'tiles': output,
             'id': None,
             'type': type
