@@ -98,17 +98,10 @@ class RecentTiles(object):
 
         try:
             point = ee.Geometry.Point(float(lat), float(lon))
-            S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point).sort('CLOUDY_PIXEL_PERCENTAGE',True)
+            S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point).sort('system:time_start',False).sort('CLOUDY_PIXEL_PERCENTAGE',True)
 
             collection = S2.toList(30).getInfo()
             data = []
-
-            #Get boundary data (same for every tile)
-            boundary_tile = ee.Feature(ee.Geometry.LinearRing(collection[0]['properties']['system:footprint']['coordinates']))
-
-            b_id = boundary_tile.getMapId({'color': '4eff32'})
-            base_url = 'https://earthengine.googleapis.com'
-            boundary_url = (base_url + '/map/' + b_id['mapid'] + '/{z}/{x}/{y}?token=' + b_id['token'])
 
             for c in collection:
 
@@ -122,7 +115,6 @@ class RecentTiles(object):
 
                     'source': c['id'],
                     'cloud_score': c['properties']['CLOUDY_PIXEL_PERCENTAGE'],
-                    'boundary': boundary_url,
                     'bbox': {
                             "geometry": {
                             "type": "Polygon",
