@@ -93,7 +93,6 @@ def serialize_sentinel_url(analysis, type):
             }
         }
 
-##### CHECK THIS. For loop for element retrieval.
 def serialize_highres_url(analysis, type):
     """Convert output of images to json"""
     output = []
@@ -130,7 +129,6 @@ def serialize_recent_data(analysis, type):
                 'date_time': analysis[e].get('date', None),
                 'tile_url': analysis[e].get('tile_url', None),
                 'thumbnail_url': analysis[e].get('thumb_url', None),
-                'boundary_url': analysis[e].get('boundary', None),
                 'bbox': analysis[e].get('bbox', None)
             }
         }
