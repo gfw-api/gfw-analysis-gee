@@ -15,7 +15,7 @@ SETTINGS = {
         'service_account': '390573081381-lm51tabsc8q8b33ik497hc66qcmbj11d@developer.gserviceaccount.com',
         'privatekey_file': BASE_DIR + '/privatekey.pem',
         'assets': {
-            'hansen': 'projects/wri-datalab/HansenComposite_16',
+            'hansen': 'projects/wri-datalab/HansenComposite_17',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
