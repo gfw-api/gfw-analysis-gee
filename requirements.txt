@@ -4,3 +4,4 @@ CTRegisterMicroserviceFlask==0.3.7
 requests==2.12.4
 shapely==1.5.13
 pyproj==1.9.5.1
+oauth2client
