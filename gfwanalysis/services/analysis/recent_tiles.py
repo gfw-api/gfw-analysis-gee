@@ -9,6 +9,7 @@ import ee
 from gfwanalysis.errors import RecentTilesError
 from gfwanalysis.config import SETTINGS
 
+SENTINEL_BANDS = ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B8A', 'B9', 'B10', 'B11', 'B12']
 
 class RecentTiles(object):
     """Create dictionary with two urls to be used as webmap tiles for Sentinel 2
@@ -17,10 +18,31 @@ class RecentTiles(object):
     Note that the URLs from Earth Engine expire every 3 days.
     """
 
-    ### TEST: http://localhost:9000/v1/recent-tiles?lat=-16.644&lon=28.266&start=2017-01-01&end=2017-02-01
+    ### TEST: http://localhost:4500/api/v1/recent-tiles?lat=-16.644&lon=28.266&start=2017-01-01&end=2017-02-01
 
     @staticmethod
-    async def async_fetch(loop, f, data_array, fetch_type=None):
+    def validate_bands(bands):
+        """Validate and serialide bands
+        """
+        logging.info("[RECENT>BANDS] function initiated, validating")
+
+        #Format
+        if type(bands) == str:
+            bands = bands[1:-1].split(',')
+        
+        parsed_bands = [ b.upper() if b.upper() in SENTINEL_BANDS else None for b in bands ]
+
+        #Validate bands
+        if(len(parsed_bands) != 3):
+            raise RecentTilesError('Incorrect number of bands. Must contain 3 elements in the format: [r,b,g].')
+        elif(None in parsed_bands):
+            raise RecentTilesError('One or more bands do not exist.')
+        else:
+            return parsed_bands
+            
+
+    @staticmethod
+    async def async_fetch(loop, f, data_array, bands, fetch_type=None):
         """Takes collection data array and implements batch fetches
         """
         asyncio.set_event_loop(loop)
@@ -41,7 +63,7 @@ class RecentTiles(object):
         futures = [
             loop.run_in_executor(
                 None,
-                funct.partial(f, data_array[i]),
+                funct.partial(f, data_array[i], bands),
             )
             for i in range(r1, r2)
         ]
@@ -56,17 +78,19 @@ class RecentTiles(object):
         return data_array
 
     @staticmethod
-    def recent_tiles(col_data, viz_params=None):
+    def recent_tiles(col_data, bands=None):
         """Takes collection data array and fetches tiles
         """
         logging.info(f"[RECENT>TILE] {col_data}")
-        im = ee.Image(col_data['source']).divide(10000).visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)
 
-        if viz_params:
-            m_id = im.getMapId(viz_params)
-            logging.info(m_id)
+        if(bands):
+            validated_bands = RecentTiles.validate_bands(bands)
         else:
-            m_id = im.getMapId()
+            validated_bands = ["B4", "B3", "B2"]
+
+        im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
+
+        m_id = im.getMapId()
 
         base_url = 'https://earthengine.googleapis.com'
         url = (base_url + '/map/' + m_id['mapid'] + '/{z}/{x}/{y}?token=' + m_id['token'])
@@ -76,13 +100,16 @@ class RecentTiles(object):
         return col_data
 
     @staticmethod
-    def recent_thumbs(col_data):
+    def recent_thumbs(col_data, bands=None):
         """Takes collection data array and fetches thumbs
         """
 
-        im = ee.Image(col_data['source']).divide(10000).visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)
+        if(bands):
+            validated_bands = RecentTiles.validate_bands(bands)
+        else:
+            validated_bands = ["B4", "B3", "B2"]
 
-        m_id = im.getMapId()
+        im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
 
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
         logging.info(thumbnail)
@@ -95,7 +122,7 @@ class RecentTiles(object):
     def recent_data(lat, lon, start, end):
 
         logging.info("[RECENT>DATA] function initiated")
-
+        
         try:
             point = ee.Geometry.Point(float(lat), float(lon))
             S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point).sort('system:time_start',False).sort('CLOUDY_PIXEL_PERCENTAGE',True)
