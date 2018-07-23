@@ -32,11 +32,15 @@ class RecentTiles(object):
         
         parsed_bands = [ b.upper() if b.upper() in SENTINEL_BANDS else None for b in bands ]
 
+        # Check for dupes
+        seen = set()
+        uniq = [b for b in bands if b not in seen and not seen.add(b)]  
+
         #Validate bands
-        if(len(parsed_bands) != 3):
-            raise RecentTilesError('Incorrect number of bands. Must contain 3 elements in the format: [r,b,g].')
+        if(len(parsed_bands) != 3 or len(uniq) != 3):
+            raise RecentTilesError('Must contain 3 unique elements in the format: [r,b,g].')
         elif(None in parsed_bands):
-            raise RecentTilesError('One or more bands do not exist.')
+            raise RecentTilesError('One or more bands are invalid.')
         else:
             return parsed_bands
             
