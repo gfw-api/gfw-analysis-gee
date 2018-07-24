@@ -2,7 +2,6 @@
 
 from functools import wraps
 from flask import request
-import logging
 
 from gfwanalysis.routes.api import error
 from gfwanalysis.services.geostore_service import GeostoreService
@@ -54,12 +53,14 @@ def get_recent_params(func):
             lon = request.args.get('lon')
             start = request.args.get('start')
             end = request.args.get('end')
+            bands = request.args.get('bands', None)
             if not lat or not lon or not start or not end:
-                return error(status=400, detail='[RECENT] Some parameters are needed')
+                return error(status=400, detail='[RECENT] Parameters: (lat, lon. start, end) are needed')
         kwargs["lat"] = lat
         kwargs["lon"] = lon
         kwargs["start"] = start
         kwargs["end"] = end
+        kwargs["bands"] = bands
         return func(*args, **kwargs)
     return wrapper
 
@@ -69,9 +70,11 @@ def get_recent_tiles(func):
 
         if request.method == 'POST':
             data_array = request.get_json().get('source_data')
+            bands = request.get_json().get('bands', None)
             if not data_array:
                 return error(status=400, detail='[TILES] Some parameters are needed')
         kwargs["data_array"] = data_array
+        kwargs["bands"] = bands
 
         return func(*args, **kwargs)
     return wrapper
@@ -82,9 +85,11 @@ def get_recent_thumbs(func):
 
         if request.method == 'POST':
             data_array = request.get_json().get('source_data')
+            bands = request.get_json().get('bands', None)
             if not data_array:
                 return error(status=400, detail='[THUMBS] Some parameters are needed')
         kwargs["data_array"] = data_array
+        kwargs["bands"] = bands
 
         return func(*args, **kwargs)
     return wrapper
