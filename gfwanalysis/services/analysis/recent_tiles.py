@@ -60,9 +60,7 @@ class RecentTiles(object):
         elif(None in parsed_bands):
             raise RecentTilesError('One or more bands are invalid.')
         else:
-            logging.info(f"[RECENT>BANDS] bands {parsed_bands} validated")
             return parsed_bands
-            
 
     @staticmethod
     async def async_fetch(loop, f, data_array, bands, fetch_type=None):
@@ -104,15 +102,16 @@ class RecentTiles(object):
     def recent_tiles(col_data, bands=None):
         """Takes collection data array and fetches tiles
         """
-        logging.info(f"[RECENT>TILE] {col_data}")
+        logging.info(f"[RECENT>TILE] {col_data.get('source')}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
 
         maximum=0.3    
-        if 'LANDSAT' in col_data.get('source'): maximum=2
-        
         im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=maximum, opacity=1.0)
+        if 'LANDSAT' in col_data.get('source'): 
+            maximum=2
+            tmp_im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=maximum, opacity=1.0)
         
         m_id = im.getMapId()
 
@@ -120,14 +119,13 @@ class RecentTiles(object):
         url = (base_url + '/map/' + m_id['mapid'] + '/{z}/{x}/{y}?token=' + m_id['token'])
 
         col_data['tile_url'] = url
-
         return col_data
 
     @staticmethod
     def recent_thumbs(col_data, bands=None):
         """Takes collection data array and fetches thumbs
         """
-        logging.info(f"[RECENT>THUMB] {col_data}")
+        logging.info(f"[RECENT>THUMB] {col_data.get('source')}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
@@ -137,7 +135,6 @@ class RecentTiles(object):
 
         im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=maximum, opacity=1.0)
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
-        logging.info(thumbnail)
 
         col_data['thumb_url'] = thumbnail
 
