@@ -38,8 +38,6 @@ class RecentTiles(object):
     def validate_bands(bands, instrument):
         """Validate and serialide bands
         """
-        logging.info(f"[RECENT>BANDS] function initiated, validating for {instrument}")
-
         #Format
         if type(bands) == str:
             bands = bands[1:-1].split(',')
@@ -54,6 +52,7 @@ class RecentTiles(object):
         if 'LANDSAT' in instrument:
             parsed_bands = [ S2_TO_L8_DICT[b] for b in parsed_bands ]
 
+        logging.info(f"[RECENT>BANDS] parsed bands: {parsed_bands}")
         #Validate bands
         if(len(parsed_bands) != 3 or len(uniq) != 3):
             raise RecentTilesError('Must contain 3 unique elements in the format: [r,b,g].')
@@ -61,6 +60,21 @@ class RecentTiles(object):
             raise RecentTilesError('One or more bands are invalid.')
         else:
             return parsed_bands
+
+    @staticmethod
+    def pansharpened_L8_image(image, bands):
+        #If natural colour, pansharpen. Else, dont!
+        if bands == ['B4', 'B3', 'B2']:
+
+            hsv2 = image.select(bands).rgbToHsv()
+            sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
+                                image.select('B8')]).hsvToRgb().visualize(
+                                bands=bands, min=0.35, max=1.75, opacity=1.0)
+            return sharpened
+        
+        else:
+            return image.visualize(bands=bands, min=0.35, max=1.75, opacity=1.0)
+
 
     @staticmethod
     async def async_fetch(loop, f, data_array, bands, fetch_type=None):
@@ -107,11 +121,10 @@ class RecentTiles(object):
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
 
-        maximum=0.3    
-        im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=maximum, opacity=1.0)
+        im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
         if 'LANDSAT' in col_data.get('source'): 
-            maximum=2
-            tmp_im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=maximum, opacity=1.0)
+            tmp_im = ee.Image(col_data['source']).divide(10000)
+            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands)
         
         m_id = im.getMapId()
 
@@ -130,10 +143,13 @@ class RecentTiles(object):
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
 
-        maximum=0.3    
-        if 'LANDSAT' in col_data.get('source'): maximum=2          
+        maximum = 0.3
+        minimum = 0.0  
+        if 'LANDSAT' in col_data.get('source'): 
+            maximum=1.25          
+            minimum=0.35
 
-        im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=maximum, opacity=1.0)
+        im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=minimum, max=maximum, opacity=1.0)
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
 
         col_data['thumb_url'] = thumbnail
