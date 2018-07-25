@@ -41,7 +41,6 @@ class RecentTiles(object):
         #Format
         if type(bands) == str:
             bands = bands[1:-1].split(',')
-        
         parsed_bands = [ b.upper() if b.upper() in SENTINEL_BANDS else None for b in bands ]
 
         # Check for dupes
@@ -69,7 +68,7 @@ class RecentTiles(object):
             hsv2 = image.select(bands).rgbToHsv()
             sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
                                 image.select('B8')]).hsvToRgb().visualize(
-                                bands=bands, min=0.35, max=1.75, opacity=1.0)
+                                bands=['red', 'green', 'blue'], min=0.35, max=1.75, opacity=1.0)
             return sharpened
         
         else:
@@ -121,8 +120,9 @@ class RecentTiles(object):
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
 
-        im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
-        if 'LANDSAT' in col_data.get('source'): 
+        if 'COPERNICUS' in col_data.get('source'):
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
+        elif 'LANDSAT' in col_data.get('source'): 
             tmp_im = ee.Image(col_data['source']).divide(10000)
             im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands)
         
