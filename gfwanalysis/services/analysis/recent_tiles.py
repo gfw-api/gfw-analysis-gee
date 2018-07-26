@@ -68,6 +68,7 @@ class RecentTiles(object):
                             image.select('B8')]).hsvToRgb().visualize(min=0, max=0.3, gamma=[1.3, 1.3, 1.3])
         return sharpened
 
+
     @staticmethod
     async def async_fetch(loop, f, data_array, bands, fetch_type=None):
         """Takes collection data array and implements batch fetches

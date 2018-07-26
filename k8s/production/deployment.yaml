@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   labels:
     name: {name}
+    app: gfw
   name: {name}
 spec:
   revisionHistoryLimit: 2
@@ -13,6 +14,20 @@ spec:
       labels:
         name: {name}
     spec:
+      tolerations:
+      - key: "type"
+        operator: "Equal"
+        value: "gfw"
+        effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - gfw
       containers:
       - name: {name}
         image: vizzuality/{name}
