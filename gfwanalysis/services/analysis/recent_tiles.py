@@ -63,16 +63,10 @@ class RecentTiles(object):
     @staticmethod
     def pansharpened_L8_image(image, bands):
         #If natural colour, pansharpen. Else, dont!
-        if bands == ['B4', 'B3', 'B2']:
-
-            hsv2 = image.select(bands).rgbToHsv()
-            sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-                                image.select('B8')]).hsvToRgb().visualize(
-                                bands=['red', 'green', 'blue'], min=0.35, max=1.75, opacity=1.0)
-            return sharpened
-        
-        else:
-            return image.visualize(bands=bands, min=0.35, max=1.75, opacity=1.0)
+        hsv2 = image.select(bands).rgbToHsv()
+        sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
+                            image.select('B8')]).hsvToRgb().visualize(min=0, max=0.2, gamma=[1.3, 1.3, 1.3])
+        return sharpened
 
 
     @staticmethod
@@ -123,7 +117,7 @@ class RecentTiles(object):
         if 'COPERNICUS' in col_data.get('source'):
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
         elif 'LANDSAT' in col_data.get('source'): 
-            tmp_im = ee.Image(col_data['source']).divide(10000)
+            tmp_im = ee.Image(col_data['source'])
             im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands)
         
         m_id = im.getMapId()
@@ -143,13 +137,12 @@ class RecentTiles(object):
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
 
-        maximum = 0.3
-        minimum = 0.0  
-        if 'LANDSAT' in col_data.get('source'): 
-            maximum=1.25          
-            minimum=0.35
+        if 'COPERNICUS' in col_data.get('source'):
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.5, opacity=1.0)
+            
+        elif 'LANDSAT' in col_data.get('source'): 
+            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=0, max=3, gamm=[1.3, 1.3, 1.3] opacity=1.0)
 
-        im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=minimum, max=maximum, opacity=1.0)
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
 
         col_data['thumb_url'] = thumbnail
@@ -165,7 +158,7 @@ class RecentTiles(object):
         
             point = ee.Geometry.Point(float(lat), float(lon))
             S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point)
-            L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT').filterDate(start,end).filterBounds(point)
+            L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(start,end).filterBounds(point)
 
             collection = S2.toList(52).cat(L8.toList(52)).getInfo()
 
