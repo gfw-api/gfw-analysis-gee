@@ -65,9 +65,8 @@ class RecentTiles(object):
         #If natural colour, pansharpen. Else, dont!
         hsv2 = image.select(bands).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-                            image.select('B8')]).hsvToRgb().visualize(min=0, max=0.2, gamma=[1.3, 1.3, 1.3])
+                            image.select('B8')]).hsvToRgb().visualize(min=0, max=0.3, gamma=[1.3, 1.3, 1.3])
         return sharpened
-
 
     @staticmethod
     async def async_fetch(loop, f, data_array, bands, fetch_type=None):
@@ -141,7 +140,7 @@ class RecentTiles(object):
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
             
         elif 'LANDSAT' in col_data.get('source'): 
-            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=0, max=0.2, gamma=[1.3, 1.3, 1.3] opacity=1.0)
+            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=0, max=0.2, gamma=[1.3, 1.3, 1.3], opacity=1.0)
 
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
 
@@ -161,7 +160,6 @@ class RecentTiles(object):
             L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(start,end).filterBounds(point)
 
             collection = S2.toList(52).cat(L8.toList(52)).getInfo()
-
             data = []
 
             for c in collection:
@@ -192,7 +190,7 @@ class RecentTiles(object):
                     data.append(tmp_)
 
                 elif c.get('properties').get('SPACECRAFT_ID') and c.get('properties').get('SPACECRAFT_ID') == 'LANDSAT_8':
-                    date_info = c['id'].split('LANDSAT/LC08/C01/T1_RT/LC08_')[1].split('_')[1]
+                    date_info = c['id'].split('LANDSAT/LC08/C01/T1_RT_TOA/LC08_')[1].split('_')[1]
                     time_info = c['properties']['SCENE_CENTER_TIME'].split('.')[0]
                     date_time = ''.join([date_info[0:4],'-',date_info[4:6],'-',date_info[6:8],' ', time_info, 'Z' ])
 
