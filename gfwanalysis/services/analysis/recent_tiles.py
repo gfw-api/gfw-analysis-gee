@@ -65,7 +65,7 @@ class RecentTiles(object):
         #If natural colour, pansharpen. Else, dont!
         hsv2 = image.select(bands).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-                            image.select('B8')]).hsvToRgb().visualize(min=0, max=0.3, gamma=[1.3, 1.3, 1.3])
+                            image.select('B8')]).hsvToRgb().visualize(min=0, max=0.2, gamma=[1.3, 1.3, 1.3])
         return sharpened
 
 
