@@ -140,7 +140,7 @@ class RecentTiles(object):
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
             
         elif 'LANDSAT' in col_data.get('source'): 
-            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=0, max=0.2, gamma=[1.3, 1.3, 1.3] opacity=1.0)
+            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=0, max=0.2, gamma=[1.3, 1.3, 1.3], opacity=1.0)
 
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
 
