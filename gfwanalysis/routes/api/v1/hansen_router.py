@@ -58,7 +58,6 @@ def get_by_geostore(geojson, area_ha):
 
 
 @hansen_endpoints_v1.route('/use/<name>/<id>', strict_slashes=False, methods=['GET'])
-@validate_use
 @get_geo_by_use
 def get_by_use(name, id, geojson, area_ha):
     """Analyze by use"""
