@@ -25,6 +25,6 @@ def validate_use(func):
         names = ['mining', 'oilpalm', 'fiber', 'logging']
         name = request.view_args.get('name')
         if name not in names:
-            return error(status=400, detail='Name not valid')
+            return error(status=400, detail='Name is not valid')
         return func(*args, **kwargs)
     return wrapper
