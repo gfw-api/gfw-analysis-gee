@@ -11,7 +11,7 @@ from gfwanalysis.routes.api import error, set_params
 from gfwanalysis.services.analysis.forma250_service import Forma250Service
 from gfwanalysis.validators import validate_geostore
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
-    get_geo_by_national, get_geo_by_subnational
+    get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
 from gfwanalysis.errors import FormaError
 from gfwanalysis.serializers import serialize_forma
 
@@ -78,4 +78,10 @@ def get_by_national(iso, geojson, area_ha):
 @get_geo_by_subnational
 def get_by_subnational(iso, id1, geojson, area_ha):
     logging.info('[ROUTER]: Getting forma by subnational')
+    return analyze(geojson, area_ha)
+
+@forma250_endpoints_v1.route('/admin/<iso>/<id1>/<id2>', strict_slashes=False, methods=['GET'])
+@get_geo_by_regional
+def get_by_regional(iso, id1, id2, geojson, area_ha):
+    logging.info('[ROUTER]: Getting forma by regional')
     return analyze(geojson, area_ha)
