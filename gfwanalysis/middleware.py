@@ -160,7 +160,7 @@ def get_geo_by_regional(func):
                 iso = request.view_args.get('iso')
                 id1 = request.view_args.get('id1')
                 id2 = request.view_args.get('id2')
-                geojson, area_ha = GeostoreService.get_geo_by_regional(iso, id1, id2)
+                geojson, area_ha = GeostoreService.get_regional(iso, id1, id2)
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
             kwargs["geojson"] = geojson
