@@ -13,7 +13,7 @@ from gfwanalysis.validators import validate_geostore
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
 from gfwanalysis.errors import FormaError
-from gfwanalysis.serializers import serialize_forma
+from gfwanalysis.serializers import serialize_forma, serialize_forma_latest
 
 forma250_endpoints_v1 = Blueprint('forma250_endpoints_v1', __name__)
 
@@ -40,6 +40,21 @@ def analyze(geojson, area_ha):
 
     data['area_ha'] = area_ha
     return jsonify(data=serialize_forma(data, 'forma250gfw')), 200
+
+def get_latest():
+    """Get latest date forma250"""
+    logging.info('[ROUTER]: Getting latest date')
+
+    try:
+        data = Forma250Service.latest()
+    except FormaError as e:
+        logging.error('[ROUTER]: '+e.message)
+        return error(status=500, detail=e.message)
+    except Exception as e:
+        logging.error('[ROUTER]: '+str(e))
+        return error(status=500, detail='Generic Error')
+
+    return jsonify(data=serialize_forma_latest(data, 'forma250gfw')), 200
 
 
 @forma250_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
@@ -85,3 +100,8 @@ def get_by_subnational(iso, id1, geojson, area_ha):
 def get_by_regional(iso, id1, id2, geojson, area_ha):
     logging.info('[ROUTER]: Getting forma by regional')
     return analyze(geojson, area_ha)
+
+@forma250_endpoints_v1.route('/latest', strict_slashes=False, methods=['GET'])
+def latest():
+    logging.info('[ROUTER]: Getting latest')
+    return get_latest()

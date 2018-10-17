@@ -56,3 +56,22 @@ class Forma250Service(object):
         except Exception as error:
             logging.error(str(error))
             raise FormaError(message='Error in Forma250 Analysis')
+
+    @staticmethod
+    def latest():
+        """Gets the date of the latest image
+        """
+        try:
+            asset_id = SETTINGS.get('gee').get('assets').get('forma250GFW')
+            logging.info(asset_id)
+            ic=ee.ImageCollection(asset_id)
+            latest_im = ic.toList(ic.size()).get(-1).getInfo()
+            latest_date = latest_im['properties']['date']
+
+            logging.info('Retreiving latest date: ')
+            logging.info(latest_date)
+
+            return {'latest': latest_date}
+        except Exception as error:
+            logging.error(str(error))
+            raise FormaError(message='Error in Forma250 Analysis')
