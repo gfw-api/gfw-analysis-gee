@@ -54,6 +54,16 @@ def serialize_forma(analysis, type):
         }
     }
 
+def serialize_forma_latest(analysis, type):
+    """Convert the output of the forma250 analysis to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'latest': analysis.get('latest', None)
+        }
+    }
+
 def serialize_biomass(analysis, type):
     """Convert the output of the biomass_loss analysis to json"""
     return {
