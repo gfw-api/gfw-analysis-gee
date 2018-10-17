@@ -36,6 +36,13 @@
 			"path": "/api/v1/forma250gfw"
 		}
     },{
+			"path": "/v1/forma250gfw/latest",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/forma250gfw/latest"
+			}
+			},{
 		"path": "/v1/forma250gfw",
 		"method": "POST",
 		"redirect": {
