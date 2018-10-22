@@ -36,6 +36,13 @@
 			"path": "/api/v1/forma250gfw"
 		}
     },{
+			"path": "/v1/forma250gfw/latest",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/forma250gfw/latest"
+			}
+			},{
 		"path": "/v1/forma250gfw",
 		"method": "POST",
 		"redirect": {
@@ -71,6 +78,13 @@
 			"path": "/api/v1/forma250gfw/admin/:iso/:admin"
 		}
     },{
+			"path": "/v1/forma250gfw/admin/:iso/:admin/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/forma250gfw/admin/:iso/:admin/:admin2"
+			}
+			},{
 		"path": "/v1/biomass-loss",
 		"method": "GET",
 		"redirect": {

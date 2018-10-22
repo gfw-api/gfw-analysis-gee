@@ -151,6 +151,22 @@ def get_geo_by_subnational(func):
         return func(*args, **kwargs)
     return wrapper
 
+def get_geo_by_regional(func):
+    """Get geodata"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'GET':
+            try:
+                iso = request.view_args.get('iso')
+                id1 = request.view_args.get('id1')
+                id2 = request.view_args.get('id2')
+                geojson, area_ha = GeostoreService.get_regional(iso, id1, id2)
+            except GeostoreNotFound:
+                return error(status=404, detail='Geostore not found')
+            kwargs["geojson"] = geojson
+            kwargs["area_ha"] = area_ha
+        return func(*args, **kwargs)
+    return wrapper
 
 def get_geo_by_use(func):
     """Get geodata"""

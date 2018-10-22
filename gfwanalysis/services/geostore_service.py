@@ -62,6 +62,14 @@ class GeostoreService(object):
         return GeostoreService.execute(config)
 
     @staticmethod
+    def get_regional(iso, id1, id2):
+        config = {
+            'uri': '/geostore/admin/'+iso+'/'+id1+'/'+id2,
+            'method': 'GET'
+        }
+        return GeostoreService.execute(config)
+
+    @staticmethod
     def get_use(name, use_id):
         config = {
             'uri': '/geostore/use/'+name+'/'+use_id,

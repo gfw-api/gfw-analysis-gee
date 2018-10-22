@@ -9,7 +9,7 @@ import logging
 from flask import jsonify, request, Blueprint
 from gfwanalysis.routes.api import error, set_params
 from gfwanalysis.services.analysis.hansen_service import HansenService
-from gfwanalysis.validators import validate_geostore, validate_use
+from gfwanalysis.validators import validate_geostore
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational
 from gfwanalysis.errors import HansenError
@@ -58,7 +58,6 @@ def get_by_geostore(geojson, area_ha):
 
 
 @hansen_endpoints_v1.route('/use/<name>/<id>', strict_slashes=False, methods=['GET'])
-@validate_use
 @get_geo_by_use
 def get_by_use(name, id, geojson, area_ha):
     """Analyze by use"""
