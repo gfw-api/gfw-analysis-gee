@@ -63,6 +63,8 @@ class HansenService(object):
                 loss_area_img = tmp_img.gte(begin).And(tmp_img.lte(end)).multiply(ee.Image.pixelArea())
                 loss_total = loss_area_img.reduceRegion(**reduce_args).getInfo()
                 d['loss'] = squaremeters_to_ha(loss_total[loss_band])
+                d['loss_start_year'] = int(begin.split('-')[0])
+                d['loss_end_year'] = int(end.split('-')[0])
             else:
                 # Identify loss area per year from beginning year to end year
                 d['loss'] = {}
