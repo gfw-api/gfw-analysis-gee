@@ -23,6 +23,7 @@ SETTINGS = {
             'ifl2000': 'projects/wri-datalab/gfw-api/ifl-world',
             'mangroves': 'LANDSAT/MANGROVE_FORESTS/2000',
             'primary-forest': 'projects/wri-datalab/gfw-api/primary-forest',
+            'gfw-landcover-2000': 'projects/wri-datalab/ESACCI-LC-IPCC-img/LC_2000',
             'gfw-landcover-2015': 'projects/wri-datalab/gfw-api/globcover-2015-reclassified',
             'idn-landcover': 'projects/wri-datalab/gfw-api/idn-landcover',
             'sea-landcover': 'projects/wri-datalab/gfw-api/sea-landcover',
