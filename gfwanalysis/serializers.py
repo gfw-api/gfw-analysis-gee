@@ -13,9 +13,10 @@ def serialize_umd(analysis, type):
             'treeExtent': analysis.get('tree_extent', None),
             'treeExtent2010': analysis.get('tree_extent2010', None),
             'areaHa': analysis.get('area_ha', None),
+            'loss_start_year': analysis.get('loss_start_year', None),
+            'loss_end_year': analysis.get('loss_end_year', None)
         }
     }
-
 
 def serialize_histogram(analysis, type):
     """."""
@@ -25,7 +26,7 @@ def serialize_histogram(analysis, type):
         'type': type,
         'attributes': {
             'histogram': analysis.get('result', None),
-            'areaHa': analysis.get('area_ha', None),
+            'areaHa': analysis.get('area_ha', None)
         }
     }
 
@@ -37,7 +38,7 @@ def serialize_landcover(analysis, type):
         'type': type,
         'attributes': {
             'landcover': analysis.get('result', None),
-            'areaHa': analysis.get('area_ha', None),
+            'areaHa': analysis.get('area_ha', None)
         }
     }
 
@@ -99,7 +100,7 @@ def serialize_sentinel_url(analysis, type):
             "url_image": analysis.get('image_tiles', None),
             "url_boundary": analysis.get('boundary_tiles', None),
             "date_time": analysis.get('metadata', None).get('date_time', None),
-            "product_id": analysis.get('metadata', None).get('product_id', None),
+            "product_id": analysis.get('metadata', None).get('product_id', None)
             }
         }
 
@@ -154,12 +155,12 @@ def serialize_recent_url(analysis, type):
     """Convert output of images to json"""
     tmp_output = []
     output = {}
-    
+
     if type == 'recent_thumbs_url':
 
         output['id'] = None
         output['type'] = type
-        
+
         for e in range (0, len(analysis)):
             temp_obj = {
                     'source': analysis[e].get('source', None),
@@ -167,7 +168,7 @@ def serialize_recent_url(analysis, type):
             }
             tmp_output.append(temp_obj)
         output['attributes'] = tmp_output
-        
+
     elif type == 'recent_tiles_url':
 
         output['id'] = None
@@ -178,7 +179,7 @@ def serialize_recent_url(analysis, type):
                     'source_id': analysis[e].get('source', None),
                     'tile_url': analysis[e].get('tile_url', None)
             }
-            tmp_output.append(temp_obj)            
+            tmp_output.append(temp_obj)
         output['attributes'] = tmp_output
 
     return output
