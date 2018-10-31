@@ -25,6 +25,10 @@ def analyze(geojson, area_ha):
 
     threshold, begin, end = set_params()
 
+    logging.debug("[ROUTER]: threshold" + threshold)
+    logging.debug("[ROUTER]: begin" + begin)
+    logging.debug("[ROUTER]: end" + end)
+
     if request.args.get('aggregate_values', '').lower() == 'false':
         aggregate_values = False
     else:

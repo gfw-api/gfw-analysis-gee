@@ -57,14 +57,14 @@ class HansenService(object):
             gain = gfw_data.select('gain').divide(255.0).multiply(
                             ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
             d['gain'] = squaremeters_to_ha(gain['gain'])
+            d['loss_start_year'] = begin + 2000
+            d['loss_end_year'] = end + 2000
             if aggregate_values:
                 # Identify one loss area from begin year up untill end year
                 tmp_img = gfw_data.select(loss_band)
                 loss_area_img = tmp_img.gte(begin).And(tmp_img.lte(end)).multiply(ee.Image.pixelArea())
                 loss_total = loss_area_img.reduceRegion(**reduce_args).getInfo()
                 d['loss'] = squaremeters_to_ha(loss_total[loss_band])
-                d['loss_start_year'] = int(begin.split('-')[0])
-                d['loss_end_year'] = int(end.split('-')[0])
             else:
                 # Identify loss area per year from beginning year to end year
                 d['loss'] = {}
