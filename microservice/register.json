@@ -64,6 +64,20 @@
 							"path": "/api/v1/whrc-biomass"
 						}
 						},{
+							"path": "/v1/whrc-biomass/use/:name/:id",
+							"method": "GET",
+							"redirect": {
+								"method": "GET",
+								"path": "/api/v1/whrc-biomass/use/:name/:id"
+							}
+							},{
+								"path": "/v1/whrc-biomass/wdpa/:id",
+								"method": "GET",
+								"redirect": {
+									"method": "GET",
+									"path": "/api/v1/whrc-biomass/wpda/:id"
+								}
+								},{
 		"path": "/v1/forma250gfw",
 		"method": "GET",
 		"redirect": {
