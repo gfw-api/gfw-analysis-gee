@@ -1,242 +1,277 @@
 {
 	"name": "gfw umd",
-	"endpoints": [{
-		"path": "/v1/umd-loss-gain",
-		"method": "GET",
-		"redirect": {
+	"endpoints": [
+		{
+			"path": "/v1/umd-loss-gain",
 			"method": "GET",
-			"path": "/api/v1/umd-loss-gain"
-		}
-    },{
-		"path": "/v1/umd-loss-gain",
-		"method": "POST",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/umd-loss-gain"
+			}
+		},
+		{
+			"path": "/v1/umd-loss-gain",
 			"method": "POST",
-			"path": "/api/v1/umd-loss-gain"
-		}
-    },{
-		"path": "/v1/umd-loss-gain/use/:name/:id",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/umd-loss-gain"
+			}
+		},
+		{
+			"path": "/v1/umd-loss-gain/use/:name/:id",
 			"method": "GET",
-			"path": "/api/v1/umd-loss-gain/use/:name/:id"
-		}
-    },{
-		"path": "/v1/umd-loss-gain/wdpa/:id",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/umd-loss-gain/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/umd-loss-gain/wdpa/:id",
 			"method": "GET",
-			"path": "/api/v1/umd-loss-gain/wdpa/:id"
-		}
-    },{
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/umd-loss-gain/wdpa/:id"
+			}
+		},
+		{
 			"path": "/v1/whrc-biomass",
 			"method": "GET",
 			"redirect": {
 				"method": "GET",
 				"path": "/api/v1/whrc-biomass"
 			}
-			},{
-				"path": "/v1/whrc-biomass",
+		},
+		{
+			"path": "/v1/whrc-biomass",
+			"method": "POST",
+			"redirect": {
 				"method": "POST",
-				"redirect": {
-					"method": "POST",
-					"path": "/api/v1/whrc-biomass"
-				}
-				},{
-					"path": "/v1/whrc-biomass/use/:name/:id",
-					"method": "GET",
-					"redirect": {
-						"method": "GET",
-						"path": "/api/v1/whrc-biomass/use/:name/:id"
-					}
-					},{
-					"path": "/v1/whrc-biomass/wdpa/:id",
-					"method": "GET",
-					"redirect": {
-						"method": "GET",
-						"path": "/api/v1/whrc-biomass/wdpa/:id"
-					}
-					},{
-						"path": "/v1/whrc-biomass",
-						"method": "GET",
-						"redirect": {
-							"method": "GET",
-							"path": "/api/v1/whrc-biomass"
-						}
-						},{
-							"path": "/v1/whrc-biomass/use/:name/:id",
-							"method": "GET",
-							"redirect": {
-								"method": "GET",
-								"path": "/api/v1/whrc-biomass/use/:name/:id"
-							}
-							},{
-								"path": "/v1/whrc-biomass/wdpa/:id",
-								"method": "GET",
-								"redirect": {
-									"method": "GET",
-									"path": "/api/v1/whrc-biomass/wpda/:id"
-								}
-								},{
-		"path": "/v1/forma250gfw",
-		"method": "GET",
-		"redirect": {
+				"path": "/api/v1/whrc-biomass"
+			}
+		},
+		{
+			"path": "/v1/whrc-biomass/use/:name/:id",
 			"method": "GET",
-			"path": "/api/v1/forma250gfw"
-		}
-    },{
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/whrc-biomass/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/whrc-biomass/admin/:iso",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/whrc-biomass/admin/:iso"
+			}
+		},
+		{
+			"path": "/v1/whrc-biomass/admin/:iso/:admin1",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/whrc-biomass/admin/:iso/:admin1"
+			}
+		},
+		{
+			"path": "/v1/whrc-biomass/admin/:iso/:admin1/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/whrc-biomass/admin/:iso/:admin1/:admin2"
+			}
+		},
+		{
+			"path": "/v1/whrc-biomass/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/whrc-biomass/wpda/:id"
+			}
+		},
+		{
+			"path": "/v1/forma250gfw",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/forma250gfw"
+			}
+		},
+		{
 			"path": "/v1/forma250gfw/latest",
 			"method": "GET",
 			"redirect": {
 				"method": "GET",
 				"path": "/api/v1/forma250gfw/latest"
 			}
-			},{
-		"path": "/v1/forma250gfw",
-		"method": "POST",
-		"redirect": {
+		},
+		{
+			"path": "/v1/forma250gfw",
 			"method": "POST",
-			"path": "/api/v1/forma250gfw"
-		}
-    },{
-		"path": "/v1/forma250gfw/wdpa/:id",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/forma250gfw"
+			}
+		},
+		{
+			"path": "/v1/forma250gfw/wdpa/:id",
 			"method": "GET",
-			"path": "/api/v1/forma250gfw/wdpa/:id"
-		}
-    },{
-		"path": "/v1/forma250gfw/use/:name/:id",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/forma250gfw/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v1/forma250gfw/use/:name/:id",
 			"method": "GET",
-			"path": "/api/v1/forma250gfw/use/:name/:id"
-		}
-    },{
-		"path": "/v1/forma250gfw/admin/:iso",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/forma250gfw/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/forma250gfw/admin/:iso",
 			"method": "GET",
-			"path": "/api/v1/forma250gfw/admin/:iso"
-		}
-    },{
-		"path": "/v1/forma250gfw/admin/:iso/:admin",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/forma250gfw/admin/:iso"
+			}
+		},
+		{
+			"path": "/v1/forma250gfw/admin/:iso/:admin",
 			"method": "GET",
-			"path": "/api/v1/forma250gfw/admin/:iso/:admin"
-		}
-    },{
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/forma250gfw/admin/:iso/:admin"
+			}
+		},
+		{
 			"path": "/v1/forma250gfw/admin/:iso/:admin/:admin2",
 			"method": "GET",
 			"redirect": {
 				"method": "GET",
 				"path": "/api/v1/forma250gfw/admin/:iso/:admin/:admin2"
 			}
-			},{
-		"path": "/v1/biomass-loss",
-		"method": "GET",
-		"redirect": {
+		},
+		{
+			"path": "/v1/biomass-loss",
 			"method": "GET",
-			"path": "/api/v1/biomass-loss"
-		}
-    },{
-		"path": "/v1/biomass-loss",
-		"method": "POST",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/biomass-loss"
+			}
+		},
+		{
+			"path": "/v1/biomass-loss",
 			"method": "POST",
-			"path": "/api/v1/biomass-loss"
-		}
-    },{
-		"path": "/v1/loss-by-landcover",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/biomass-loss"
+			}
+		},
+		{
+			"path": "/v1/loss-by-landcover",
 			"method": "GET",
-			"path": "/api/v1/loss-by-landcover"
-		}
-    },{
-		"path": "/v1/loss-by-landcover",
-		"method": "POST",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/loss-by-landcover"
+			}
+		},
+		{
+			"path": "/v1/loss-by-landcover",
 			"method": "POST",
-			"path": "/api/v1/loss-by-landcover"
-		}
-    },{
-		"path": "/v1/landcover",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/loss-by-landcover"
+			}
+		},
+		{
+			"path": "/v1/landcover",
 			"method": "GET",
-			"path": "/api/v1/landcover"
-		}
-    },{
-		"path": "/v1/landcover",
-		"method": "POST",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/landcover"
+			}
+		},
+		{
+			"path": "/v1/landcover",
 			"method": "POST",
-			"path": "/api/v1/landcover"
-		}
-    },{
-		"path": "/v1/biomass-loss/wdpa/:id",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/landcover"
+			}
+		},
+		{
+			"path": "/v1/biomass-loss/wdpa/:id",
 			"method": "GET",
-			"path": "/api/v1/biomass-loss/wdpa/:id"
-		}
-    },{
-		"path": "/v1/biomass-loss/use/:name/:id",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/biomass-loss/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v1/biomass-loss/use/:name/:id",
 			"method": "GET",
-			"path": "/api/v1/biomass-loss/use/:name/:id"
-		}
-    },{
-		"path": "/v1/biomass-loss/admin/:iso",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/biomass-loss/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/biomass-loss/admin/:iso",
 			"method": "GET",
-			"path": "/api/v1/biomass-loss/admin/:iso"
-		}
-    },{
-		"path": "/v1/biomass-loss/admin/:iso/:id1",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/biomass-loss/admin/:iso"
+			}
+		},
+		{
+			"path": "/v1/biomass-loss/admin/:iso/:id1",
 			"method": "GET",
-			"path": "/api/v1/biomass-loss/admin/:iso/:id1"
-		}
-    },{
-		"path": "/v1/landsat-tiles/:year",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/biomass-loss/admin/:iso/:id1"
+			}
+		},
+		{
+			"path": "/v1/landsat-tiles/:year",
 			"method": "GET",
-			"path": "/api/v1/landsat-tiles/:year"
-		}
-    },{
-		"path": "/v1/sentinel-tiles/",
-		"method": "GET",
-		"redirect": {
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/landsat-tiles/:year"
+			}
+		},
+		{
+			"path": "/v1/sentinel-tiles/",
 			"method": "GET",
-			"path": "/api/v1/sentinel-tiles/"
-		}
-		},{
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/sentinel-tiles/"
+			}
+		},
+		{
 			"path": "/v1/recent-tiles/",
 			"method": "GET",
 			"redirect": {
 				"method": "GET",
 				"path": "/api/v1/recent-tiles/"
 			}
-	},{
-		"path": "/v1/recent-tiles/tiles",
-		"method": "POST",
-		"redirect": {
+		},
+		{
+			"path": "/v1/recent-tiles/tiles",
 			"method": "POST",
-			"path": "/api/v1/recent-tiles/tiles"
-		}
-	},{
-		"path": "/v1/recent-tiles/thumbs",
-		"method": "POST",
-		"redirect": {
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/recent-tiles/tiles"
+			}
+		},
+		{
+			"path": "/v1/recent-tiles/thumbs",
 			"method": "POST",
-			"path": "/api/v1/recent-tiles/thumbs"
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/recent-tiles/thumbs"
+			}
 		}
-	}]
+	]
 }
