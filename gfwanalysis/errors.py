@@ -37,8 +37,6 @@ class RecentTilesError(Error):
 class FormaError(Error):
     pass
 
-class WHRCBiomassError(Error):
-    pass
 
 class BiomassLossError(Error):
     pass
