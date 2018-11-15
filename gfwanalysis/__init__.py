@@ -56,15 +56,15 @@ app.register_blueprint(whrc_biomass_endpoints_v1, url_prefix='/api/v1/whrc-bioma
 # CT
 info = load_config_json('register')
 swagger = load_config_json('swagger')
-CTRegisterMicroserviceFlask.register(
-    app=app,
-    name='gfw-umd',
-    info=info,
-    swagger=swagger,
-    mode=CTRegisterMicroserviceFlask.AUTOREGISTER_MODE if os.getenv('CT_REGISTER_MODE') and os.getenv('CT_REGISTER_MODE') == 'auto' else CTRegisterMicroserviceFlask.NORMAL_MODE,
-    ct_url=os.getenv('CT_URL'),
-    url=os.getenv('LOCAL_URL')
-)
+# CTRegisterMicroserviceFlask.register(
+#     app=app,
+#     name='gfw-umd',
+#     info=info,
+#     swagger=swagger,
+#     mode=CTRegisterMicroserviceFlask.AUTOREGISTER_MODE if os.getenv('CT_REGISTER_MODE') and os.getenv('CT_REGISTER_MODE') == 'auto' else CTRegisterMicroserviceFlask.NORMAL_MODE,
+#     ct_url=os.getenv('CT_URL'),
+#     url=os.getenv('LOCAL_URL')
+# )
 
 @app.errorhandler(403)
 def forbidden(e):
