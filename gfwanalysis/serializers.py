@@ -18,6 +18,17 @@ def serialize_umd(analysis, type):
         }
     }
 
+
+def serialize_whrc_biomass(analysis, type):
+    """."""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'biomass': analysis.get('biomass', None)
+        }
+    }
+
 def serialize_histogram(analysis, type):
     """."""
 

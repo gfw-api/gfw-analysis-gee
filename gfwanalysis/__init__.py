@@ -17,7 +17,7 @@ from gfwanalysis.routes.api import error
 from gfwanalysis.routes.api.v1 import hansen_endpoints_v1, forma250_endpoints_v1, \
     biomass_loss_endpoints_v1, landsat_tiles_endpoints_v1, histogram_endpoints_v1, \
     landcover_endpoints_v1, sentinel_tiles_endpoints_v1, highres_tiles_endpoints_v1, \
-    recent_tiles_endpoints_v1
+    recent_tiles_endpoints_v1, whrc_biomass_endpoints_v1
 from gfwanalysis.utils.files import load_config_json
 import CTRegisterMicroserviceFlask
 
@@ -44,6 +44,7 @@ app = Flask(__name__)
 # Routing
 app.register_blueprint(hansen_endpoints_v1, url_prefix='/api/v1/umd-loss-gain')
 app.register_blueprint(forma250_endpoints_v1, url_prefix='/api/v1/forma250gfw')
+app.register_blueprint(hansen_endpoints_v1, url_prefix='/api/v1/whrc-biomass')
 app.register_blueprint(biomass_loss_endpoints_v1, url_prefix='/api/v1/biomass-loss')
 app.register_blueprint(landsat_tiles_endpoints_v1, url_prefix='/api/v1/landsat-tiles')
 app.register_blueprint(sentinel_tiles_endpoints_v1, url_prefix='/api/v1/sentinel-tiles')
@@ -51,6 +52,7 @@ app.register_blueprint(highres_tiles_endpoints_v1, url_prefix='/api/v1/highres-t
 app.register_blueprint(recent_tiles_endpoints_v1, url_prefix='/api/v1/recent-tiles')
 app.register_blueprint(histogram_endpoints_v1, url_prefix='/api/v1/loss-by-landcover')
 app.register_blueprint(landcover_endpoints_v1, url_prefix='/api/v1/landcover')
+app.register_blueprint(whrc_biomass_endpoints_v1, url_prefix='/api/v1/whrc-biomass')
 
 # CT
 info = load_config_json('register')

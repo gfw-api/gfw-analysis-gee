@@ -1,0 +1,37 @@
+"""WHRC BIOMASS SERVICE"""
+
+import logging
+
+import ee
+from gfwanalysis.errors import WHRCBiomassError
+from gfwanalysis.config import SETTINGS
+from gfwanalysis.utils.geo import get_region, squaremeters_to_ha
+
+
+class WHRCBiomassService(object):
+
+    @staticmethod
+    def analyze(threshold, geojson):
+        """For a given Hansen threshold mask on WHRC biomass data
+        and geometry return a dictionary of total t/ha.
+        The threshold is used to identify which band of loss and tree to select.
+        asset_id should be 'projects/wri-datalab/HansenComposite_14-15'
+        """
+        try:
+            d = {}
+            hansen_asset = SETTINGS.get('gee').get('assets').get('hansen')
+            biomass_asset= SETTINGS.get('gee').get('assets').get('whrc_biomass')
+            region = get_region(geojson)
+            reduce_args = {'reducer': ee.Reducer.sum().unweighted(),
+                           'geometry': region,
+                           'bestEffort': True,
+                           'scale': 30}
+            tc_mask = ee.Image(hansen_asset).select('tree_'+ thresh).gt(0)
+            biomass = ee.imageCollection(biomass_asset).max().mask(tc_mask)
+            # Identify thresholded biomass value
+            biomass_value = biomass.reduceRegion(**reduce_args).getInfo()
+            d['biomass'] = biomass_value
+            return d
+        except Exception as error:
+            logging.error(str(error))
+            raise WHRCBiomassError(message='Error in WHRC Biomass Analysis')
