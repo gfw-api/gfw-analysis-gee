@@ -58,6 +58,22 @@
 			}
 		},
 		{
+			"path": "/v1/whrc-biomass/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/whrc-biomass/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v1/whrc-biomass",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/whrc-biomass"
+			}
+		},
+		{
 			"path": "/v1/whrc-biomass/admin/:iso",
 			"method": "GET",
 			"redirect": {
@@ -66,27 +82,19 @@
 			}
 		},
 		{
-			"path": "/v1/whrc-biomass/admin/:iso/:admin1",
+			"path": "/v1/whrc-biomass/admin/:iso/:admin",
 			"method": "GET",
 			"redirect": {
 				"method": "GET",
-				"path": "/api/v1/whrc-biomass/admin/:iso/:admin1"
+				"path": "/api/v1/whrc-biomass/admin/:iso/:admin"
 			}
 		},
 		{
-			"path": "/v1/whrc-biomass/admin/:iso/:admin1/:admin2",
+			"path": "/v1/whrc-biomass/admin/:iso/:admin/:admin2",
 			"method": "GET",
 			"redirect": {
 				"method": "GET",
-				"path": "/api/v1/whrc-biomass/admin/:iso/:admin1/:admin2"
-			}
-		},
-		{
-			"path": "/v1/whrc-biomass/wdpa/:id",
-			"method": "GET",
-			"redirect": {
-				"method": "GET",
-				"path": "/api/v1/whrc-biomass/wpda/:id"
+				"path": "/api/v1/whrc-biomass/admin/:iso/:admin/:admin2"
 			}
 		},
 		{

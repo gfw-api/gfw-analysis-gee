@@ -15,32 +15,27 @@ from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_w
 from gfwanalysis.errors import WHRCBiomassError
 from gfwanalysis.serializers import serialize_whrc_biomass
 
-whrc_biomass_endpoints_v1 = Blueprint('whrc_biomass_endpoints_v1', __name__)
-
+whrc_biomass_endpoints_v1 = Blueprint('whrc_biomass', __name__)
 
 def analyze(geojson, area_ha):
     """Analyze WHRC Biomass"""
     logging.info('[ROUTER]: Getting biomass')
     if not geojson:
         return error(status=400, detail='Geojson is required')
-
-    threshold, begin, end = set_params()
-
+    threshold, start, end = set_params()
     try:
         data = WHRCBiomassService.analyze(
             geojson=geojson,
-            threshold=threshold,
-            begin=begin,
-            end=end)
+            threshold=threshold)
+
     except WHRCBiomassError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
-
     data['area_ha'] = area_ha
-    return jsonify(data=serialize_biomass(data, 'biomasses')), 200
+    return jsonify(data=serialize_whrc_biomass(data, 'WHRC biomass')), 200
 
 
 @whrc_biomass_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
