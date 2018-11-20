@@ -17,7 +17,6 @@ from gfwanalysis.serializers import serialize_whrc_biomass
 
 whrc_biomass_endpoints_v1 = Blueprint('whrc_biomass', __name__)
 
-
 def analyze(geojson, area_ha):
     """Analyze WHRC Biomass"""
     logging.info('[ROUTER]: Getting biomass')
@@ -28,6 +27,7 @@ def analyze(geojson, area_ha):
         data = WHRCBiomassService.analyze(
             geojson=geojson,
             threshold=threshold)
+
     except WHRCBiomassError as e:
         logging.error('[ROUTER]: '+e.message)
         return error(status=500, detail=e.message)

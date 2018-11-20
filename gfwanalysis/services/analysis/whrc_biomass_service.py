@@ -29,7 +29,6 @@ class WHRCBiomassService(object):
             tc_mask = ee.Image(hansen_asset).select('tree_'+ str(threshold)).gt(0)
             biomass = ee.ImageCollection(biomass_asset).max().mask(tc_mask)
             # Identify thresholded biomass value
-
             biomass_value = biomass.reduceRegion(**reduce_args).getInfo()
             d['biomass'] = biomass_value
             return d
