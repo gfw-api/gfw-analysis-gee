@@ -23,9 +23,7 @@ def analyze(geojson, area_ha):
     logging.info('[ROUTER]: Getting biomass')
     if not geojson:
         return error(status=400, detail='Geojson is required')
-
-    threshold = set_params()
-
+    threshold, start, end = set_params()
     try:
         data = WHRCBiomassService.analyze(
             geojson=geojson,
@@ -36,7 +34,6 @@ def analyze(geojson, area_ha):
     except Exception as e:
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
-
     data['area_ha'] = area_ha
     return jsonify(data=serialize_whrc_biomass(data, 'WHRC biomass')), 200
 
