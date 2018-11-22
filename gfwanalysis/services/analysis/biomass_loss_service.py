@@ -50,17 +50,14 @@ class BiomassLossService(object):
             # mask hasen data with itself (important step to prevent over-counting)
             hansen = hansen.mask(hansen)
 
-            # Calculate area of loss within a specific year range (inclusive) - not needed
-            #area_stats = hansen.gte(start_year).And(hansen.lte(end_year)).multiply(ee.Image.pixelArea()).reduceRegion(**reduce_args)
-            #d['areaHa'] = squaremeters_to_ha(area_stats.getInfo().get(band_name))
-
             # Calculate annual biomass loss with a collection operation method
             def reduceFunction(img):
                 out = img.reduceRegion(**reduce_args)
                 return ee.Feature(None, img.toDictionary().combine(out))
 
-            ## Calculate annual biomass loss - add subset images to a collection and then map a reducer to it
-            collectionG = ee.ImageCollection([biomass.mask(hansen.updateMask(hansen.eq(year))).set({'year': 2000+year})
+            # Calculate annual biomass loss - add subset images to a collection and then map a reducer to it
+            # Calculate stats 10000 ha, 10^6 to transform from Mg (10^6g) to Tg(10^12g) and 255 as is the pixel value
+            collectionG = ee.ImageCollection([biomass.multiply(ee.Image.pixelArea().divide(10000)).mask(hansen.updateMask(hansen.eq(year))).set({'year': 2000+year})
                                                for year in range(start_year, end_year + 1)])
             output = collectionG.map(reduceFunction).getInfo()
 
