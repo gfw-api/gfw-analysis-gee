@@ -68,7 +68,7 @@ class HansenService(object):
             else:
                 # Identify loss area per year from beginning year to end year
                 d['loss'] = {}
-                tmp_img = gfw_data.select(loss_band)
+                tmp_img = gfw_data.select(loss_band).mask(gfw_data.select(loss_band))
                 for year in range(begin, end+1):
                     year_loss = tmp_img.updateMask(tmp_img.eq(year)).divide(year).multiply(
                                 ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()

@@ -11,7 +11,7 @@ from gfwanalysis.routes.api import error, set_params
 from gfwanalysis.services.analysis.biomass_loss_service import BiomassLossService
 from gfwanalysis.validators import validate_geostore
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
-    get_geo_by_national, get_geo_by_subnational
+    get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
 from gfwanalysis.errors import BiomassLossError
 from gfwanalysis.serializers import serialize_biomass
 
@@ -72,13 +72,20 @@ def get_by_wdpa(id, geojson, area_ha):
 @get_geo_by_national
 def get_by_national(iso, geojson, area_ha):
     """National Endpoint"""
-    logging.info('[ROUTER]: Getting biomassloss by national')
+    logging.info('[ROUTER]: Getting biomassloss by iso')
     return analyze(geojson, area_ha)
 
 
-@biomass_loss_endpoints_v1.route('/admin/<iso>/<id1>', strict_slashes=False, methods=['GET'])
+@biomass_loss_endpoints_v1.route('/admin/<iso>/<admin>', strict_slashes=False, methods=['GET'])
 @get_geo_by_subnational
-def get_by_subnational(iso, id1, geojson, area_ha):
+def get_by_subnational(iso, admin, geojson, area_ha):
     """Subnational Endpoint"""
-    logging.info('[ROUTER]: Getting biomassloss by subnational')
+    logging.info('[ROUTER]: Getting biomassloss by admin1')
+    return analyze(geojson, area_ha)
+
+@biomass_loss_endpoints_v1.route('/admin/<iso>/<id1>/<id2>', strict_slashes=False, methods=['GET'])
+@get_geo_by_regional
+def get_geo_by_regional(iso, id1, id2, geojson, area_ha):
+    """Subnational Endpoint"""
+    logging.info('[ROUTER]: Getting biomassloss by admin2')
     return analyze(geojson, area_ha)

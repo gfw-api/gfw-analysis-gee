@@ -21,8 +21,9 @@ def analyze(geojson, area_ha):
     """Analyze WHRC Biomass"""
     logging.info('[ROUTER]: Getting biomass')
     if not geojson:
-        return error(status=400, detail='Geojson is required')
+        return error(status=400, detail='A Geojson argument is required')
     threshold, start, end = set_params()
+    logging.info(f'[ROUTER - params]: biomass params {threshold}, {start}, {end}')
     try:
         data = WHRCBiomassService.analyze(
             geojson=geojson,
@@ -67,7 +68,7 @@ def get_by_wdpa(id, geojson, area_ha):
 @get_geo_by_national
 def get_by_national(iso, geojson, area_ha):
     """National Endpoint"""
-    logging.info('[ROUTER]: Getting biomass by national')
+    logging.info('[ROUTER]: Getting biomass loss by iso')
     return analyze(geojson, area_ha)
 
 
@@ -75,12 +76,12 @@ def get_by_national(iso, geojson, area_ha):
 @get_geo_by_subnational
 def get_by_subnational(iso, id1, geojson, area_ha):
     """Subnational Endpoint"""
-    logging.info('[ROUTER]: Getting biomass by subnational')
+    logging.info('[ROUTER]: Getting biomass loss by admin1')
     return analyze(geojson, area_ha)
 
 @whrc_biomass_endpoints_v1.route('/admin/<iso>/<id1>/<id2>', strict_slashes=False, methods=['GET'])
 @get_geo_by_regional
 def get_geo_by_regional(iso, id1, id2, geojson, area_ha):
     """Subnational Endpoint"""
-    logging.info('[ROUTER]: Getting biomass by subnational')
+    logging.info('[ROUTER]: Getting biomass loss by admin2 ')
     return analyze(geojson, area_ha)

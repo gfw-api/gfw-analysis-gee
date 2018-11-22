@@ -18,10 +18,10 @@ class BiomassLossService(object):
 
         # Reducer arguments
         reduce_args = {
-            'reducer': ee.Reducer.sum(),
+            'reducer': ee.Reducer.sum().unweighted(),
             'geometry': region,
             'bestEffort': True,
-            'scale': 90
+            'scale': 30
         }
 
         # Calculate stats
@@ -40,10 +40,10 @@ class BiomassLossService(object):
 
         # Reducer arguments
         reduce_args = {
-            'reducer': ee.Reducer.sum(),
+            'reducer': ee.Reducer.sum().unweighted(),
             'geometry': region,
             'bestEffort': True,
-            'scale': 90
+            'scale': 30
         }
 
         # Calculate stats 10000 ha, 10^6 to transform from Mg (10^6g) to Tg(10^12g) and 255 as is the pixel value when true.
