@@ -82,12 +82,12 @@ def serialize_biomass(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'biomass': analysis.get('biomass', None),
-            'biomassLoss': analysis.get('biomass_loss', None),
-            'biomassLossByYear': analysis.get('biomass_loss_by_year', None),
-            'cLossByYear': analysis.get('c_loss_by_year', None),
-            'co2LossByYear': analysis.get('co2_loss_by_year', None),
-            'treeLossByYear': analysis.get('tree_loss_by_year', None),
+            #'biomass': analysis.get('biomass', None),  # this should be from whrc_biomass service
+            'biomassLoss': analysis.get('biomassLoss', None),
+            'biomassLossByYear': analysis.get('biomassLossByYear', None),
+            'cLossByYear': analysis.get('cLossByYear', None),
+            'co2LossByYear': analysis.get('co2LossByYear', None),
+            #'treeLossByYear': analysis.get('treeLossByYear', None), # this should be from hansen service
             'areaHa': analysis.get('area_ha', None)
         }
     }
