@@ -1,100 +1,82 @@
 """Biomass-Loss SERVICE"""
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import logging
 
 import ee
 from gfwanalysis.errors import BiomassLossError
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.utils.geo import get_thresh_image, get_region, dict_unit_transform, \
-    sum_range, dates_selector
+     sum_range, dates_selector, squaremeters_to_ha
 
 
 class BiomassLossService(object):
 
     @staticmethod
-    def _gee_hansen(geojson, thresh):
-        image = get_thresh_image(str(thresh), SETTINGS.get('gee').get('assets').get('biomassloss').get('hansen_loss_thresh'))
-        region = get_region(geojson)
-
-        # Reducer arguments
-        reduce_args = {
-            'reducer': ee.Reducer.sum(),
-            'geometry': region,
-            'bestEffort': True,
-            'scale': 90
-        }
-
-        # Calculate stats
-        area_stats = image.divide(10000 * 255.0) \
-            .multiply(ee.Image.pixelArea()) \
-            .reduceRegion(**reduce_args)
-
-        return area_stats.getInfo()
-
-    @staticmethod
-    def _gee_biomass(geom, thresh):
-
-        image1 = get_thresh_image(str(thresh), SETTINGS.get('gee').get('assets').get('biomassloss').get('hansen_loss_thresh'))
-        image2 = ee.Image(SETTINGS.get('gee').get('assets').get('biomassloss').get('biomass_2000'))
-        region = get_region(geom)
-
-        # Reducer arguments
-        reduce_args = {
-            'reducer': ee.Reducer.sum(),
-            'geometry': region,
-            'bestEffort': True,
-            'scale': 90
-        }
-
-        # Calculate stats 10000 ha, 10^6 to transform from Mg (10^6g) to Tg(10^12g) and 255 as is the pixel value when true.
-        area_stats = image2.multiply(image1) \
-            .divide(10000 * 255.0) \
-            .multiply(ee.Image.pixelArea()) \
-            .reduceRegion(**reduce_args)
-
-        carbon_stats = image2.multiply(ee.Image.pixelArea().divide(10000)).reduceRegion(**reduce_args)
-        area_results = area_stats.combine(carbon_stats).getInfo()
-
-        return area_results
-
-
-
-    @staticmethod
     def analyze(threshold, geojson, begin, end):
         """
+        Takes WHRC Carbon and Hansen loss data and returns amount of biomass, carbon and co2 lost
+        by time.
         """
         try:
+            logging.info(f'[biomass-loss-service]: with properties passed: {threshold}, {begin}, {end}')
             # hansen tree cover loss by year
-            logging.info('getting hansen')
-            hansen_loss_by_year = BiomassLossService._gee_hansen(geojson, threshold)
-            # Biomass loss by year
-            logging.info('getting biomass')
-            loss_by_year = BiomassLossService._gee_biomass(geojson, threshold)
-            # biomass (UMD doesn't permit disaggregation of forest gain by threshold).
-            biomass = loss_by_year['carbon']
-            loss_by_year.pop("carbon", None)
+            d = {}
+            # Extract int years to work with for time range
+            start_year = int(begin.split('-')[0]) - 2000
+            end_year = int(end.split('-')[0]) - 2000
 
-            # Carbon (UMD doesn't permit disaggregation of forest gain by threshold).
-            carbon_loss = dict_unit_transform(loss_by_year, 0.5)
+            # Gather assets
+            band_name = f'loss_{threshold}'
+            hansen_asset = SETTINGS.get('gee').get('assets').get('hansen')
+            biomass_asset = SETTINGS.get('gee').get('assets').get('whrc_biomass')
+            hansen = ee.Image(hansen_asset).select(band_name)
+            biomass = ee.ImageCollection(biomass_asset).max()
+            region = get_region(geojson)
+            logging.info(f'[biomass-loss-service]: built assets for analysis, using Hansen band {band_name}')
 
-            # CO2 (UMD doesn't permit disaggregation of forest gain by threshold).
-            carbon_dioxide_loss = dict_unit_transform(carbon_loss, 3.67)
+            # Reducer arguments
+            reduce_args = {
+                'reducer': ee.Reducer.sum().unweighted(),
+                'geometry': region,
+                'bestEffort': True,
+                'scale': 30,
+                'tileScale': 16
+            }
 
-            # Reduce loss by year for supplied begin and end year
-            begin = begin.split('-')[0]
-            end = end.split('-')[0]
-            biomass_loss = sum_range(loss_by_year, begin, end)
+            # mask hasen data with itself (important step to prevent over-counting)
+            hansen = hansen.mask(hansen)
 
-            # Prepare result object
-            result = {}
-            result['biomass'] = biomass
-            result['biomass_loss'] = biomass_loss
-            result['biomass_loss_by_year'] = dates_selector(loss_by_year, begin, end)
-            result['tree_loss_by_year'] = dates_selector(hansen_loss_by_year, begin, end)
-            result['c_loss_by_year'] = dates_selector(carbon_loss, begin, end)
-            result['co2_loss_by_year'] = dates_selector(carbon_dioxide_loss, begin, end)
+            # Calculate annual biomass loss with a collection operation method
+            def reduceFunction(img):
+                out = img.reduceRegion(**reduce_args)
+                return ee.Feature(None, img.toDictionary().combine(out))
 
-            return result
+            # Calculate annual biomass loss - add subset images to a collection and then map a reducer to it
+            # Calculate stats 10000 ha, 10^6 to transform from Mg (10^6g) to Tg(10^12g) and 255 as is the pixel value
+            collectionG = ee.ImageCollection([biomass.multiply(ee.Image.pixelArea().divide(10000)).mask(hansen.updateMask(hansen.eq(year))).set({'year': 2000+year})
+                                               for year in range(start_year, end_year + 1)])
+            output = collectionG.map(reduceFunction).getInfo()
+
+            # # Convert to carbon and co2 values and add to output dictionary
+            biomass_to_carbon = 0.5
+            carbon_to_co2 = 3.67
+
+            d['biomassLossByYear'] = {}
+            d['cLossByYear'] = {}
+            d['co2LossByYear'] = {}
+            for row in output.get('features'):
+                yr = row.get('properties').get('year')
+                d['biomassLossByYear'][yr] = row.get('properties').get('b1')
+                d['cLossByYear'][yr] = float(f"{d.get('biomassLossByYear').get(yr) * biomass_to_carbon :3.2f}")
+                d['co2LossByYear'][yr] = float(f"{d.get('cLossByYear').get(yr) * carbon_to_co2 :3.2f}")
+
+            # # Calculate total biomass loss
+            d['biomassLoss'] = sum([d.get('biomassLossByYear').get(y) for y in d.get('biomassLossByYear')])
+            return d
 
         except Exception as error:
             logging.error(str(error))

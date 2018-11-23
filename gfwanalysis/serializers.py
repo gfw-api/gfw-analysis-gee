@@ -13,9 +13,21 @@ def serialize_umd(analysis, type):
             'treeExtent': analysis.get('tree_extent', None),
             'treeExtent2010': analysis.get('tree_extent2010', None),
             'areaHa': analysis.get('area_ha', None),
+            'loss_start_year': analysis.get('loss_start_year', None),
+            'loss_end_year': analysis.get('loss_end_year', None)
         }
     }
 
+
+def serialize_whrc_biomass(analysis, type):
+    """."""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'biomass': analysis.get('biomass', None)
+        }
+    }
 
 def serialize_histogram(analysis, type):
     """."""
@@ -25,7 +37,7 @@ def serialize_histogram(analysis, type):
         'type': type,
         'attributes': {
             'histogram': analysis.get('result', None),
-            'areaHa': analysis.get('area_ha', None),
+            'areaHa': analysis.get('area_ha', None)
         }
     }
 
@@ -37,7 +49,7 @@ def serialize_landcover(analysis, type):
         'type': type,
         'attributes': {
             'landcover': analysis.get('result', None),
-            'areaHa': analysis.get('area_ha', None),
+            'areaHa': analysis.get('area_ha', None)
         }
     }
 
@@ -70,12 +82,12 @@ def serialize_biomass(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'biomass': analysis.get('biomass', None),
-            'biomassLoss': analysis.get('biomass_loss', None),
-            'biomassLossByYear': analysis.get('biomass_loss_by_year', None),
-            'cLossByYear': analysis.get('c_loss_by_year', None),
-            'co2LossByYear': analysis.get('co2_loss_by_year', None),
-            'treeLossByYear': analysis.get('tree_loss_by_year', None),
+            #'biomass': analysis.get('biomass', None),  # this should be from whrc_biomass service
+            'biomassLoss': analysis.get('biomassLoss', None),
+            'biomassLossByYear': analysis.get('biomassLossByYear', None),
+            'cLossByYear': analysis.get('cLossByYear', None),
+            'co2LossByYear': analysis.get('co2LossByYear', None),
+            #'treeLossByYear': analysis.get('treeLossByYear', None), # this should be from hansen service
             'areaHa': analysis.get('area_ha', None)
         }
     }
@@ -99,7 +111,7 @@ def serialize_sentinel_url(analysis, type):
             "url_image": analysis.get('image_tiles', None),
             "url_boundary": analysis.get('boundary_tiles', None),
             "date_time": analysis.get('metadata', None).get('date_time', None),
-            "product_id": analysis.get('metadata', None).get('product_id', None),
+            "product_id": analysis.get('metadata', None).get('product_id', None)
             }
         }
 
@@ -154,12 +166,12 @@ def serialize_recent_url(analysis, type):
     """Convert output of images to json"""
     tmp_output = []
     output = {}
-    
+
     if type == 'recent_thumbs_url':
 
         output['id'] = None
         output['type'] = type
-        
+
         for e in range (0, len(analysis)):
             temp_obj = {
                     'source': analysis[e].get('source', None),
@@ -167,7 +179,7 @@ def serialize_recent_url(analysis, type):
             }
             tmp_output.append(temp_obj)
         output['attributes'] = tmp_output
-        
+
     elif type == 'recent_tiles_url':
 
         output['id'] = None
@@ -178,7 +190,7 @@ def serialize_recent_url(analysis, type):
                     'source_id': analysis[e].get('source', None),
                     'tile_url': analysis[e].get('tile_url', None)
             }
-            tmp_output.append(temp_obj)            
+            tmp_output.append(temp_obj)
         output['attributes'] = tmp_output
 
     return output

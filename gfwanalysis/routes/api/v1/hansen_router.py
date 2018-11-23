@@ -53,7 +53,7 @@ def analyze(geojson, area_ha):
 @get_geo_by_hash
 def get_by_geostore(geojson, area_ha):
     """Analyze by geostore"""
-    logging.info('[ROUTER]: Getting umd by world')
+    logging.info('[ROUTER]: Getting Hansen by geostore')
     return analyze(geojson, area_ha)
 
 
@@ -61,7 +61,7 @@ def get_by_geostore(geojson, area_ha):
 @get_geo_by_use
 def get_by_use(name, id, geojson, area_ha):
     """Analyze by use"""
-    logging.info('[ROUTER]: Getting umd by use')
+    logging.info('[ROUTER]: Getting Hansen by use area')
     return analyze(geojson, area_ha)
 
 
@@ -69,5 +69,5 @@ def get_by_use(name, id, geojson, area_ha):
 @get_geo_by_wdpa
 def get_by_wdpa(id, geojson, area_ha):
     """Analyze by wdpa"""
-    logging.info('[ROUTER]: Getting umd by wdpa')
+    logging.info('[ROUTER]: Getting Hansen by wdpa area')
     return analyze(geojson, area_ha)
