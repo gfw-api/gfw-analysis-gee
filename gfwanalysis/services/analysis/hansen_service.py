@@ -36,11 +36,14 @@ class HansenService(object):
             extent_2010_asset = SETTINGS.get('gee').get('assets').get('hansen_2010_extent')
             begin = int(begin.split('-')[0][2:])
             end = int(end.split('-')[0][2:])
+            d['loss_start_year'] = begin
+            d['loss_end_year'] = end
             region = get_region(geojson)
             reduce_args = {'reducer': ee.Reducer.sum().unweighted(),
                            'geometry': region,
                            'bestEffort': True,
-                           'scale': 30}
+                           'scale': 30,
+                           'tileScale': 16}
             gfw_data = ee.Image(asset_id)
             loss_band = 'loss_{0}'.format(threshold)
             cover_band = 'tree_{0}'.format(threshold)
@@ -57,23 +60,26 @@ class HansenService(object):
             gain = gfw_data.select('gain').divide(255.0).multiply(
                             ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
             d['gain'] = squaremeters_to_ha(gain['gain'])
+            # Mask loss with itself to avoid overcounting errors
+            tmp_img = gfw_data.select(loss_band).mask(gfw_data.select(loss_band))
             if aggregate_values:
                 # Identify one loss area from begin year up untill end year
-                tmp_img = gfw_data.select(loss_band)
                 loss_area_img = tmp_img.gte(begin).And(tmp_img.lte(end)).multiply(ee.Image.pixelArea())
                 loss_total = loss_area_img.reduceRegion(**reduce_args).getInfo()
                 d['loss'] = squaremeters_to_ha(loss_total[loss_band])
-                d['loss_start_year'] = begin
-                d['loss_end_year'] = end
             else:
-                # Identify loss area per year from beginning year to end year
+                # Identify loss area per year from beginning year to end year (inclusive)
+                def reduceFunction(img):
+                    out = img.reduceRegion(**reduce_args)
+                    return ee.Feature(None, out)
+
+                ## Calculate annual biomass loss - add subset images to a collection and then map a reducer to it
+                collectionG = ee.ImageCollection([tmp_img.updateMask(tmp_img.eq(year)).divide(year).multiply(
+                                ee.Image.pixelArea()).set({'year': 2000+year}) for year in range(begin, end + 1)])
+                output = collectionG.map(reduceFunction).getInfo()
                 d['loss'] = {}
-                tmp_img = gfw_data.select(loss_band)
-                for year in range(begin, end+1):
-                    year_loss = tmp_img.updateMask(tmp_img.eq(year)).divide(year).multiply(
-                                ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
-                    tmp_loss_value = year_loss['loss_{}'.format(str(threshold))]
-                    d['loss']['{}'.format(year + 2000)] = squaremeters_to_ha(tmp_loss_value)
+                for row, yr in zip(output.get('features'), range(begin, end+1)):
+                    d['loss'][yr+2000] = squaremeters_to_ha(row.get('properties').get(loss_band))
             return d
         except Exception as error:
             logging.error(str(error))
