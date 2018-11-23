@@ -14,8 +14,6 @@ class WHRCBiomassService(object):
     def analyze(threshold, geojson):
         """For a given Hansen threshold mask on WHRC biomass data
         and geometry return a dictionary of total t/ha.
-        The threshold is used to identify which band of loss and tree to select.
-        asset_id should be 'projects/wri-datalab/HansenComposite_14-15'
         """
         try:
             d = {}
@@ -27,7 +25,7 @@ class WHRCBiomassService(object):
                            'bestEffort': True,
                            'scale': 30}
             tc_mask = ee.Image(hansen_asset).select('tree_'+ str(threshold)).gt(0)
-            biomass = ee.ImageCollection(biomass_asset).max().mask(tc_mask)
+            biomass = ee.ImageCollection(biomass_asset).max().multiply(ee.Image.pixelArea().divide(10000)).mask(tc_mask)
             # Identify thresholded biomass value
             biomass_value = biomass.reduceRegion(**reduce_args).getInfo()
             d['biomass'] = biomass_value
