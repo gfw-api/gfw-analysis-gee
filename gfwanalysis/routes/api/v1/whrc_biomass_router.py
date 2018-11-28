@@ -19,10 +19,10 @@ whrc_biomass_endpoints_v1 = Blueprint('whrc_biomass', __name__)
 
 def analyze(geojson, area_ha):
     """Analyze WHRC Biomass"""
-    logging.info('[ROUTER]: Getting biomass')
+    logging.info('[ROUTER]: WHRC Getting biomass')
     if not geojson:
         return error(status=400, detail='A Geojson argument is required')
-    threshold, start, end = set_params()
+    threshold, start, end, table = set_params()
     logging.info(f'[ROUTER - params]: biomass params {threshold}, {start}, {end}')
     try:
         data = WHRCBiomassService.analyze(

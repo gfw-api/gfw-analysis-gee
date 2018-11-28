@@ -24,7 +24,11 @@ def set_params():
     begin = request.args.get('begin', '2001-01-01')
     end = request.args.get('end', '2017-12-31')
     period = request.args.get('period', None)
-    table = request.args.get('table', None)
+    if request.args.get('table', '').lower() == 'false':
+        table = False
+    else:
+        table = True
+
     if period and len(period.split(',')) > 1:
         first = period.split(',')[0]
         second = period.split(',')[1]
