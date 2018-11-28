@@ -25,7 +25,8 @@ def serialize_whrc_biomass(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'biomass': analysis.get('biomass', None)
+            'biomass': analysis.get('biomass', None),
+            'areaHa': analysis.get('area_ha', None)
         }
     }
 
@@ -82,14 +83,33 @@ def serialize_biomass_v1(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'biomass': analysis.get('biomass', None),  # this should be from whrc_biomass service
+            'biomass': analysis.get('biomass', None),
             'biomassLoss': analysis.get('biomass_loss', None),
             'biomassLossByYear': analysis.get('biomass_loss_by_year', None),
             'cLossByYear': analysis.get('c_loss_by_year', None),
             'co2LossByYear': analysis.get('co2_loss_by_year', None),
-            'treeLossByYear': analysis.get('tree_loss_by_year', None), # this should be from hansen service
+            'treeLossByYear': analysis.get('tree_loss_by_year', None),
             'areaHa': analysis.get('area_ha', None)
         }
+    }
+
+
+def serialize_biomass_table_v1(analysis, type):
+    """Convert the output of the biomass_loss analysis to json"""
+    rows = []
+    for year in analysis.get('biomass_loss_by_year'):
+        rows.append({'year': year,
+                     'biomassLossByYear':analysis.get('biomass_loss_by_year', None).get(year, None),
+                     'totalBiomass': analysis.get('biomass', None),
+                     'cLossByYear':analysis.get('c_loss_by_year', None).get(year, None),
+                     'co2LossByYear': analysis.get('co2_loss_by_year', None).get(year, None),
+                     'treeLossByYear': analysis.get('tree_loss_by_year', None).get(year, None),
+                     'totalAreaHa': analysis.get('area_ha', None),
+                    })
+    return {
+        'id': None,
+        'type': type,
+        'attributes': rows
     }
 
 
@@ -105,6 +125,21 @@ def serialize_biomass_v2(analysis, type):
             'co2LossByYear': analysis.get('co2LossByYear', None),
             'areaHa': analysis.get('area_ha', None)
         }
+    }
+
+def serialize_biomass_table_v2(analysis, type):
+    """Convert the output of the biomass_loss analysis to json"""
+    rows = []
+    for year in analysis.get('biomassLossByYear'):
+        rows.append({'year': year, 'biomassLossByYear':analysis.get('biomassLossByYear', None).get(year, None),
+                     'cLossByYear':analysis.get('cLossByYear', None).get(year, None),
+                     'co2LossByYear': analysis.get('co2LossByYear', None).get(year, None),
+                     'areaHa': analysis.get('area_ha', None)
+                    })
+    return {
+        'id': None,
+        'type': type,
+        'attributes': rows
     }
 
 
