@@ -24,7 +24,7 @@ def analyze(geojson, area_ha):
     if not geojson:
         return error(status=400, detail='Geojson is required')
 
-    threshold, begin, end = set_params()
+    threshold, begin, end, table = set_params()
 
     try:
         data = Forma250Service.analyze(
