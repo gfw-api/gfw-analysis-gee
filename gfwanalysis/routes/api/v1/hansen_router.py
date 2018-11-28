@@ -23,7 +23,7 @@ def analyze(geojson, area_ha):
     if not geojson:
         return error(status=400, detail='Geojson is required')
 
-    threshold, begin, end = set_params()
+    threshold, begin, end, table = set_params()
 
     if request.args.get('aggregate_values', '').lower() == 'false':
         aggregate_values = False

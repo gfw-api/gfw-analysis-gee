@@ -13,7 +13,7 @@ from gfwanalysis.validators import validate_geostore
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
 from gfwanalysis.errors import BiomassLossError
-from gfwanalysis.serializers import serialize_biomass_v2
+from gfwanalysis.serializers import serialize_biomass_v2, serialize_biomass_table_v2
 
 biomass_loss_endpoints_v2 = Blueprint('biomass_loss_endpoints_v2', __name__)
 
@@ -24,7 +24,7 @@ def analyze(geojson, area_ha):
     if not geojson:
         return error(status=400, detail='Geojson is required')
 
-    threshold, begin, end = set_params()
+    threshold, begin, end, table = set_params()
 
     try:
         data = BiomassLossService.analyze(
@@ -40,7 +40,10 @@ def analyze(geojson, area_ha):
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
-    return jsonify(data=serialize_biomass_v2(data, 'biomasses')), 200
+    if table:
+        return jsonify(data=serialize_biomass_table_v2(data, 'biomasses')), 200
+    else:
+        return jsonify(data=serialize_biomass_v2(data, 'biomasses')), 200
 
 
 @biomass_loss_endpoints_v2.route('/', strict_slashes=False, methods=['GET', 'POST'])
