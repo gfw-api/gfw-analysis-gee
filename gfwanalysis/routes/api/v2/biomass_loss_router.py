@@ -86,7 +86,7 @@ def get_by_subnational(iso, id1, geojson, area_ha):
 
 @biomass_loss_endpoints_v2.route('/admin/<iso>/<id1>/<id2>', strict_slashes=False, methods=['GET'])
 @get_geo_by_regional
-def get_geo_by_regional(iso, id1, id2, geojson, area_ha):
+def get_by_regional(iso, id1, id2, geojson, area_ha):
     """Subnational Endpoint"""
     logging.info('[ROUTER]: Getting biomassloss by admin2')
     return analyze(geojson, area_ha)
