@@ -76,21 +76,37 @@ def serialize_forma_latest(analysis, type):
         }
     }
 
-def serialize_biomass(analysis, type):
+def serialize_biomass_v1(analysis, type):
     """Convert the output of the biomass_loss analysis to json"""
     return {
         'id': None,
         'type': type,
         'attributes': {
-            #'biomass': analysis.get('biomass', None),  # this should be from whrc_biomass service
+            'biomass': analysis.get('biomass', None),  # this should be from whrc_biomass service
+            'biomassLoss': analysis.get('biomass_loss', None),
+            'biomassLossByYear': analysis.get('biomass_loss_by_year', None),
+            'cLossByYear': analysis.get('c_loss_by_year', None),
+            'co2LossByYear': analysis.get('co2_loss_by_year', None),
+            'treeLossByYear': analysis.get('tree_loss_by_year', None), # this should be from hansen service
+            'areaHa': analysis.get('area_ha', None)
+        }
+    }
+
+
+def serialize_biomass_v2(analysis, type):
+    """Convert the output of the biomass_loss analysis to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
             'biomassLoss': analysis.get('biomassLoss', None),
             'biomassLossByYear': analysis.get('biomassLossByYear', None),
             'cLossByYear': analysis.get('cLossByYear', None),
             'co2LossByYear': analysis.get('co2LossByYear', None),
-            #'treeLossByYear': analysis.get('treeLossByYear', None), # this should be from hansen service
             'areaHa': analysis.get('area_ha', None)
         }
     }
+
 
 def serialize_landsat_url(analysis, type):
     """Convert output of landsat_tiles to json"""

@@ -1,4 +1,4 @@
-"""Biomass-Loss SERVICE"""
+"""Biomass-Loss SERVICE V2"""
 
 from __future__ import absolute_import
 from __future__ import division
