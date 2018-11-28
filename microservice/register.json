@@ -250,6 +250,22 @@
 			}
 		},
 		{
+			"path": "/v2/biomass-loss",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/biomass-loss"
+			}
+		},
+		{
+			"path": "/v2/biomass-loss",
+			"method": "POST",
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v2/biomass-loss"
+			}
+		},
+		{
 			"path": "/v2/biomass-loss/wdpa/:id",
 			"method": "GET",
 			"redirect": {
