@@ -24,7 +24,7 @@ def set_params():
     begin = request.args.get('begin', '2001-01-01')
     end = request.args.get('end', '2017-12-31')
     period = request.args.get('period', None)
-    if request.args.get('table', '').lower() == 'false':
+    if request.args.get('table', 'false').lower() == 'false':
         table = False
     else:
         table = True
