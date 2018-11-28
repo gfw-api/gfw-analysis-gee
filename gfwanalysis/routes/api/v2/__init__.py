@@ -1,0 +1,1 @@
+from gfwanalysis.routes.api.v2.biomass_loss_router import biomass_loss_endpoints_v2

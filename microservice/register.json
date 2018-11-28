@@ -250,6 +250,46 @@
 			}
 		},
 		{
+			"path": "/v2/biomass-loss/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/biomass-loss/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v2/biomass-loss/use/:name/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/biomass-loss/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v2/biomass-loss/admin/:iso",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/biomass-loss/admin/:iso"
+			}
+		},
+		{
+			"path": "/v2/biomass-loss/admin/:iso/:admin",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/biomass-loss/admin/:iso/:admin"
+			}
+		},
+		{
+			"path": "/v2/biomass-loss/admin/:iso/:admin/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/biomass-loss/admin/:iso/:admin/:admin2"
+			}
+		},
+		{
 			"path": "/v1/landsat-tiles/:year",
 			"method": "GET",
 			"redirect": {
