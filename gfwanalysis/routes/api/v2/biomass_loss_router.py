@@ -41,9 +41,9 @@ def analyze(geojson, area_ha):
 
     data['area_ha'] = area_ha
     if table:
-        return jsonify(data=serialize_biomass_table_v2(data, 'biomasses')), 200
+        return jsonify(data=serialize_biomass_table_v2(data, 'biomass-loss')), 200
     else:
-        return jsonify(data=serialize_biomass_v2(data, 'biomasses')), 200
+        return jsonify(data=serialize_biomass_v2(data, 'biomass-loss')), 200
 
 
 @biomass_loss_endpoints_v2.route('/', strict_slashes=False, methods=['GET', 'POST'])
