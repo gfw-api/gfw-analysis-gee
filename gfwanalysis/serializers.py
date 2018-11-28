@@ -25,7 +25,7 @@ def serialize_whrc_biomass(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'biomass': analysis.get('biomass', None),
+            'biomass': analysis.get('biomass', None).get('b1', None),
             'areaHa': analysis.get('area_ha', None)
         }
     }
