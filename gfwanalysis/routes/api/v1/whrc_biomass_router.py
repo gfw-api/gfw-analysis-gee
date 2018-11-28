@@ -36,7 +36,7 @@ def analyze(geojson, area_ha):
         logging.error('[ROUTER]: '+str(e))
         return error(status=500, detail='Generic Error')
     data['area_ha'] = area_ha
-    return jsonify(data=serialize_whrc_biomass(data, 'WHRC biomass')), 200
+    return jsonify(data=serialize_whrc_biomass(data, 'whrc-biomass')), 200
 
 
 @whrc_biomass_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
