@@ -19,13 +19,32 @@ def serialize_umd(analysis, type):
     }
 
 
+def serialize_table_umd(analysis, type):
+    """ Convert the aggregate_values=false Hansen response into a table"""
+    rows = []
+    for year in analysis.get('loss', None):
+        rows.append({'year':year,
+                     'loss': analysis.get('loss', None).get(year),
+                     'gain': analysis.get('gain', None),
+                     'areaHa': analysis.get('area_ha', None),
+                     'treeExtent': analysis.get('tree_extent', None),
+                     'treeExtent2010': analysis.get('tree_extent2010', None),
+                    })
+    return {
+        'id': None,
+        'type': type,
+        'attributes': rows
+    }
+
+
 def serialize_whrc_biomass(analysis, type):
     """."""
     return {
         'id': None,
         'type': type,
         'attributes': {
-            'biomass': analysis.get('biomass', None).get('b1', None),
+            'totalBiomass': analysis.get('biomass', None).get('b1', None),
+            'biomassDensity': analysis.get('biomass_density'),
             'areaHa': analysis.get('area_ha', None)
         }
     }

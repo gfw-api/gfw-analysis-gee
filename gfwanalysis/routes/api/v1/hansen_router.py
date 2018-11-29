@@ -13,7 +13,7 @@ from gfwanalysis.validators import validate_geostore
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational
 from gfwanalysis.errors import HansenError
-from gfwanalysis.serializers import serialize_umd
+from gfwanalysis.serializers import serialize_umd, serialize_table_umd
 
 hansen_endpoints_v1 = Blueprint('hansen_endpoints_v1', __name__)
 
@@ -22,9 +22,8 @@ def analyze(geojson, area_ha):
     """Analyze Hansen"""
     if not geojson:
         return error(status=400, detail='Geojson is required')
-
     threshold, begin, end, table = set_params()
-
+    logging.info(f'[ROUTER]: umd params thresh={threshold}, {begin}, {end}, {table}')
     if request.args.get('aggregate_values', '').lower() == 'false':
         aggregate_values = False
     else:
@@ -45,7 +44,10 @@ def analyze(geojson, area_ha):
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
-    return jsonify(data=serialize_umd(data, 'umd')), 200
+    if table and not aggregate_values:
+        return jsonify(data=serialize_table_umd(data, 'umd')), 200
+    else:
+        return jsonify(data=serialize_umd(data, 'umd')), 200
 
 
 @hansen_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
