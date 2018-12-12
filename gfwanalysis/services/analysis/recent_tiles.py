@@ -163,8 +163,9 @@ class RecentTiles(object):
             data = []
 
             for c in collection:
+                instrument = c.get('properties').get('SPACECRAFT_NAME') and c.get('properties').get('SPACECRAFT_NAME')
 
-                if c.get('properties').get('SPACECRAFT_NAME') and c.get('properties').get('SPACECRAFT_NAME') == 'Sentinel-2A':
+                if instrument == 'Sentinel-2A' or instrument ==  'Sentinel-2B':
                     
                     date_info = c['id'].split('COPERNICUS/S2/')[1]
                     date_time = ''.join([date_info[0:4],'-',date_info[4:6],'-',date_info[6:8],' ',
@@ -189,7 +190,7 @@ class RecentTiles(object):
                     }
                     data.append(tmp_)
 
-                elif c.get('properties').get('SPACECRAFT_ID') and c.get('properties').get('SPACECRAFT_ID') == 'LANDSAT_8':
+                elif instrument == 'LANDSAT_8':
                     date_info = c['id'].split('LANDSAT/LC08/C01/T1_RT_TOA/LC08_')[1].split('_')[1]
                     time_info = c['properties']['SCENE_CENTER_TIME'].split('.')[0]
                     date_time = ''.join([date_info[0:4],'-',date_info[4:6],'-',date_info[6:8],' ', time_info, 'Z' ])
