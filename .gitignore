@@ -91,3 +91,9 @@ ENV/
 
 # nohup files
 nohup.out
+
+#VS code
+.vscode
+
+# Notebook playground
+nbk_testing

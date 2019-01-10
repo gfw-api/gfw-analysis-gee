@@ -34,6 +34,7 @@ class HansenService(object):
             d = {}
             asset_id = SETTINGS.get('gee').get('assets').get('hansen')
             extent_2010_asset = SETTINGS.get('gee').get('assets').get('hansen_2010_extent')
+            hansen_v1_5_asset = SETTINGS.get('gee').get('assets').get('hansen_2017_v1_5')
             begin = int(begin.split('-')[0][2:])
             end = int(end.split('-')[0][2:])
             d['loss_start_year'] = begin
@@ -45,12 +46,13 @@ class HansenService(object):
                            'scale': 30,
                            'tileScale': 16}
             gfw_data = ee.Image(asset_id)
+            hansen_v1_5 = ee.Image(hansen_v1_5_asset)
             loss_band = 'loss_{0}'.format(threshold)
             cover_band = 'tree_{0}'.format(threshold)
             # Identify 2000 forest cover at given threshold
-            tree_area = gfw_data.select(cover_band).gt(0).multiply(
+            tree_area = hansen_v1_5.select('treecover2000').gt(float(threshold)).multiply(
                             ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
-            d['tree_extent'] = squaremeters_to_ha(tree_area[cover_band])
+            d['tree_extent'] = squaremeters_to_ha(tree_area['treecover2000'])
             # Identify 2010 forest cover at given threshold
             extent2010_image = ee.Image(extent_2010_asset)
             extent2010_area = extent2010_image.gt(float(threshold)).multiply(
