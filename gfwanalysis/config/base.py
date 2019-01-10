@@ -17,6 +17,7 @@ SETTINGS = {
         'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_17',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
+            'hansen_2017_v1_5':'UMD/hansen/global_forest_change_2017_v1_5',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
