@@ -41,5 +41,8 @@ SETTINGS = {
     'carto': {
         'service_account': os.getenv('CARTODB_USER'),
         'uri': 'carto.com/api/v2/sql'
+    },
+    'redis': {
+        'url': os.getenv('REDIS_URL')
     }
 }

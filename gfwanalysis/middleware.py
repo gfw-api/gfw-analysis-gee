@@ -3,10 +3,35 @@
 from functools import wraps
 from flask import request
 
+import logging
+
 from gfwanalysis.routes.api import error
 from gfwanalysis.services.geostore_service import GeostoreService
 from gfwanalysis.services.area_service import AreaService
 from gfwanalysis.errors import GeostoreNotFound
+from gfwanalysis.services.analysis.landsat_tiles import RedisService
+
+
+def exist_tile(func):
+    """Get geodata"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        url = RedisService.get(request.path)
+        if url is None:
+            return func(*args, **kwargs)
+        else:
+            return redirect(url)
+    return wrapper
+
+
+def exist_mapid(func):
+    """Get geodata"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        year = kwargs['year']
+        kwargs["map_object"] = RedisService.check_year_mapid(year)
+        return func(*args, **kwargs)
+    return wrapper
 
 
 def get_sentinel_params(func):

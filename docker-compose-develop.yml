@@ -12,8 +12,15 @@ develop:
       LOCAL_URL: http://mymachine:4500
       EE_PRIVATE_KEY: ${EE_PRIVATE_KEY}
       API_VERSION: v1
+      REDIS_URL: redis://redis:6379
       CARTODB_USER: wri-01
     command: develop
     volumes:
       - ./gfwanalysis:/opt/gfwanalysis/gfwanalysis
     restart: always
+    links:
+      - redis
+redis:
+  image: redis
+  restart: always
+
