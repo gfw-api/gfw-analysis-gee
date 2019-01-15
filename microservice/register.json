@@ -314,6 +314,14 @@
 			}
 		},
 		{
+			"path": "/v2/landsat-tiles/:year/:z/:x/:y",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/landsat-tiles/:year/:z/:x/:y"
+			}
+		},
+		{
 			"path": "/v1/sentinel-tiles/",
 			"method": "GET",
 			"redirect": {

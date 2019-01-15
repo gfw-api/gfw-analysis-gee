@@ -9,7 +9,7 @@ from gfwanalysis.routes.api import error
 from gfwanalysis.services.geostore_service import GeostoreService
 from gfwanalysis.services.area_service import AreaService
 from gfwanalysis.errors import GeostoreNotFound
-from gfwanalysis.services.analysis.landsat_tiles import RedisService
+from gfwanalysis.services.analysis.landsat_tiles_v2 import RedisService
 
 
 def exist_tile(func):
