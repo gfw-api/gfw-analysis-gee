@@ -12,6 +12,7 @@ from gfwanalysis.routes.api import error
 from gfwanalysis.services.analysis.landsat_tiles_v1 import LandsatTiles
 from gfwanalysis.errors import LandsatTilesError
 from gfwanalysis.serializers import serialize_landsat_url
+from gfwanalysis.validators import validate_landsat_year
 
 landsat_tiles_endpoints_v1 = Blueprint('landsat_tiles_endpoints_v1', __name__)
 
@@ -30,7 +31,9 @@ def analyze(year):
 
 
 @landsat_tiles_endpoints_v1.route('/<year>', strict_slashes=False, methods=['GET'])
-def get_by_geostore(year):
-    """Analyze by geostore"""
-    logging.info('[ROUTER]: Getting url for tiles for year')
+@validate_landsat_year
+#def get_by_geostore(year):
+def get_tile(year):
+    """Get tile Endpoint"""
+    logging.info(f"[ROUTER]: Getting url for tiles for year {year}")
     return analyze(year)

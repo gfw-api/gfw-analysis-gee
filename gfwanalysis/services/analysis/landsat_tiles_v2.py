@@ -85,7 +85,6 @@ class LandsatTiles(object):
     def analyze(year, z, x, y, map_object):
         """For a given year, generate a valid url from which to retrieve Landsat
         tiles directly from Earth Engine. This is necessary as the urls expire.
-        Currently, only 2015 and 2016 are supported as input years.
         """
         try:
             d = {}

@@ -12,6 +12,7 @@ from gfwanalysis.services.analysis.landsat_tiles_v2 import LandsatTiles
 from gfwanalysis.errors import LandsatTilesError
 from gfwanalysis.serializers import serialize_landsat_url
 from gfwanalysis.middleware import exist_mapid, exist_tile
+from gfwanalysis.validators import validate_landsat_year
 
 landsat_tiles_endpoints_v2 = Blueprint('landsat_tiles_endpoints_v2', __name__)
 
@@ -30,6 +31,7 @@ def analyze(year, z, x, y, map_object):
 
 
 @landsat_tiles_endpoints_v2.route('/<year>/<z>/<x>/<y>', strict_slashes=False, methods=['GET'])
+@validate_landsat_year
 @exist_tile
 @exist_mapid
 def get_tile(year, z, x, y, map_object=None):
