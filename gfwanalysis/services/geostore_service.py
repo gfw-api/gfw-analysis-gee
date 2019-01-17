@@ -48,24 +48,27 @@ class GeostoreService(object):
     @staticmethod
     def get_national(iso):
         config = {
-            'uri': '/geostore/admin/'+iso,
-            'method': 'GET'
+            'uri': '/v2/geostore/admin/'+iso,
+            'method': 'GET',
+            'ignore_version': True
         }
         return GeostoreService.execute(config)
 
     @staticmethod
     def get_subnational(iso, id1):
         config = {
-            'uri': '/geostore/admin/'+iso+'/'+id1,
-            'method': 'GET'
+            'uri': '/v2/geostore/admin/'+iso+'/'+id1,
+            'method': 'GET',
+            'ignore_version': True
         }
         return GeostoreService.execute(config)
 
     @staticmethod
     def get_regional(iso, id1, id2):
         config = {
-            'uri': '/geostore/admin/'+iso+'/'+id1+'/'+id2,
-            'method': 'GET'
+            'uri': '/v2/geostore/admin/'+iso+'/'+id1+'/'+id2,
+            'method': 'GET',
+            'ignore_version': True
         }
         return GeostoreService.execute(config)
 
