@@ -74,11 +74,20 @@ class LandsatTiles(object):
         return sharpened
 
     @staticmethod
-    def iker_image(year):
-        """Your function should return an EE.Image instance"""
-        logging.warning(f"[Iker Image] -- using year {year}")
-        pass
-        return 
+    def pansharpened_L7_image(year):
+        collection = ee.ImageCollection('LANDSAT/LE07/C01/T1_TOA').filterDate(
+                            "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year)).filter(
+                                ee.Filter.lt('CLOUD_COVER_LAND', 5))
+
+        composite = collection.median()
+
+        hsv2 = composite.select(['B3', 'B2', 'B1']).rgbToHsv()
+
+        sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
+                            composite.select('B8')]).hsvToRgb().visualize(
+                            gain=1000, gamma= [1.15, 1.4, 1.15])
+
+        return sharpened
     
 
     @staticmethod
@@ -97,7 +106,7 @@ class LandsatTiles(object):
                         image = LandsatTiles.pansharpened_L8_image(year)
                         d['url'], map_object = LandsatTiles.tile_url_gee(image, z, x, y)
                     elif int(year) in [2012]:
-                        image = LandsatTiles.iker_image(year)
+                        image = LandsatTiles.pansharpened_L7_image(year)
                         d['url'], map_object = LandsatTiles.tile_url_gee(image, z, x, y)
                     else:
                         logging.warning("Bad: URL for tiles for year={0} requested".format(year))
