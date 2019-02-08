@@ -1,6 +1,5 @@
-
 import ee
-
+import logging
 
 def get_region(geom):
     """Take a valid geojson object, iterate over all features in that object.
@@ -76,3 +75,50 @@ def dates_selector(data, begin, end):
 
 def sum_range(data, begin, end):
     return sum([data[key] for key in data if (int(key) >= int(begin)) and (int(key) < int(end))])
+
+
+def admin_0_simplify(iso):
+    """Check admin areas and return a relevant simplification or None"""
+    #logging.info(f'[admin_0_simplify]: passed {iso}')
+    admin_0_dic = {'ATA': 0.3,
+                    'RUS': 0.3,
+                    'CAN': 0.3,
+                    'GRL': 0.3,
+                    'USA': 0.3,
+                    'CHN': 0.3,
+                    'AUS': 0.1,
+                    'BRA': 0.1,
+                    'KAZ': 0.1,
+                    'ARG': 0.1,
+                    'IND': 0.1,
+                    'MNG': 0.1,
+                    'DZA': 0.1,
+                    'MEX': 0.1,
+                    'COD': 0.1,
+                    'SAU': 0.1,
+                    'IRN': 0.1,
+                    'SWE': 0.1,
+                    'LBY': 0.1,
+                    'SDN': 0.1,
+                    'IDN': 0.1,
+                    'FIN': 0.01,
+                    'NOR': 0.01,
+                    'SJM': 0.01,
+                    'ZAF': 0.01,
+                    'UKR': 0.01,
+                    'MLI': 0.01,
+                    'TCD': 0.01,
+                    'PER': 0.01,
+                    'AGO': 0.01,
+                    'NER': 0.01,
+                    'CHL': 0.01,
+                    'TUR': 0.01,
+                    'EGY': 0.01,
+                    'MRT': 0.01,
+                    'BOL': 0.01,
+                    'PAK': 0.01,
+                    'ETH': 0.01,
+                    'FRA': 0.01,
+                    'COL': 0.01}
+    simplification = admin_0_dic.get(iso, None)
+    return simplification
