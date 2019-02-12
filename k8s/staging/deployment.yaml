@@ -55,6 +55,17 @@ spec:
                 secretKeyRef:
                   name: mssecrets
                   key: EE_PRIVATE_KEY
+          - name: REDIS_URL
+            value: redis://localhost:6379
+
+      - name: redis
+        image: redis
+        ports:
+         - containerPort: 6379
+        resources:
+         requests:
+           memory: "0Mi"
+           cpu: "0m"
 
         ports:
           - containerPort: 4500
