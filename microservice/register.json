@@ -346,11 +346,19 @@
 			}
 		},
 		{
-			"path": "/v1/landsat-tiles/:year",
+			"path": "/v1/landsat-tiles/:year/:z/:x/:y",
 			"method": "GET",
 			"redirect": {
 				"method": "GET",
-				"path": "/api/v1/landsat-tiles/:year"
+				"path": "/api/v1/landsat-tiles/:year/:z/:x/:y"
+			}
+		},
+		{
+			"path": "/v2/landsat-tiles/:year/:z/:x/:y",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/landsat-tiles/:year/:z/:x/:y"
 			}
 		},
 		{
