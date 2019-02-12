@@ -43,6 +43,8 @@ class WHRCBiomassError(Error):
 class BiomassLossError(Error):
     pass
 
+class soilCarbonError(Error):
+    pass
 
 class GeostoreNotFound(Error):
     pass
