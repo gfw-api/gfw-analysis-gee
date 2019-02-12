@@ -49,6 +49,19 @@ def serialize_whrc_biomass(analysis, type):
         }
     }
 
+def serialize_soil_carbon(analysis, type):
+    """Return serialised soil carbon data"""
+    return {
+            'id': None,
+            'type': type,
+            'attributes':{
+                'total_soil_carbon': analysis.get('total_soil_carbon', None).get('b1_first', None),
+                'soil_carbon_density': analysis.get('soil_carbon_density', None),
+                'areaHa': analysis.get('area_ha', None)
+            }
+    }
+
+
 def serialize_histogram(analysis, type):
     """."""
 

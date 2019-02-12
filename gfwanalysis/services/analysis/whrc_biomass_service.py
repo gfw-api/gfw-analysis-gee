@@ -5,7 +5,7 @@ import logging
 import ee
 from gfwanalysis.errors import WHRCBiomassError
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.geo import get_region, squaremeters_to_ha
+from gfwanalysis.utils.geo import get_region, squaremeters_to_ha, admin_0_simplify
 
 
 class WHRCBiomassService(object):

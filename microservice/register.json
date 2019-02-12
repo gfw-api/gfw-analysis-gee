@@ -35,14 +35,6 @@
 		},
 		{
 			"path": "/v1/whrc-biomass",
-			"method": "GET",
-			"redirect": {
-				"method": "GET",
-				"path": "/api/v1/whrc-biomass"
-			}
-		},
-		{
-			"path": "/v1/whrc-biomass",
 			"method": "POST",
 			"redirect": {
 				"method": "POST",
@@ -95,6 +87,54 @@
 			"redirect": {
 				"method": "GET",
 				"path": "/api/v1/whrc-biomass/admin/:iso/:admin/:admin2"
+			}
+		},
+		{
+			"path": "/v1/soil-carbon",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/soil-carbon"
+			}
+		},
+		{
+			"path": "/v1/soil-carbon/use/:name/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/soil-carbon/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/soil-carbon/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/soil-carbon/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v1/soil-carbon/admin/:iso",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/soil-carbon/admin/:iso"
+			}
+		},
+		{
+			"path": "/v1/soil-carbon/admin/:iso/:admin",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/soil-carbon/admin/:iso/:admin"
+			}
+		},
+		{
+			"path": "/v1/soil-carbon/admin/:iso/:admin/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/soil-carbon/admin/:iso/:admin/:admin2"
 			}
 		},
 		{

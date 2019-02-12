@@ -17,11 +17,13 @@ SETTINGS = {
         'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_17',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
+            'hansen_2017_v1_5':'UMD/hansen/global_forest_change_2017_v1_5',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
             'ifl2000': 'projects/wri-datalab/gfw-api/ifl-world',
             'mangroves': 'LANDSAT/MANGROVE_FORESTS/2000',
+            'soils_30m':'projects/wri-datalab/Soil_Organic_Carbon_30m',
             'primary-forest': 'projects/wri-datalab/gfw-api/primary-forest',
             'gfw-landcover-2015': 'projects/wri-datalab/gfw-api/globcover-2015-reclassified',
             'idn-landcover': 'projects/wri-datalab/gfw-api/idn-landcover',

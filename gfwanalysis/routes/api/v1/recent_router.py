@@ -31,7 +31,7 @@ def analyze_recent_data(lat, lon, start, end, bands):
     """
     loop = asyncio.new_event_loop()
 
-    try:     
+    try:
         #Get data
         data = RecentTiles.recent_data(lat=lat, lon=lon, start=start, end=end)
         #Get first tile
@@ -93,6 +93,7 @@ def get_by_geostore(lat, lon, start, end, bands):
 def get_by_tile(data_array, bands=None):
     """Analyze by geostore"""
     logging.info('[ROUTER]: Getting tile url(s) for tiles for Recent Sentinel Images')
+    logging.info(f'[ROUTER]: Getting tile url(s) for tiles {data_array}')
     data = analyze_recent_tiles(data_array=data_array, bands=bands)
     return data
 
