@@ -37,7 +37,7 @@ def analyze(geojson, area_ha):
         return error(status=500, detail='Generic Error')
     data['area_ha'] = area_ha
     data['soil_carbon_density'] = data['total_soil_carbon'].get('b1_first') / area_ha
-    return jsonify(data=serialize_soil_carbon(data, 'soil_carbon')), 200
+    return jsonify(data=serialize_soil_carbon(data, 'soil-carbon')), 200
 
 
 @soil_carbon_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
