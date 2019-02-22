@@ -44,7 +44,7 @@ def serialize_whrc_biomass(analysis, type):
         'type': type,
         'attributes': {
             'totalBiomass': analysis.get('biomass', None).get('b1', None),
-            'biomassDensity': analysis.get('biomass_density'),
+            'biomassDensity': int(analysis.get('biomass_density')),
             'areaHa': analysis.get('area_ha', None)
         }
     }
@@ -56,7 +56,7 @@ def serialize_soil_carbon(analysis, type):
             'type': type,
             'attributes':{
                 'total_soil_carbon': analysis.get('total_soil_carbon', None).get('b1_first', None),
-                'soil_carbon_density': analysis.get('soil_carbon_density', None),
+                'soil_carbon_density': int(analysis.get('soil_carbon_density', None)),
                 'areaHa': analysis.get('area_ha', None)
             }
     }
