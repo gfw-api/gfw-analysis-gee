@@ -33,6 +33,17 @@ def exist_mapid(func):
         return func(*args, **kwargs)
     return wrapper
 
+def get_classification_params(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'GET':
+            img_id = request.args.get('img_id')
+            if not img_id:
+                return error(status=400, detail='An image ID is needed (Landsat or Sentinel)')
+        kwargs["img_id"] = img_id
+        return func(*args, **kwargs)
+    return wrapper
+
 
 def get_sentinel_params(func):
     @wraps(func)

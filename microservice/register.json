@@ -2,6 +2,14 @@
 	"name": "gfw umd",
 	"endpoints": [
 		{
+			"path": "/v1/recent-tiles-classifier",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/recent-tiles-classifier"
+			}
+		},
+		{
 			"path": "/v1/umd-loss-gain",
 			"method": "GET",
 			"redirect": {
