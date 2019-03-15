@@ -4,18 +4,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import logging
 import asyncio
-import requests
-import functools as funct
 
-from flask import jsonify, Blueprint, request
-from gfwanalysis.routes.api import error
-from gfwanalysis.services.analysis.recent_tiles import RecentTiles
+import logging
+from flask import jsonify, Blueprint
+
 from gfwanalysis.errors import RecentTilesError
-from gfwanalysis.serializers import serialize_recent_url
-from gfwanalysis.serializers import serialize_recent_data
 from gfwanalysis.middleware import get_recent_params, get_recent_tiles, get_recent_thumbs
+from gfwanalysis.routes.api import error
+from gfwanalysis.serializers import serialize_recent_data
+from gfwanalysis.serializers import serialize_recent_url
+from gfwanalysis.services.analysis.recent_tiles import RecentTiles
 
 recent_tiles_endpoints_v1 = Blueprint('recent_tiles_endpoints_v1', __name__)
 
@@ -32,15 +31,15 @@ def analyze_recent_data(lat, lon, start, end, bands):
     loop = asyncio.new_event_loop()
 
     try:
-        #Get data
+        # Get data
         data = RecentTiles.recent_data(lat=lat, lon=lon, start=start, end=end)
-        #Get first tile
+        # Get first tile
         data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data, bands, 'first'))
     except RecentTilesError as e:
-        logging.error('[ROUTER]: '+e.message)
+        logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
     return jsonify(data=serialize_recent_data(data, 'recent_tiles_data')), 200
 
@@ -55,10 +54,10 @@ def analyze_recent_tiles(data_array, bands):
     try:
         data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data_array, bands))
     except RecentTilesError as e:
-        logging.error('[ROUTER]: '+e.message)
+        logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
     return jsonify(data=serialize_recent_url(data, 'recent_tiles_url')), 200
 
@@ -71,10 +70,10 @@ def analyze_recent_thumbs(data_array, bands):
     try:
         data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_thumbs, data_array, bands))
     except RecentTilesError as e:
-        logging.error('[ROUTER]: '+e.message)
+        logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
     return jsonify(data=serialize_recent_url(data, 'recent_thumbs_url')), 200
 

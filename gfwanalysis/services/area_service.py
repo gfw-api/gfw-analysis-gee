@@ -1,13 +1,7 @@
-import json
-import os
-import logging
-from functools import partial
-
 import pyproj
-from shapely.geometry import shape
+from functools import partial
 from shapely.geometry import shape
 from shapely.ops import transform
-from flask import request
 
 
 class AreaService(object):
@@ -33,7 +27,7 @@ class AreaService(object):
 
     @staticmethod
     def get_polygon_area(geom):
-    # source: https://gis.stackexchange.com/a/166421/30899
+        # source: https://gis.stackexchange.com/a/166421/30899
 
         geom_area = transform(
             partial(

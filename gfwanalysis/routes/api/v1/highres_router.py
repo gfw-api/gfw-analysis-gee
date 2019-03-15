@@ -5,15 +5,16 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
-
 from flask import jsonify, Blueprint
-from gfwanalysis.routes.api import error
-from gfwanalysis.services.analysis.highres_tiles import HighResTiles
-from gfwanalysis.errors import HighResTilesError
-from gfwanalysis.serializers import serialize_highres_url
-from gfwanalysis.middleware import get_highres_params
 
-highres_tiles_endpoints_v1 = Blueprint('highres_tiles_endpoints_v1', __name__) 
+from gfwanalysis.errors import HighResTilesError
+from gfwanalysis.middleware import get_highres_params
+from gfwanalysis.routes.api import error
+from gfwanalysis.serializers import serialize_highres_url
+from gfwanalysis.services.analysis.highres_tiles import HighResTiles
+
+highres_tiles_endpoints_v1 = Blueprint('highres_tiles_endpoints_v1', __name__)
+
 
 def analyze2(lat, lon, start, end):
     """Generate Sentinel tile url for a requested lat lon point and time prd
@@ -27,12 +28,12 @@ def analyze2(lat, lon, start, end):
 
     try:
         data = HighResTiles.proxy_highres(lat=lat, lon=lon,
-                                            start=start, end=end)
+                                          start=start, end=end)
     except HighResTilesError as e:
-        logging.error('[ROUTER]: '+e.message)
+        logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
     return jsonify(data=serialize_highres_url(data, 'highres_tiles_url')), 200
 

@@ -5,13 +5,12 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+from flask import Blueprint, redirect
 
-from flask import jsonify, Blueprint, redirect
+from gfwanalysis.errors import LandsatTilesError
+from gfwanalysis.middleware import exist_mapid, exist_tile
 from gfwanalysis.routes.api import error
 from gfwanalysis.services.analysis.landsat_tiles_v2 import LandsatTiles
-from gfwanalysis.errors import LandsatTilesError
-from gfwanalysis.serializers import serialize_landsat_url
-from gfwanalysis.middleware import exist_mapid, exist_tile
 from gfwanalysis.validators import validate_landsat_year
 
 landsat_tiles_endpoints_v2 = Blueprint('landsat_tiles_endpoints_v2', __name__)
@@ -22,10 +21,10 @@ def analyze(year, z, x, y, map_object):
     try:
         data = LandsatTiles.analyze(year, z, x, y, map_object)
     except LandsatTilesError as e:
-        logging.error('[ROUTER]: '+e.message)
+        logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
     return redirect(data['url'])
 

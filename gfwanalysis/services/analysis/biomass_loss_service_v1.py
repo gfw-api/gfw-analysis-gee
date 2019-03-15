@@ -4,11 +4,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import ee
 import logging
 
-import ee
-from gfwanalysis.errors import BiomassLossError
 from gfwanalysis.config import SETTINGS
+from gfwanalysis.errors import BiomassLossError
 from gfwanalysis.utils.geo import get_thresh_image, get_region, dict_unit_transform, \
     sum_range, dates_selector
 
@@ -17,7 +17,8 @@ class BiomassLossService(object):
 
     @staticmethod
     def _gee_hansen(geojson, thresh):
-        image = get_thresh_image(str(thresh), SETTINGS.get('gee').get('assets').get('biomassloss_v1').get('hansen_loss_thresh'))
+        image = get_thresh_image(str(thresh),
+                                 SETTINGS.get('gee').get('assets').get('biomassloss_v1').get('hansen_loss_thresh'))
         region = get_region(geojson)
 
         # Reducer arguments
@@ -38,7 +39,8 @@ class BiomassLossService(object):
     @staticmethod
     def _gee_biomass(geom, thresh):
 
-        image1 = get_thresh_image(str(thresh), SETTINGS.get('gee').get('assets').get('biomassloss_v1').get('hansen_loss_thresh'))
+        image1 = get_thresh_image(str(thresh),
+                                  SETTINGS.get('gee').get('assets').get('biomassloss_v1').get('hansen_loss_thresh'))
         image2 = ee.Image(SETTINGS.get('gee').get('assets').get('biomassloss_v1').get('biomass_2000'))
         region = get_region(geom)
 
@@ -60,8 +62,6 @@ class BiomassLossService(object):
         area_results = area_stats.combine(carbon_stats).getInfo()
 
         return area_results
-
-
 
     @staticmethod
     def analyze(threshold, geojson, begin, end):

@@ -16,35 +16,46 @@ class Error(Exception):
 class HansenError(Error):
     pass
 
+
 class HistogramError(Error):
     pass
+
 
 class LandcoverError(Error):
     pass
 
+
 class LandsatTilesError(Error):
     pass
+
 
 class SentinelTilesError(Error):
     pass
 
+
 class HighResTilesError(Error):
     pass
+
 
 class RecentTilesError(Error):
     pass
 
+
 class FormaError(Error):
     pass
+
 
 class WHRCBiomassError(Error):
     pass
 
+
 class BiomassLossError(Error):
     pass
 
+
 class soilCarbonError(Error):
     pass
+
 
 class GeostoreNotFound(Error):
     pass

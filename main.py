@@ -1,6 +1,7 @@
 """Main Script"""
 
 import os
+from dotenv import load_dotenv
 from gfwanalysis import app
 
 

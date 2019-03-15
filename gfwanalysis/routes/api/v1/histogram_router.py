@@ -1,15 +1,14 @@
 """API ROUTER"""
 
 import logging
+from flask import jsonify, Blueprint
 
-from flask import jsonify, request, Blueprint
+from gfwanalysis.middleware import get_geo_by_hash
 from gfwanalysis.routes.api import error, set_params, get_layer, return_pixel_count
-from gfwanalysis.services.analysis.histogram_service import HistogramService
-from gfwanalysis.validators import validate_geostore
-from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
-    get_geo_by_national, get_geo_by_subnational
 from gfwanalysis.serializers import serialize_histogram
+from gfwanalysis.services.analysis.histogram_service import HistogramService
 from gfwanalysis.utils.landcover_lookup import get_landcover_types
+from gfwanalysis.validators import validate_geostore
 
 histogram_endpoints_v1 = Blueprint('histogram_endpoints_v1', __name__)
 
@@ -26,7 +25,7 @@ def analyze(geojson, area_ha):
     if not layer:
         logging.debug(get_landcover_types())
         return error(status=400, detail='Layer type must ' \
-                    'be one of {}'.format(', '.join(get_landcover_types())))
+                                        'be one of {}'.format(', '.join(get_landcover_types())))
 
     try:
         data = HistogramService.analyze(
@@ -37,7 +36,7 @@ def analyze(geojson, area_ha):
             layer=layer,
             count_pixels=count_pixels)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
