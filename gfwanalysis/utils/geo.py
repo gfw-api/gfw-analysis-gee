@@ -210,6 +210,8 @@ def admin_1_simplify(iso, admin1):
         admin1 = int(admin1)
     except:
         admin1 = -999
-    simplification = admin_1_dic.get(iso, None).get(admin1, None)
-    #logging.info(f'[admin_1_simplify]: {simplification}')
+    simplification = None
+    if admin_1_dic.get(iso):
+        simplification = admin_1_dic.get(iso, None).get(admin1, None)
+        logging.info(f'[admin_1_simplify]: {simplification}')
     return simplification
