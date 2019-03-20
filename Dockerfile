@@ -22,12 +22,16 @@ RUN cd /opt/$NAME && virtualenv venv && source venv/bin/activate
 COPY requirements.txt /opt/$NAME/requirements.txt
 RUN cd /opt/$NAME && pip install -r requirements.txt
 
+
 COPY entrypoint.sh /opt/$NAME/entrypoint.sh
 COPY main.py /opt/$NAME/main.py
 COPY gunicorn.py /opt/$NAME/gunicorn.py
 
 # Copy the application folder inside the container
 WORKDIR /opt/$NAME
+
+#add the folder containing the classifier models
+ADD gfwanalysis/classifier_models/classifier.pkl /opt/$NAME/classifier.pkl
 
 COPY ./$NAME /opt/$NAME/$NAME
 COPY ./microservice /opt/$NAME/microservice
@@ -40,3 +44,4 @@ USER $USER
 
 # Launch script
 ENTRYPOINT ["./entrypoint.sh"]
+
