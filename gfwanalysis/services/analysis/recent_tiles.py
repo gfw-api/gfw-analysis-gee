@@ -45,7 +45,7 @@ class RecentTiles(object):
 
         # Check for dupes
         seen = set()
-        uniq = [b for b in bands if b not in seen and not seen.add(b)]  
+        uniq = [b for b in bands if b not in seen and not seen.add(b)]
 
         #Convert if Landsat
         if 'LANDSAT' in instrument:
@@ -115,10 +115,10 @@ class RecentTiles(object):
 
         if 'COPERNICUS' in col_data.get('source'):
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
-        elif 'LANDSAT' in col_data.get('source'): 
+        elif 'LANDSAT' in col_data.get('source'):
             tmp_im = ee.Image(col_data['source'])
             im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands)
-        
+
         m_id = im.getMapId()
 
         base_url = 'https://earthengine.googleapis.com'
@@ -138,8 +138,8 @@ class RecentTiles(object):
 
         if 'COPERNICUS' in col_data.get('source'):
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
-            
-        elif 'LANDSAT' in col_data.get('source'): 
+
+        elif 'LANDSAT' in col_data.get('source'):
             im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=0, max=0.2, gamma=[1.3, 1.3, 1.3], opacity=1.0)
 
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
@@ -152,51 +152,46 @@ class RecentTiles(object):
     def recent_data(lat, lon, start, end):
 
         logging.info("[RECENT>DATA] function initiated")
-        
+
         try:
-        
+
             point = ee.Geometry.Point(float(lat), float(lon))
             S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point)
             L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(start,end).filterBounds(point)
 
             collection = S2.toList(52).cat(L8.toList(52)).getInfo()
             data = []
-
             for c in collection:
-                instrument = c.get('properties').get('SPACECRAFT_NAME') and c.get('properties').get('SPACECRAFT_NAME')
 
-                if instrument == 'Sentinel-2A' or instrument ==  'Sentinel-2B':
-                    
+                sentinel_image = c.get('properties').get('SPACECRAFT_NAME', None)
+                landsat_image = c.get('properties').get('SPACECRAFT_ID', None)
+                if sentinel_image:
+                     
                     date_info = c['id'].split('COPERNICUS/S2/')[1]
-                    date_time = ''.join([date_info[0:4],'-',date_info[4:6],'-',date_info[6:8],' ',
-                                date_info[9:11],':',date_info[11:13],':',date_info[13:15],"Z"])
-
+                    date_time = f"{date_info[0:4]}-{date_info[4:6]}-{date_info[6:8]} {date_info[9:11]}:{date_info[11:13]}:{date_info[13:15]}Z"
                     bbox = c['properties']['system:footprint']['coordinates']
-
                     tmp_ = {
-
-                        'source': c['id'],
-                        'cloud_score': c['properties']['CLOUDY_PIXEL_PERCENTAGE'],
-                        'bbox': {
-                                "geometry": {
-                                "type": "Polygon",
-                                "coordinates": bbox
-                                }
-                            },
-                        'spacecraft': c['properties']['SPACECRAFT_NAME'],
-                        'product_id': c['properties']['PRODUCT_ID'],
-                        'date': date_time
-
-                    }
+                                'source': c['id'],
+                                'cloud_score': c['properties']['CLOUDY_PIXEL_PERCENTAGE'],
+                                'bbox': {
+                                        "geometry": {
+                                        "type": "Polygon",
+                                        "coordinates": bbox
+                                        }
+                                    },
+                                'spacecraft': c['properties']['SPACECRAFT_NAME'],
+                                'product_id': c['properties']['PRODUCT_ID'],
+                                'date': date_time
+                            }
                     data.append(tmp_)
+                    logging.info(f"[RECENT>TILE] [Sentinel]:{sentinel_image} {date_time}")
 
-                elif instrument == 'LANDSAT_8':
+                elif landsat_image:
+
                     date_info = c['id'].split('LANDSAT/LC08/C01/T1_RT_TOA/LC08_')[1].split('_')[1]
                     time_info = c['properties']['SCENE_CENTER_TIME'].split('.')[0]
-                    date_time = ''.join([date_info[0:4],'-',date_info[4:6],'-',date_info[6:8],' ', time_info, 'Z' ])
-
+                    date_time = f"{date_info[0:4]}-{date_info[4:6]}-{date_info[6:8]} {time_info}Z"
                     bbox = c['properties']['system:footprint']['coordinates']
-
                     tmp_ = {
 
                         'source': c['id'],
@@ -213,7 +208,6 @@ class RecentTiles(object):
 
                     }
                     data.append(tmp_)
-
             logging.info('[RECENT>DATA] sorting by cloud cover & date of acquisition')
             sorted_data = sorted(data, key=lambda k: (-k.get('cloud_score',100), k.get('date')), reverse=True)
 
