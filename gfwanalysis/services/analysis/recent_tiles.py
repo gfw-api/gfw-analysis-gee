@@ -162,9 +162,11 @@ class RecentTiles(object):
             collection = S2.toList(52).cat(L8.toList(52)).getInfo()
             data = []
             for c in collection:
+
                 sentinel_image = c.get('properties').get('SPACECRAFT_NAME', None)
                 landsat_image = c.get('properties').get('SPACECRAFT_ID', None)
                 if sentinel_image:
+                     
                     date_info = c['id'].split('COPERNICUS/S2/')[1]
                     date_time = f"{date_info[0:4]}-{date_info[4:6]}-{date_info[6:8]} {date_info[9:11]}:{date_info[11:13]}:{date_info[13:15]}Z"
                     bbox = c['properties']['system:footprint']['coordinates']
@@ -185,6 +187,7 @@ class RecentTiles(object):
                     logging.info(f"[RECENT>TILE] [Sentinel]:{sentinel_image} {date_time}")
 
                 elif landsat_image:
+
                     date_info = c['id'].split('LANDSAT/LC08/C01/T1_RT_TOA/LC08_')[1].split('_')[1]
                     time_info = c['properties']['SCENE_CENTER_TIME'].split('.')[0]
                     date_time = f"{date_info[0:4]}-{date_info[4:6]}-{date_info[6:8]} {time_info}Z"
