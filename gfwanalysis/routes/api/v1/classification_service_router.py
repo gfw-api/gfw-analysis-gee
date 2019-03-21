@@ -29,6 +29,6 @@ def analyze(img_id):
 @recent_tiles_classifier_v1.route('/', strict_slashes=False, methods=['GET'])
 @get_classification_params
 def trigger_analysis(img_id):
-    """Classify an image by ID"""
+    """Classify an image by ID depending on Satellite type"""
     logging.info('[ROUTER]: Getting url for tiles for Sentinel')
     return analyze(img_id=img_id)

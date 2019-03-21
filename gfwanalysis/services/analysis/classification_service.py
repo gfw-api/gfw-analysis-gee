@@ -32,9 +32,9 @@ class ClassificationService(object):
             image = get_image(img_id)
             # Apply classifer to specified L8 or S2 image
             #logging.info(f"[classification_service]: classified version = {classified_image}")
-            
+            classified_image = classify_image(image, model)
             # Generate tile url and return in d['url'] object
-            url = get_url_classify_image(image, model) #(classified_image)
+            url = get_image_url(classified_image)
             logging.info(f'[classification_service]: passed main logic url={url}')
             d = {}
             d['url'] = url
@@ -44,14 +44,17 @@ class ClassificationService(object):
             raise ClassificationError(message='Error in Classification Analysis')
 
 
-def get_url_classify_image(image, model):
+def get_image_url(classified_image):
     logging.info(f'[classification_service]: attempting to get url')
     viz = {'min': 0, 'max': 3, 'palette': ['yellow', 'blue', 'grey', 'green']}
-    d = image.select("B4","B3","B2").divide(10000).classify(model).getMapId(viz)
+    d = classified_image.getMapId(viz)
     logging.info(f'[classification_service]: d object = {d}')
     base_url = 'https://earthengine.googleapis.com'
     url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
     return url
+
+def classify_image(image, model):
+    return image.select("B4","B3","B2").divide(100*100).classify(model)
 
 def create_model():
     logging.info(f'[classification_service]: attempting to create model')
@@ -75,8 +78,16 @@ def get_model_from_local():
     try:
         # find a way of checking if model is in local memory (probably using OS?)
         # use OS to test if model is saved as a local file
-        model = pickle.load(open("/opt/gfwanalysis/classifier.pkl", 'rb'))       #hardcoded for now
-        return model
+        simple_bands = ['B2', 'B3', 'B4']
+        labeled_bands = simple_bands
+        labeled_bands.append('cropland')
+        trainingPoints = ee.FeatureCollection('projects/wri-datalab/trainingPoints')
+        classifier_args = {'features': trainingPoints, 'classProperty':'cropland',\
+                                     'inputProperties':labeled_bands}
+        classifier = ee.Classifier.randomForest(15).train(**classifier_args)
+        return classifier
+        #model = pickle.load(open("/opt/gfwanalysis/classifier.pkl", 'rb'))      
+        #return model
     except:
         return None
 
