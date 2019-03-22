@@ -18,6 +18,16 @@ def serialize_umd(analysis, type):
         }
     }
 
+def serialize_classifier_output(analysis, type):
+    """."""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'url': analysis.get('url', None)
+        }
+    }
+
 
 def serialize_table_umd(analysis, type):
     """ Convert the aggregate_values=false Hansen response into a table"""
