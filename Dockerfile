@@ -30,9 +30,6 @@ COPY gunicorn.py /opt/$NAME/gunicorn.py
 # Copy the application folder inside the container
 WORKDIR /opt/$NAME
 
-#add the folder containing the classifier models
-ADD gfwanalysis/classifier_models/classifier.pkl /opt/$NAME/classifier.pkl
-
 COPY ./$NAME /opt/$NAME/$NAME
 COPY ./microservice /opt/$NAME/microservice
 COPY ./tests /opt/$NAME/tests

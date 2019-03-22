@@ -1,11 +1,10 @@
 """CLASSIFICATION SERVICE"""
 
 import logging
-
 import ee
 from gfwanalysis.errors import ClassificationError
 from gfwanalysis.config import SETTINGS
-import pickle
+
 
 class ClassificationService(object):
 
@@ -23,9 +22,6 @@ class ClassificationService(object):
                 instrument = "landsat"
             # If one exists restore it from local storage
             model = create_model(instrument)
-            if(model == None):
-                # If there's an error when creating, get default one from local storage
-                model = get_model_from_local() 
             # grab the image specified by the ID
             image = get_image(img_id)
             # Apply classifer to specified L8 or S2 image
@@ -80,12 +76,6 @@ def get_image(img_id):
     except:
         return None
 
-def get_model_from_local():
-    try:
-        model = pickle.load(open("/opt/gfwanalysis/classifier.pkl", 'rb'))      
-        return model
-    except:
-        return None
 
 def get_model_from_bucket():
     logging.info(f'[classification_service]: attempting to get model from bucket')

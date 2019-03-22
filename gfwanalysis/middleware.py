@@ -39,7 +39,7 @@ def get_classification_params(func):
         if request.method == 'GET':
             img_id = request.args.get('img_id')
             if not img_id:
-                return error(status=400, detail='An image ID is needed (Landsat or Sentinel)')
+                return error(status=400, detail='An img_id string is needed (from Landsat-8 or Sentinel-2 collections).')
         kwargs["img_id"] = img_id
         return func(*args, **kwargs)
     return wrapper
