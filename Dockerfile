@@ -1,5 +1,5 @@
-FROM python:3.6-alpine
-MAINTAINER Sergio Gordillo sergio.gordillo@vizzuality.com
+FROM python:3.6.8-alpine
+MAINTAINER Vizzuality info@vizzuality.com
 
 ENV NAME gfwanalysis
 ENV USER gfwanalysis

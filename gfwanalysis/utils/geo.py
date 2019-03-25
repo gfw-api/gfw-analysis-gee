@@ -1,6 +1,7 @@
 import ee
 import logging
 
+
 def get_region(geom):
     """Take a valid geojson object, iterate over all features in that object.
         Build up a list of EE Polygons, and finally return an EE Feature
