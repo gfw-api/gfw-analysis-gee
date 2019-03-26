@@ -22,6 +22,7 @@ RUN cd /opt/$NAME && virtualenv venv && source venv/bin/activate
 COPY requirements.txt /opt/$NAME/requirements.txt
 RUN cd /opt/$NAME && pip install -r requirements.txt
 
+
 COPY entrypoint.sh /opt/$NAME/entrypoint.sh
 COPY main.py /opt/$NAME/main.py
 COPY gunicorn.py /opt/$NAME/gunicorn.py
@@ -40,3 +41,4 @@ USER $USER
 
 # Launch script
 ENTRYPOINT ["./entrypoint.sh"]
+

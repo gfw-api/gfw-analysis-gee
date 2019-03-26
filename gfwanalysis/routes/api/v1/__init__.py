@@ -9,3 +9,5 @@ from gfwanalysis.routes.api.v1.recent_router import recent_tiles_endpoints_v1
 from gfwanalysis.routes.api.v1.sentinel_router import sentinel_tiles_endpoints_v1
 from gfwanalysis.routes.api.v1.soil_carbon_router import soil_carbon_endpoints_v1
 from gfwanalysis.routes.api.v1.whrc_biomass_router import whrc_biomass_endpoints_v1
+from gfwanalysis.routes.api.v1.soil_carbon_router import soil_carbon_endpoints_v1
+from gfwanalysis.routes.api.v1.classification_service_router import recent_tiles_classifier_v1

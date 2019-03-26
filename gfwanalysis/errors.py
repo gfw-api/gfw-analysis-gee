@@ -59,3 +59,6 @@ class soilCarbonError(Error):
 
 class GeostoreNotFound(Error):
     pass
+
+class ClassificationError(Error):
+    pass
