@@ -8,7 +8,8 @@ case "$1" in
         exec python main.py
         ;;
     test)
-        echo "Test (not yet)"
+        echo "Running tests"
+        exec pytest
         ;;
     start)
         echo "Running Start"
