@@ -98,6 +98,14 @@
 			}
 		},
 		{
+			"path": "/v1/mangrove-biomass",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass"
+			}
+		},
+		{
 			"path": "/v1/soil-carbon",
 			"method": "GET",
 			"redirect": {

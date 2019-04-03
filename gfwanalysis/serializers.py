@@ -28,7 +28,6 @@ def serialize_classifier_output(analysis, type):
         }
     }
 
-
 def serialize_table_umd(analysis, type):
     """ Convert the aggregate_values=false Hansen response into a table"""
     rows = []
@@ -46,6 +45,17 @@ def serialize_table_umd(analysis, type):
         'attributes': rows
     }
 
+def serialize_mangrove_biomass(analysis, type):
+    """."""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'totalBiomass': analysis.get('biomass', None).get('b1', None),
+            'biomassDensity': int(analysis.get('biomass_density')),
+            'areaHa': analysis.get('area_ha', None)
+        }
+    }
 
 def serialize_whrc_biomass(analysis, type):
     """."""
