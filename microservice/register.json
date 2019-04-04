@@ -106,6 +106,54 @@
 			}
 		},
 		{
+			"path": "/v1/mangrove-biomass/use/:name/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/admin/:iso",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/admin/:iso"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/admin/:iso/:admin",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/admin/:iso/:admin"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/admin/:iso/:admin/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/admin/:iso/:admin/:admin2"
+			}
+		},
+		{
 			"path": "/v1/soil-carbon",
 			"method": "GET",
 			"redirect": {
