@@ -46,6 +46,9 @@ class BiomassLossError(Error):
 class MangroveBiomassError(Error):
     pass
 
+class PopulationError(Error):
+    pass
+
 class soilCarbonError(Error):
     pass
 

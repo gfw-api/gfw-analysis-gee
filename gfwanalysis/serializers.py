@@ -45,13 +45,25 @@ def serialize_table_umd(analysis, type):
         'attributes': rows
     }
 
+def serialize_population(analysis, type):
+    """."""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'totalPopulation': analysis.get('population', None).get('population-density', None),
+            'populationDensity': int(analysis.get('population_density')),
+            'areaHa': analysis.get('area_ha', None)
+        }
+    }
+
 def serialize_mangrove_biomass(analysis, type):
     """."""
     return {
         'id': None,
         'type': type,
         'attributes': {
-            'totalBiomass': analysis.get('biomass', None).get('b1', None),
+            'total': analysis.get('biomass', None).get('b1', None),
             'biomassDensity': int(analysis.get('biomass_density')),
             'areaHa': analysis.get('area_ha', None)
         }

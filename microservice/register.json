@@ -154,6 +154,62 @@
 			}
 		},
 		{
+			"path": "/v1/population",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population"
+			}
+		},
+		{
+			"path": "/v1/population/use/:name/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/population/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v1/population",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population"
+			}
+		},
+		{
+			"path": "/v1/population/admin/:iso",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/admin/:iso"
+			}
+		},
+		{
+			"path": "/v1/population/admin/:iso/:admin",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/admin/:iso/:admin"
+			}
+		},
+		{
+			"path": "/v1/population/admin/:iso/:admin/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/admin/:iso/:admin/:admin2"
+			}
+		},
+		{
 			"path": "/v1/soil-carbon",
 			"method": "GET",
 			"redirect": {
