@@ -40,7 +40,13 @@ class FormaError(Error):
 class WHRCBiomassError(Error):
     pass
 
-class BiomassLossError(Error):
+class BiomassLossError(Error):    
+    pass
+
+class MangroveBiomassError(Error):
+    pass
+
+class PopulationError(Error):
     pass
 
 class soilCarbonError(Error):
