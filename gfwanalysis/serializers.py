@@ -52,7 +52,7 @@ def serialize_population(analysis, type):
         'type': type,
         'attributes': {
             'totalPopulation': analysis.get('population', None).get('population-density', None),
-            'populationDensity': int(analysis.get('population_density')),
+            'populationDensity': float(f"{analysis.get('population_density'):3.2f}"),
             'areaHa': analysis.get('area_ha', None)
         }
     }

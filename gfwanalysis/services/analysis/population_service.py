@@ -13,7 +13,7 @@ class PopulationService(object):
     @staticmethod
     def analyze(geojson):
         """For a given geometry and population density data
-        return a dictionary of total t/ha.
+        return a dictionary of total people in a region.
         """
         try:
             d = {}
@@ -24,8 +24,8 @@ class PopulationService(object):
                            'geometry': region,
                            'bestEffort': True,
                            'scale': 30}
-            # Convert m2 to ha
-            scale_factor = ee.Number(1e4)
+            # Convert m2 to km2
+            scale_factor = ee.Number(1e6)
             # The estimated number of persons per pixel
             population = ee.Image(population_asset).multiply(ee.Image.pixelArea().divide(scale_factor))
             # Total population value within region
