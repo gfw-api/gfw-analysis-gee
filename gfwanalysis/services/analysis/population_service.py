@@ -24,8 +24,8 @@ class PopulationService(object):
                            'geometry': region,
                            'bestEffort': True,
                            'scale': 30}
-            # Convert m2 to km2
-            scale_factor = ee.Number(1e6)               
+            # Convert m2 to ha
+            scale_factor = ee.Number(1e4)
             # The estimated number of persons per pixel
             population = ee.Image(population_asset).multiply(ee.Image.pixelArea().divide(scale_factor))
             # Total population value within region
