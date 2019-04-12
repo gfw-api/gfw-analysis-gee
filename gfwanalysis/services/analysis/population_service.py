@@ -13,7 +13,7 @@ class PopulationService(object):
     @staticmethod
     def analyze(geojson):
         """For a given geometry and population density data
-        return a dictionary of total t/ha.
+        return a dictionary of total people in a region.
         """
         try:
             d = {}
