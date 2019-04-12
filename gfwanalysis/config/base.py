@@ -23,7 +23,7 @@ SETTINGS = {
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
             'ifl2000': 'projects/wri-datalab/gfw-api/ifl-world',
             'mangroves': 'LANDSAT/MANGROVE_FORESTS/2000',
-            'population': 'CIESIN/GPWv4/population-density/2015',
+            'population': 'JRC/GHSL/P2016/POP_GPW_GLOBE_V1/2015',
             'mangrove_biomass': 'projects/wri-datalab/mangrove_aboveground_biomass_density_2005',
             'soils_30m':'projects/wri-datalab/Soil_Organic_Carbon_30m',
             'primary-forest': 'projects/wri-datalab/gfw-api/primary-forest',

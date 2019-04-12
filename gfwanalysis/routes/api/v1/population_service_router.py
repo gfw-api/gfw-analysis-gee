@@ -29,7 +29,7 @@ def analyze(geojson, area_ha):
         logging.error(f'[ROUTER]: {str(e)}')
         return error(status=500, detail='Generic Error')
     data['area_ha'] = area_ha
-    data['population_density'] = data['population'].get('population-density') / area_ha
+    data['population_density'] = data['population'].get('population_count') / area_ha
     return jsonify(data=serialize_population(data, 'population')), 200
 
 

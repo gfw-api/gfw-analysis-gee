@@ -51,7 +51,7 @@ def serialize_population(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'totalPopulation': analysis.get('population', None).get('population-density', None),
+            'totalPopulation': analysis.get('population', None).get('population_count', None),
             'populationDensity': int(analysis.get('population_density')),
             'areaHa': analysis.get('area_ha', None)
         }

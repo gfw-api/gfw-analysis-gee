@@ -17,17 +17,18 @@ class PopulationService(object):
         """
         try:
             d = {}
-            # The estimated number of persons per square kilometer
+            # The number of people per cell
             population_asset = SETTINGS.get('gee').get('assets').get('population')
             region = get_region(geojson)
             reduce_args = {'reducer': ee.Reducer.sum().unweighted(),
                            'geometry': region,
                            'bestEffort': True,
                            'scale': 30}
-            # Convert m2 to km2
-            scale_factor = ee.Number(1e6)               
-            # The estimated number of persons per pixel
-            population = ee.Image(population_asset).multiply(ee.Image.pixelArea().divide(scale_factor))
+            # Convert m2 to ha
+            scale_factor = ee.Number(1e4)               
+            # The number of persons per cell
+            population = ee.Image(population_asset)
+            #.multiply(ee.Image.pixelArea().divide(scale_factor))
             # Total population value within region
             population_value = population.reduceRegion(**reduce_args).getInfo()
             d['population'] = population_value
