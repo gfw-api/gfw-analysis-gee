@@ -2,6 +2,14 @@
 	"name": "gfw umd",
 	"endpoints": [
 		{
+			"path": "/v1/recent-tiles-classifier",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/recent-tiles-classifier"
+			}
+		},
+		{
 			"path": "/v1/umd-loss-gain",
 			"method": "GET",
 			"redirect": {
@@ -87,6 +95,118 @@
 			"redirect": {
 				"method": "GET",
 				"path": "/api/v1/whrc-biomass/admin/:iso/:admin/:admin2"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/use/:name/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/admin/:iso",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/admin/:iso"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/admin/:iso/:admin",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/admin/:iso/:admin"
+			}
+		},
+		{
+			"path": "/v1/mangrove-biomass/admin/:iso/:admin/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/mangrove-biomass/admin/:iso/:admin/:admin2"
+			}
+		},
+		{
+			"path": "/v1/population",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population"
+			}
+		},
+		{
+			"path": "/v1/population/use/:name/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v1/population/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v1/population",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population"
+			}
+		},
+		{
+			"path": "/v1/population/admin/:iso",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/admin/:iso"
+			}
+		},
+		{
+			"path": "/v1/population/admin/:iso/:admin",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/admin/:iso/:admin"
+			}
+		},
+		{
+			"path": "/v1/population/admin/:iso/:admin/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/population/admin/:iso/:admin/:admin2"
 			}
 		},
 		{
