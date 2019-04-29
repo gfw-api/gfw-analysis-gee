@@ -15,7 +15,7 @@ RUN apk add --no-cache geos-dev
 RUN addgroup $USER && adduser -s /bin/bash -D -G $USER $USER
 
 RUN easy_install pip && pip install --upgrade pip
-RUN pip install virtualenv gunicorn gevent
+RUN pip install virtualenv gunicorn gevent pytest-cov
 
 RUN mkdir -p /opt/$NAME
 RUN cd /opt/$NAME && virtualenv venv && source venv/bin/activate
@@ -32,7 +32,7 @@ WORKDIR /opt/$NAME
 
 COPY ./$NAME /opt/$NAME/$NAME
 COPY ./microservice /opt/$NAME/microservice
-COPY ./tests /opt/$NAME/tests
+#COPY ./tests /opt/$NAME/tests
 RUN chown $USER:$USER /opt/$NAME
 
 # Tell Docker we are going to use this ports

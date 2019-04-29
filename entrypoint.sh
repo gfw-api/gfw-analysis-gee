@@ -9,7 +9,8 @@ case "$1" in
         ;;
     test)
         echo "Running tests"
-        exec pytest -q tests/*
+        echo -e "$EE_PRIVATE_KEY" | base64 -d > privatekey.pem
+        exec pytest --cov=gfwanalysis gfwanalysis/tests/
         ;;
     start)
         echo "Running Start"
