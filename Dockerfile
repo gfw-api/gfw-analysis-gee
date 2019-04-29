@@ -15,7 +15,7 @@ RUN apk add --no-cache geos-dev
 RUN addgroup $USER && adduser -s /bin/bash -D -G $USER $USER
 
 RUN easy_install pip && pip install --upgrade pip
-RUN pip install virtualenv gunicorn gevent pytest-cov
+RUN pip install virtualenv gunicorn gevent
 
 RUN mkdir -p /opt/$NAME
 RUN cd /opt/$NAME && virtualenv venv && source venv/bin/activate

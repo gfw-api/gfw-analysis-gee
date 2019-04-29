@@ -9,3 +9,4 @@ pytest
 oauth2client
 python-dotenv==0.10.1
 google-cloud==0.34.0
+pytest-cov
