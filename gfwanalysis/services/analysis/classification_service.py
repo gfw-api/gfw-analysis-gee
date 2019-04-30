@@ -20,7 +20,7 @@ class ClassificationService(object):
                 instrument = "sentinel"
             elif (img_id.startswith("LANDSAT")):
                 instrument = "landsat"
-            logging.info(f'instrument={instrument}')
+            #logging.info(f'instrument={instrument}')
             # If one exists restore it from local storage
             model = create_model(instrument)
             # grab the image specified by the ID
@@ -39,10 +39,10 @@ class ClassificationService(object):
 
 
 def get_image_url(classified_image):
-    logging.info(f'[classification_service]: attempting to get url')
+    #logging.info(f'[classification_service]: attempting to get url')
     viz = {'min': 0, 'max': 5, 'palette': ['yellow', 'blue', 'grey', 'green', 'orange', 'darkgreen'], 'format':'png'}
     d = classified_image.getMapId(viz)
-    logging.info(f'[classification_service]: d object = {d}')
+    #logging.info(f'[classification_service]: d object = {d}')
     base_url = 'https://earthengine.googleapis.com'
     url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
     return url
