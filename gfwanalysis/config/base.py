@@ -27,6 +27,7 @@ SETTINGS = {
             'mangrove_biomass': 'projects/wri-datalab/mangrove_aboveground_biomass_density_2005',
             'soils_30m':'projects/wri-datalab/Soil_Organic_Carbon_30m',
             'primary-forest': 'projects/wri-datalab/gfw-api/primary-forest',
+            'gfw-landcover-2000': 'projects/wri-datalab/ESACCI-LC-IPCC-img/LC_2000',
             'gfw-landcover-2015': 'projects/wri-datalab/gfw-api/globcover-2015-reclassified',
             'idn-landcover': 'projects/wri-datalab/gfw-api/idn-landcover',
             'sea-landcover': 'projects/wri-datalab/gfw-api/sea-landcover',
