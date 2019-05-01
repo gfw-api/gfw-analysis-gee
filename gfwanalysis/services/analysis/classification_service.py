@@ -60,9 +60,11 @@ def create_model(instrument):
         labeled_bands = bands
         labeled_bands.append('cropland')
         if (instrument == 'sentinel'):
-            trainingPoints = ee.FeatureCollection('projects/wri-datalab/trainingPoints')
+            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/sentinel/sent_glob30Jaxa35k').\
+                merge(ee.FeatureCollection('users/nicolaerigheriu/sentinel/sent_usCan_glob30Jaxa5k'))
         elif (instrument == 'landsat'):
-            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/landsat/landsat_glob30_jaxa35k_toa')
+            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/landsat/landsat_glob30_jaxa35k_toa').\
+                merge(ee.FeatureCollection('landsat_usCan_glob30Jaxa5ktoa'))
         classifier_args = {'features': trainingPoints, 'classProperty':'cropland',\
                                     'inputProperties':labeled_bands}
         randomForest_args = {'numberOfTrees':17}
