@@ -64,7 +64,7 @@ def create_model(instrument):
                 merge(ee.FeatureCollection('users/nicolaerigheriu/sentinel/sent_usCan_glob30Jaxa5k'))
         elif (instrument == 'landsat'):
             trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/landsat/landsat_glob30_jaxa35k_toa').\
-                merge(ee.FeatureCollection('landsat_usCan_glob30Jaxa5ktoa'))
+                merge(ee.FeatureCollection('users/nicolaerigheriu/landsat/landsat_usCan_glob30Jaxa5ktoa'))
         classifier_args = {'features': trainingPoints, 'classProperty':'cropland',\
                                     'inputProperties':labeled_bands}
         randomForest_args = {'numberOfTrees':17}
