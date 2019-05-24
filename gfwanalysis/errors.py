@@ -34,6 +34,9 @@ class HighResTilesError(Error):
 class RecentTilesError(Error):
     pass
 
+class CompositeError(Error):
+    pass    
+
 class FormaError(Error):
     pass
 

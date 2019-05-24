@@ -10,6 +10,14 @@
 			}
 		},
 		{
+			"path": "/v1/composite-service",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/composite-service"
+			}
+		},
+		{
 			"path": "/v1/umd-loss-gain",
 			"method": "GET",
 			"redirect": {
