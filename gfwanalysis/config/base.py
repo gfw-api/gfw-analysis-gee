@@ -14,10 +14,11 @@ SETTINGS = {
     'gee': {
         'service_account': '390573081381-lm51tabsc8q8b33ik497hc66qcmbj11d@developer.gserviceaccount.com',
         'privatekey_file': BASE_DIR + '/privatekey.pem',
-        'assets': { 
+        'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_18',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
             'hansen_2017_v1_5':'UMD/hansen/global_forest_change_2017_v1_5',
+            'geodescriber':'users/benlaken/geodesriber-asset',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
