@@ -19,7 +19,7 @@ from gfwanalysis.routes.api.v1 import hansen_endpoints_v1, forma250_endpoints_v1
     landcover_endpoints_v1, sentinel_tiles_endpoints_v1, highres_tiles_endpoints_v1, \
     recent_tiles_endpoints_v1, whrc_biomass_endpoints_v1, mangrove_biomass_endpoints_v1, \
     population_endpoints_v1, soil_carbon_endpoints_v1, \
-    recent_tiles_classifier_v1
+    recent_tiles_classifier_v1, geodescriber_endpoints_v1
 from gfwanalysis.routes.api.v2 import biomass_loss_endpoints_v2, landsat_tiles_endpoints_v2
 from gfwanalysis.utils.files import load_config_json
 import CTRegisterMicroserviceFlask
@@ -61,7 +61,7 @@ app.register_blueprint(population_endpoints_v1, url_prefix='/api/v1/population')
 app.register_blueprint(whrc_biomass_endpoints_v1, url_prefix='/api/v1/whrc-biomass')
 app.register_blueprint(soil_carbon_endpoints_v1, url_prefix='/api/v1/soil-carbon')
 app.register_blueprint(recent_tiles_classifier_v1, url_prefix='/api/v1/recent-tiles-classifier')
-
+app.register_blueprint(geodescriber_endpoints_v1, url_prefix="/api/v1/geodescriber")
 
 # CT
 info = load_config_json('register')
