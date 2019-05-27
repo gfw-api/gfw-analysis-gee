@@ -5,6 +5,8 @@ import asyncio
 import requests
 import functools as funct
 
+
+import LMIPy
 import ee
 from gfwanalysis.errors import CompositeError
 from gfwanalysis.config import SETTINGS
@@ -13,19 +15,21 @@ class CompositeService(object):
     """Gets a geostore geometry as input and returns a composite, cloud-free image within the geometry bounds.
     Note that the URLs from Earth Engine expire every 3 days.
     """
-    visParamsTOA = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
+    @staticmethod
     def get_formatted_date(date_range):
         if (date_range == ""):
-            date_range = get_last_3months()
+            date_range = CompositeService.get_last_3months()
         else:                           
             date_range = date_range.split(',')
         return date_range
 
+    @staticmethod
     def get_last_3months():
         date_weeks_ago = datetime.now() - timedelta(weeks=21)
         date_weeks_ago = date_weeks_ago.strftime("%Y-%m-%d")
         return [date_weeks_ago, datetime.today().strftime('%Y-%m-%d')]
 
+    @staticmethod
     def get_zonal_stats(image, classified=False):
         if(not classified):   #image classification functionality not implemented yet
             pass
@@ -37,12 +41,16 @@ class CompositeService(object):
         'scale':30, 'maxPixels':1e13, 'bestEffort':True}
         stats = image.reduceRegion(**reduce_args)
         return stats
+
+     
     def get_composite_image(geostore_id, instrument='landsat', date_range="", thumb_size=[500,500],\
-                            band_viz=visParamsTOA, classify=False, get_dem=False):
+                            band_viz=None, classify=False, get_dem=False):
         #date range inputted as “YYYY-MM-DD, YYYY-MM-DD”
+        if not band_vizz:
+            band_vizz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
         try:
             geostore_polyg = LMIPy.Geometry(id_hash=geostore_id)
-            region = get_region(geostore_polyg.attributes.get('geojson'))[0]
+            region = get_polygon_region(geostore_polyg.attributes.get('geojson'))[0]
             date_range = get_formatted_date(date_range)
             if(instrument == 'landsat'):
                 sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', 3))
@@ -77,20 +85,22 @@ class CompositeService(object):
         base_url = 'https://earthengine.googleapis.com'
         url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
         return url
-    def get_region(geom):
-        """Take a valid geojson object, iterate over all features in that object.
-            Build up a list of EE Polygons, and finally return an EE Feature
-            collection. New as of 19th Sep 2017 (needed to fix a bug where the old
-            function ignored multipolys)
-        """
-        polygons = []
-        for feature in geom.get('features'):
-            shape_type = feature.get('geometry').get('type')
-            coordinates = feature.get('geometry').get('coordinates')
-            if shape_type == 'MultiPolygon':
-                polygons.append(ee.Geometry.MultiPolygon(coordinates))
-            elif shape_type == 'Polygon':
-                polygons.append(ee.Geometry.Polygon(coordinates))
-            else:
-                pass
-        return polygons
+
+
+
+def get_polygon_region(geom):
+    """Take a valid geojson object, iterate over all features in that object.
+        Build up a list of EE Polygons. New as of 19th Sep 2017 (needed to fix a bug where the old
+        function ignored multipolys)
+    """
+    polygons = []
+    for feature in geom.get('features'):
+        shape_type = feature.get('geometry').get('type')
+        coordinates = feature.get('geometry').get('coordinates')
+        if shape_type == 'MultiPolygon':
+            polygons.append(ee.Geometry.MultiPolygon(coordinates))
+        elif shape_type == 'Polygon':
+            polygons.append(ee.Geometry.Polygon(coordinates))
+        else:
+            pass
+    return polygons

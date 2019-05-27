@@ -44,6 +44,18 @@ def get_classification_params(func):
         return func(*args, **kwargs)
     return wrapper
 
+def get_composite_params(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        logging.info('getting geostore_id')
+        if request.method == 'GET':
+            geostore_id = request.args.get('geostore_id')
+            if not geostore_id:
+                return error(status=400, detail='A geostore_id string is needed')
+        kwargs["geostore_id"] = geostore_id
+        return func(*args, **kwargs)
+    return wrapper
+
 
 def get_sentinel_params(func):
     @wraps(func)

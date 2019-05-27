@@ -1,4 +1,4 @@
-"""Router for classifications"""
+"""Router for compositing"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -11,7 +11,7 @@ from gfwanalysis.routes.api import error
 from gfwanalysis.services.analysis.composite_service import CompositeService
 from gfwanalysis.errors import CompositeError
 from gfwanalysis.serializers import serialize_composite_output
-from gfwanalysis.middleware import get_classification_params
+from gfwanalysis.middleware import get_composite_params
 
 composite_service_v1 = Blueprint('composite_service_v1', __name__) 
 
@@ -28,7 +28,7 @@ def composite(geostore_id):
 
 
 @composite_service_v1.route('/', strict_slashes=False, methods=['GET'])
-@get_classification_params
+@get_composite_params
 def trigger_compositing(geostore_id):
     """Get composite image for given geostore"""
     logging.info('geostore_id: ' + geostore_id)
