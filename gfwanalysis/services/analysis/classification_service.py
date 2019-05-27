@@ -20,12 +20,12 @@ class ClassificationService(object):
                 instrument = "sentinel"
             elif (img_id.startswith("LANDSAT")):
                 instrument = "landsat"
+            #logging.info(f'instrument={instrument}')
             # If one exists restore it from local storage
             model = create_model(instrument)
             # grab the image specified by the ID
-            image = get_image(img_id)
+            image = get_image(img_id, instrument)
             # Apply classifer to specified L8 or S2 image
-            #logging.info(f"[classification_service]: classified version = {classified_image}")
             classified_image = classify_image(image, model, instrument)
             # Generate tile url and return in d['url'] object
             url = get_image_url(classified_image)
@@ -39,56 +39,63 @@ class ClassificationService(object):
 
 
 def get_image_url(classified_image):
-    logging.info(f'[classification_service]: attempting to get url')
-    viz = {'min': 0, 'max': 3, 'palette': ['yellow', 'blue', 'grey', 'green']}
+    #logging.info(f'[classification_service]: attempting to get url')
+    viz = {'min': 0, 'max': 5, 'palette': ['yellow', 'blue', 'grey', 'green', 'orange', 'darkgreen'], 'format':'png'}
     d = classified_image.getMapId(viz)
-    logging.info(f'[classification_service]: d object = {d}')
+    #logging.info(f'[classification_service]: d object = {d}')
     base_url = 'https://earthengine.googleapis.com'
     url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
     return url
 
 def classify_image(image, model, instrument):
+    bands = ['B2', 'B3', 'B4', 'NDVI', 'NDWI', 'NDBI']
     if (instrument == "sentinel"):
-        return image.select("B4","B3","B2").divide(100*100).classify(model)
+        return image.select(bands).divide(100*100).classify(model)
     if (instrument == "landsat"):
-        return image.select("B4","B3","B2").classify(model)
+        return image.select(bands).classify(model)
+
 def create_model(instrument):
     try:
-        simple_bands = ['B2', 'B3', 'B4']
-        labeled_bands = simple_bands
+        bands = ['B2', 'B3', 'B4', 'NDVI', 'NDWI', 'NDBI']
+        labeled_bands = bands
         labeled_bands.append('cropland')
         if (instrument == 'sentinel'):
-            trainingPoints = ee.FeatureCollection('projects/wri-datalab/trainingPoints')
+            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/sentinel/sent_glob30Jaxa35k').\
+                merge(ee.FeatureCollection('users/nicolaerigheriu/sentinel/sent_usCan_glob30Jaxa5k'))
         elif (instrument == 'landsat'):
-            trainingPoints = ee.FeatureCollection('projects/wri-datalab/trainingLandsatPoints')
+            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/landsat/toa/landsat_glob30_jaxa35k_toa').\
+                merge(ee.FeatureCollection('users/nicolaerigheriu/landsat/toa/landsat_usCan_glob30Jaxa5ktoa'))
         classifier_args = {'features': trainingPoints, 'classProperty':'cropland',\
                                     'inputProperties':labeled_bands}
-        classifier = ee.Classifier.randomForest(15).train(**classifier_args)
+        randomForest_args = {'numberOfTrees':17}
+        classifier = ee.Classifier.randomForest(**randomForest_args)\
+            .train(**classifier_args)
         return classifier
     except:
         return None
 
-def get_image(img_id):
+def get_image(img_id, instrument):
     """Check if S2 or L8 image and treat image accordingly"""
     try:
         result_img = ee.Image(img_id)
+        result_img = addNDVIBands(result_img, instrument)
         return result_img
     except:
         return None
 
+def addNDVIBands(image, instrument):
+    if (instrument == 'landsat'):
+        rawBands = [['B4', 'B3'], ['B4', 'B5'], ['B6', 'B5']]
+    else:
+        rawBands = [['B8', 'B4'], ['B3', 'B8'], ['B11', 'B8']]
+    rawBands = ee.List(rawBands)
+    image = insertBands(image, rawBands)
+    return image
 
-def get_model_from_bucket():
-    logging.info(f'[classification_service]: attempting to get model from bucket')
-    bucket_name = 'skydipper_materials'
-    source_blob_name = 'classifier.pkl'
-    destination_file_name = '/opt/downl_classif.pkl'
-    try:
-        storage_client = storage.Client()
-        bucket = storage_client.get_bucket(bucket_name)
-        blob = bucket.blob(source_blob_name)
-        blob.download_to_filename(destination_file_name)
-        print('Blob {} downloaded to {}.'.format(source_blob_name,destination_file_name))
-        loaded_model = joblib.load("/opt/downl_classif.pkl")             #careful to change path when loading locally according to where it was downloaded
-        return loaded_model
-    except:
-        return None
+def insertBands(image, rawBands):
+    NDVI = image.addBands(image.normalizedDifference(rawBands.get(0)))
+    NDWI = NDVI.addBands(NDVI.normalizedDifference(rawBands.get(1)))
+    NDWI = NDWI.addBands(NDWI.select(["nd"], ["NDVI"]))
+    NDWI = NDWI.addBands(NDWI.select(["nd_1"], ["NDWI"]))
+    NDBI = NDWI.addBands(NDWI.normalizedDifference(rawBands.get(2)))
+    return NDBI.addBands(NDBI.select(["nd_2"], ["NDBI"]))
