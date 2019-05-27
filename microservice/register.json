@@ -18,6 +18,22 @@
 			}
 		},
 		{
+			"path": "/v1/geodescriber/geom",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/geodescriber/geom"
+			}
+		},
+		{
+			"path": "/v1/geodescriber/geom",
+			"method": "POST",
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/geodescriber/geom"
+			}
+		},
+		{
 			"path": "/v1/umd-loss-gain",
 			"method": "GET",
 			"redirect": {
