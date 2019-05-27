@@ -155,6 +155,27 @@ def get_geo_by_hash(func):
     return wrapper
 
 
+def get_geo_by_geom(func):
+    """Get geometry data"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'GET':
+            #logging.info(f'[decorater - geom]: Getting area by GET {request}')
+            geojson = request.args.get('geojson')
+            if not geojson:
+                return error(status=400, detail='geojson is required')
+        elif request.method == 'POST':
+            geojson = request.get_json().get('geojson', None) if request.get_json() else None
+        try:
+            area_ha = AreaService.tabulate_area(geojson)
+        except Exception as e:
+            return error(status=500, detail=str(e))
+        kwargs["geojson"] = geojson
+        kwargs['area_ha'] = area_ha
+        return func(*args, **kwargs)
+    return wrapper
+
+
 def get_geo_by_national(func):
     """Get geodata"""
     @wraps(func)
