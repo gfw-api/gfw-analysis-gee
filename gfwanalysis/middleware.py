@@ -142,8 +142,8 @@ def get_recent_thumbs(func):
         return func(*args, **kwargs)
     return wrapper
 
-def get_geo_by_hash(func):
-    """Get geodata"""
+def get_geo_by_hash(func): 
+    """Get geodata""" 
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
@@ -151,7 +151,6 @@ def get_geo_by_hash(func):
             if not geostore:
                 return error(status=400, detail='Geostore is required')
             try:
-                logging.info(f"[middleware geo hash]: {geostore}")
                 geojson, area_ha = GeostoreService.get(geostore)
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
@@ -168,6 +167,29 @@ def get_geo_by_hash(func):
         return func(*args, **kwargs)
     return wrapper
 
+def get_instrument(func):
+    """Get instrument"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'GET':
+            instrument = request.args.get('instrument')
+            if not instrument:
+                instrument = 'landsat'
+        kwargs['instrument'] = instrument
+        return func(*args, **kwargs)
+    return wrapper
+
+def get_geo_date_range(func):
+    """Get date range"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'GET':
+            date_range = request.args.get('date_range')
+            if not date_range:
+                date_range = ""
+        kwargs['date_range'] = date_range
+        return func(*args, **kwargs)
+    return wrapper
 
 def get_geo_by_geom(func):
     """Get geometry data"""

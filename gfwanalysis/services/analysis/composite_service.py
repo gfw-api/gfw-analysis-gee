@@ -1,5 +1,3 @@
-"""EE SENTINEL TILE URL SERVICE"""
-
 import logging
 import asyncio
 import requests
@@ -17,7 +15,7 @@ class CompositeService(object):
     """
     @staticmethod
     def get_formatted_date(date_range):
-        if (date_range == ""):
+        if not date_range:
             date_range = CompositeService.get_last_3months()
         else:                           
             date_range = date_range.split(',')
@@ -36,42 +34,41 @@ class CompositeService(object):
         else:
             pass
         #higher tileScale allows inspecting larger areas
-        reduce_args = {'reducer':ee.Reducer.histogram(),\
+        reduce_args = {'reducer':ee.Reducer.frequencyHistogram(),      
         'geometry':image.geometry(), 'tileScale':2,
         'scale':30, 'maxPixels':1e13, 'bestEffort':True}
         stats = image.reduceRegion(**reduce_args).getInfo()
         return stats
 
      
-    def get_composite_image(geojson, instrument='landsat', date_range="", thumb_size=[500, 500],\
-                            band_viz=None, classify=False, get_dem=False):
+    def get_composite_image(geojson, instrument, date_range, thumb_size=[500, 500],\
+                            band_viz=None, classify=False, get_dem=False, get_stats=False):
         #date range inputted as “YYYY-MM-DD, YYYY-MM-DD”
         if not band_viz:
             band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
         try:
             features = geojson.get('features')
             region = [ee.Geometry(feature['geometry']) for feature in features][0]
+            polyg_geom = [feature['geometry'] for feature in features][0]['coordinates']
             date_range = CompositeService.get_formatted_date(date_range)
             if(instrument == 'landsat'):
                 sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', 3))
-            elif(instrument == 'sentinel'):
+            else:
                 sat_img = ee.ImageCollection('COPERNICUS/S2').filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE', 1))
             sat_img = sat_img.filterBounds(region).filterDate(date_range[0].strip(), date_range[1].strip())\
                         .median().clip(region)
             if(instrument == 'sentinel'):
                 sat_img = sat_img.divide(100*100)
-            region_bounds = region.bounds().getInfo()['coordinates']
             image = sat_img.visualize(**band_viz)
             thumb_url = url = image.getThumbUrl({
-                'region':region_bounds, 'dimensions':thumb_size})
-            zonal_stats = CompositeService.get_zonal_stats(sat_img, classify)
+                'region':polyg_geom, 'dimensions':thumb_size})                   
+            result_dict = {'thumb_url':thumb_url, 'tile_zyx':CompositeService.get_image_url(sat_img)}     
             if(get_dem):
-                dem = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').clip(region)
-                dem_thumb_url = dem.getThumbUrl({'region':region_bounds, 'dimensions':thumb_size})
-                return {'thumb_url':thumb_url, 'tile_zyx':CompositeService.get_image_url(sat_img), 'dem':dem_thumb_url,\
-                    'zonal_stats':zonal_stats}                                      
-            else:  
-                return {'thumb_url':thumb_url, 'tile_zyx':CompositeService.get_image_url(sat_img), 'zonal_stats':zonal_stats}   
+                result_dict['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
+                    clip(region).getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size})
+            if(get_stats):
+                result_dict['zonal_stats'] = CompositeService.get_zonal_stats(sat_img, classify)
+            return result_dict
         except Exception as error:
             logging.error(str(error))
             raise CompositeError(message='Error in composite imaging')
