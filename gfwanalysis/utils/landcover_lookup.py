@@ -89,6 +89,19 @@ all_lulc_dict = {
         '20': 'Water Bodies'
         },
 
+    'gfw-landcover-2000':  {
+        '1': 'Agriculture',
+        '2': 'Forest',
+        '3': 'Grassland',
+        '4': 'Wetland',
+        '5': 'Settlement',
+        '6': 'Shrubland',
+        '7': 'Sparse vegetation',
+        '8': 'Bare',
+        '9': 'Water',
+        '10': 'Permanent snow and ice'
+        },
+
     'gfw-landcover-2015':  {
         '1': 'Agriculture',
         '2': 'Forest',

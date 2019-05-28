@@ -6,8 +6,8 @@ import requests
 import functools as funct
 
 
-import LMIPy
 import ee
+from datetime import datetime, timedelta
 from gfwanalysis.errors import CompositeError
 from gfwanalysis.config import SETTINGS
 
@@ -39,19 +39,19 @@ class CompositeService(object):
         reduce_args = {'reducer':ee.Reducer.histogram(),\
         'geometry':image.geometry(), 'tileScale':2,
         'scale':30, 'maxPixels':1e13, 'bestEffort':True}
-        stats = image.reduceRegion(**reduce_args)
+        stats = image.reduceRegion(**reduce_args).getInfo()
         return stats
 
      
-    def get_composite_image(geostore_id, instrument='landsat', date_range="", thumb_size=[500,500],\
+    def get_composite_image(geojson, instrument='landsat', date_range="", thumb_size=[500, 500],\
                             band_viz=None, classify=False, get_dem=False):
         #date range inputted as “YYYY-MM-DD, YYYY-MM-DD”
-        if not band_vizz:
-            band_vizz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
+        if not band_viz:
+            band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
         try:
-            geostore_polyg = LMIPy.Geometry(id_hash=geostore_id)
-            region = get_polygon_region(geostore_polyg.attributes.get('geojson'))[0]
-            date_range = get_formatted_date(date_range)
+            features = geojson.get('features')
+            region = [ee.Geometry(feature['geometry']) for feature in features][0]
+            date_range = CompositeService.get_formatted_date(date_range)
             if(instrument == 'landsat'):
                 sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', 3))
             elif(instrument == 'sentinel'):
@@ -64,14 +64,14 @@ class CompositeService(object):
             image = sat_img.visualize(**band_viz)
             thumb_url = url = image.getThumbUrl({
                 'region':region_bounds, 'dimensions':thumb_size})
-            zonal_stats = get_zonal_stats(sat_img, classify)
+            zonal_stats = CompositeService.get_zonal_stats(sat_img, classify)
             if(get_dem):
                 dem = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').clip(region)
                 dem_thumb_url = dem.getThumbUrl({'region':region_bounds, 'dimensions':thumb_size})
-                return {'thumb_url':thumb_url, 'tile_zyx':get_image_url(sat_img), 'dem':dem_thumb_url,\
+                return {'thumb_url':thumb_url, 'tile_zyx':CompositeService.get_image_url(sat_img), 'dem':dem_thumb_url,\
                     'zonal_stats':zonal_stats}                                      
-            else:
-                return {'thumb_url':thumb_url, 'tile_zyx':get_image_url(sat_img), 'zonal_stats':zonal_stats}   
+            else:  
+                return {'thumb_url':thumb_url, 'tile_zyx':CompositeService.get_image_url(sat_img), 'zonal_stats':zonal_stats}   
         except Exception as error:
             logging.error(str(error))
             raise CompositeError(message='Error in composite imaging')

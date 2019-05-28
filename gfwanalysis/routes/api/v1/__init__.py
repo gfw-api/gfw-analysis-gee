@@ -13,3 +13,4 @@ from gfwanalysis.routes.api.v1.whrc_biomass_router import whrc_biomass_endpoints
 from gfwanalysis.routes.api.v1.soil_carbon_router import soil_carbon_endpoints_v1
 from gfwanalysis.routes.api.v1.classification_service_router import recent_tiles_classifier_v1
 from gfwanalysis.routes.api.v1.composite_service_router import composite_service_v1
+from gfwanalysis.routes.api.v1.geodescriber_router import geodescriber_endpoints_v1

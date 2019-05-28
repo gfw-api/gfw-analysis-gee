@@ -42,9 +42,10 @@ class HansenService(object):
             region = get_region(geojson)
             reduce_args = {'reducer': ee.Reducer.sum().unweighted(),
                            'geometry': region,
-                           'bestEffort': True,
+                           'bestEffort': False,
                            'scale': 30,
-                           'tileScale': 16}
+                           'tileScale': 16,
+                           'maxPixels': 1e12}
             gfw_data = ee.Image(asset_id)
             hansen_v1_5 = ee.Image(hansen_v1_5_asset)
             loss_band = 'loss_{0}'.format(threshold)

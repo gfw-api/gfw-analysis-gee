@@ -1,5 +1,33 @@
 import ee
 import logging
+from shapely.geometry import shape
+import geocoder
+
+def reverse_geocode_a_geostore(s):
+    """ Take a shapely shape object and return geocoding results on the min/max coordinate locations"""
+    min_coords = [s.bounds[1], s.bounds[0]]
+    max_coords = [s.bounds[3], s.bounds[2]]
+    #logging.info(f'[Geo utils]: {min_coords}, {max_coords}')
+    geocode_results = []
+    for coords in [min_coords, max_coords]:
+        geocode_results.append(geocoder.osm(coords, method='reverse', lang_code='en'))
+    return geocode_results
+
+def check_equivence(item1, item2):
+    """Check to see if the two items are equal and neither is equal to None"""
+    if item1 is None or item2 is None:
+        return None
+    else:
+        return item1 == item2
+
+def human_format(num):
+    magnitude = 0
+    while abs(num) >= 1000:
+        magnitude += 1
+        num /= 1000.0
+    # add more suffixes if you need them
+    return '%.2f%s' % (num, ['', 'k', 'M', 'G', 'T', 'P'][magnitude])
+
 
 def get_region(geom):
     """Take a valid geojson object, iterate over all features in that object.
