@@ -191,6 +191,18 @@ def get_geo_date_range(func):
         return func(*args, **kwargs)
     return wrapper
 
+def get_thumb_size(func):
+    """Get the size of the image to be returned """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'GET':
+            thumb_size = request.args.get('thumb_size')
+            if not thumb_size:
+                thumb_size = [500, 500]
+        kwargs['thumb_size'] = thumb_size
+        return func(*args, **kwargs)
+    return wrapper
+
 def get_geo_by_geom(func):
     """Get geometry data"""
     @wraps(func)

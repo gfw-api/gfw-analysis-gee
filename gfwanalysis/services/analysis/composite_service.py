@@ -41,7 +41,7 @@ class CompositeService(object):
         return stats
 
      
-    def get_composite_image(geojson, instrument, date_range, thumb_size=[500, 500],\
+    def get_composite_image(geojson, instrument, date_range, thumb_size,\
                             band_viz=None, classify=False, get_dem=False, get_stats=False):
         #date range inputted as “YYYY-MM-DD, YYYY-MM-DD”
         if not band_viz:
