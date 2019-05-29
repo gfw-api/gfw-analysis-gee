@@ -42,10 +42,8 @@ class CompositeService(object):
 
      
     def get_composite_image(geojson, instrument, date_range, thumb_size,\
-                            band_viz=None, classify=False, get_dem=False, get_stats=False):
+                            classify, band_viz, get_dem, get_stats):
         #date range inputted as “YYYY-MM-DD, YYYY-MM-DD”
-        if not band_viz:
-            band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
         try:
             features = geojson.get('features')
             region = [ee.Geometry(feature['geometry']) for feature in features][0]
@@ -66,6 +64,7 @@ class CompositeService(object):
             if(get_dem):
                 result_dict['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
                     clip(region).getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size})
+                dem = result_dict['dem']
             if(get_stats):
                 result_dict['zonal_stats'] = CompositeService.get_zonal_stats(sat_img, classify)
             return result_dict

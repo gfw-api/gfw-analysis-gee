@@ -44,18 +44,6 @@ def get_classification_params(func):
         return func(*args, **kwargs)
     return wrapper
 
-def get_composite_params(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        logging.info('getting geostore_id')
-        if request.method == 'GET':
-            geostore_id = request.args.get('geostore_id')
-            if not geostore_id:
-                return error(status=400, detail='A geostore_id string is needed')
-        kwargs["geostore_id"] = geostore_id
-        return func(*args, **kwargs)
-    return wrapper
-
 
 def get_sentinel_params(func):
     @wraps(func)
@@ -167,7 +155,7 @@ def get_geo_by_hash(func):
         return func(*args, **kwargs)
     return wrapper
 
-def get_instrument(func):
+def get_composite_params(func):
     """Get instrument"""
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -175,33 +163,34 @@ def get_instrument(func):
             instrument = request.args.get('instrument')
             if not instrument:
                 instrument = 'landsat'
-        kwargs['instrument'] = instrument
-        return func(*args, **kwargs)
-    return wrapper
-
-def get_geo_date_range(func):
-    """Get date range"""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if request.method == 'GET':
             date_range = request.args.get('date_range')
             if not date_range:
                 date_range = ""
-        kwargs['date_range'] = date_range
-        return func(*args, **kwargs)
-    return wrapper
-
-def get_thumb_size(func):
-    """Get the size of the image to be returned """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if request.method == 'GET':
             thumb_size = request.args.get('thumb_size')
             if not thumb_size:
                 thumb_size = [500, 500]
+            classify = request.args.get('classify')
+            if not classify:
+                classify = False
+            band_viz = request.args.get('band_viz')    
+            if not band_viz:
+                band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
+            get_dem = request.args.get('get_dem')    
+            if not get_dem:
+                get_dem = False
+            get_stats = request.args.get('get_stats')    
+            if not get_stats: 
+                get_stats = False
+        kwargs['get_stats'] = get_stats       
+        kwargs['get_dem'] = get_dem        
+        kwargs['classify'] = classify
         kwargs['thumb_size'] = thumb_size
+        kwargs['date_range'] = date_range
+        kwargs['instrument'] = instrument
+        kwargs['band_viz'] = band_viz
         return func(*args, **kwargs)
     return wrapper
+
 
 def get_geo_by_geom(func):
     """Get geometry data"""
