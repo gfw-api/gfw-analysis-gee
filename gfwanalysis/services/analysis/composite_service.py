@@ -41,7 +41,7 @@ class CompositeService(object):
     def get_formatted_date(date_range):
         if not date_range:
             date_range = CompositeService.get_last_3months()
-        else:                           
+        else:
             date_range = date_range.split(',')
         return date_range
 
@@ -54,9 +54,12 @@ class CompositeService(object):
     @staticmethod
     def get_zonal_stats(image):
         #higher tileScale allows inspecting larger areas
-        reduce_args = {'reducer':ee.Reducer.frequencyHistogram(),      
-        'geometry':image.geometry(), 'tileScale':2,
-        'scale':30, 'maxPixels':1e13, 'bestEffort':True}
+        reduce_args = {'reducer':ee.Reducer.frequencyHistogram(),
+                        'geometry':image.geometry(),
+                        'tileScale':2,
+                        'scale':30,
+                        'maxPixels':1e13,
+                        'bestEffort':True}
         stats = image.reduceRegion(**reduce_args).getInfo()
         return stats
 
@@ -87,7 +90,7 @@ class CompositeService(object):
             sat_img = sat_img.divide(100*100)
         return sat_img
 
-    def get_image_url(source):  
+    def get_image_url(source):
         """
         Returns a tile url for image
         """
@@ -95,4 +98,3 @@ class CompositeService(object):
         base_url = 'https://earthengine.googleapis.com'
         url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
         return url
-
