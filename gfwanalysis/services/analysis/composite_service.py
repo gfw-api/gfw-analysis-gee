@@ -28,8 +28,8 @@ class CompositeService(object):
             else:
                 image = sat_img.visualize(**band_viz)
                 result_dict = {'thumb_url':image.getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size}),\
-                        'tile_zyx':CompositeService.get_image_url(sat_img)}
-            if(get_dem):
+                        'tile_url':CompositeService.get_image_url(sat_img)}
+            if get_dem:
                 result_dict['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
                     clip(region).getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size})
             return result_dict
@@ -70,7 +70,7 @@ class CompositeService(object):
         classif_viz_params['dimensions'] = thumb_size
         thumb_url = classified_image.getThumbUrl(classif_viz_params)  
         classified_url = get_classified_image_url(classified_image)
-        result_dict = {'thumb_url':thumb_url, 'tile_zyx':classified_url}
+        result_dict = {'thumb_url':thumb_url, 'tile_url':classified_url}
         if get_stats:
             result_dict['zonal_stats'] = CompositeService.get_zonal_stats(classified_image)
         return result_dict

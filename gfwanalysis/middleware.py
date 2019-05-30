@@ -170,16 +170,16 @@ def get_composite_params(func):
             if not thumb_size:
                 thumb_size = [500, 500]
             classify = request.args.get('classify')
-            if not classify:
+            if classify == 'False' or not classify:
                 classify = False
             band_viz = request.args.get('band_viz')    
             if not band_viz:
                 band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
             get_dem = request.args.get('get_dem')    
-            if not get_dem:
+            if get_dem == 'False' or not get_dem:
                 get_dem = False
             get_stats = request.args.get('get_stats')    
-            if not get_stats: 
+            if get_stats == 'False' or not get_stats: 
                 get_stats = False
         kwargs['get_stats'] = get_stats       
         kwargs['get_dem'] = get_dem        
