@@ -18,6 +18,22 @@
 			}
 		},
 		{
+			"path": "/v1/composite-service/geom",
+			"method": "POST",
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/composite-service/geom"
+			}
+		},
+		{
+			"path": "/v1/composite-service/geom",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/composite-service/geom"
+			}
+		},
+		{
 			"path": "/v1/geodescriber",
 			"method": "GET",
 			"redirect": {

@@ -17,7 +17,7 @@ class CompositeService(object):
     def get_formatted_date(date_range):
         if not date_range:
             date_range = CompositeService.get_last_3months()
-        else:                           
+        else:
             date_range = date_range.split(',')
         return date_range
 
@@ -34,13 +34,16 @@ class CompositeService(object):
         else:
             pass
         #higher tileScale allows inspecting larger areas
-        reduce_args = {'reducer':ee.Reducer.frequencyHistogram(),      
-        'geometry':image.geometry(), 'tileScale':2,
-        'scale':30, 'maxPixels':1e13, 'bestEffort':True}
+        reduce_args = {'reducer':ee.Reducer.frequencyHistogram(),
+                        'geometry':image.geometry(),
+                        'tileScale':2,
+                        'scale':30,
+                        'maxPixels':1e13,
+                        'bestEffort':True}
         stats = image.reduceRegion(**reduce_args).getInfo()
         return stats
 
-     
+
     def get_composite_image(geojson, instrument, date_range, thumb_size,\
                             classify, band_viz, get_dem, get_stats):
         #date range inputted as “YYYY-MM-DD, YYYY-MM-DD”
@@ -59,8 +62,9 @@ class CompositeService(object):
                 sat_img = sat_img.divide(100*100)
             image = sat_img.visualize(**band_viz)
             thumb_url = url = image.getThumbUrl({
-                'region':polyg_geom, 'dimensions':thumb_size})                   
-            result_dict = {'thumb_url':thumb_url, 'tile_zyx':CompositeService.get_image_url(sat_img)}     
+                'region':polyg_geom, 'dimensions':thumb_size})
+            result_dict = {'thumb_url':thumb_url,
+                            'tile_zyx':CompositeService.get_image_url(sat_img)}
             if(get_dem):
                 result_dict['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
                     clip(region).getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size})
@@ -72,7 +76,7 @@ class CompositeService(object):
             logging.error(str(error))
             raise CompositeError(message='Error in composite imaging')
 
-    def get_image_url(source):  
+    def get_image_url(source):
         """
         Returns a tile url for image
         """
@@ -81,7 +85,6 @@ class CompositeService(object):
         base_url = 'https://earthengine.googleapis.com'
         url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
         return url
-
 
 
 def get_polygon_region(geom):
