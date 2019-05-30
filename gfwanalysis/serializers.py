@@ -28,6 +28,20 @@ def serialize_classifier_output(analysis, type):
         }
     }
 
+def serialize_composite_output(analysis, type):
+    """."""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'thumb_url': analysis.get('thumb_url', None), 
+            'tile_zyx':analysis.get('tile_zyx', None),
+            'dem':analysis.get('dem', None),
+            'zonal_stats':analysis.get('zonal_stats', None),
+            #'dem':analysis.get('dem, None) #not sure what happens when the key isn't here, so left it commented out for now
+        }
+    }
+
 def serialize_table_umd(analysis, type):
     """ Convert the aggregate_values=false Hansen response into a table"""
     rows = []
