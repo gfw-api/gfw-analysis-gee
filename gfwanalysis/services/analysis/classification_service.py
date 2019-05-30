@@ -15,34 +15,32 @@ class ClassificationService(object):
             example of a valid img_id = 'COPERNICUS/S2/20181222T115211_20181222T115210_T28RCS'
         """
         try:
-            instrument = ""     #figure out if instrument is sentinel or landsat
-            if (img_id.startswith("COPERNICUS")):
-                instrument = "sentinel"
-            elif (img_id.startswith("LANDSAT")):
-                instrument = "landsat"
-            #logging.info(f'instrument={instrument}')
-            # If one exists restore it from local storage
+            instrument = get_instrument(img_id)
             model = create_model(instrument)
             # grab the image specified by the ID
             image = get_image(img_id, instrument)
             # Apply classifer to specified L8 or S2 image
             classified_image = classify_image(image, model, instrument)
             # Generate tile url and return in d['url'] object
-            url = get_image_url(classified_image)
-            logging.info(f'[classification_service]: passed main logic url={url}')
-            d = {}
-            d['url'] = url
+            url = get_classified_image_url(classified_image)
+            d = {'url':url}
             return d
         except Exception as error:
             logging.error(str(error))
             raise ClassificationError(message='Error in Classification Analysis')
 
+def get_instrument(img_id):
+    instrument = ""     #figure out if instrument is sentinel or landsat
+    if (img_id.startswith("COPERNICUS")):
+        instrument = "sentinel"
+    elif (img_id.startswith("LANDSAT")):
+        instrument = "landsat"
+    return instrument
 
-def get_image_url(classified_image):
-    #logging.info(f'[classification_service]: attempting to get url')
-    viz = {'min': 0, 'max': 5, 'palette': ['yellow', 'blue', 'grey', 'green', 'orange', 'darkgreen'], 'format':'png'}
-    d = classified_image.getMapId(viz)
-    #logging.info(f'[classification_service]: d object = {d}')
+def get_classified_image_url(classified_image):
+    classif_viz_params = {'min': 0, 'max': 5, 'palette': ['yellow', 'blue', 'grey', 'green', 'orange', 'darkgreen'], 'format':'png'}
+    
+    d = classified_image.getMapId(classif_viz_params)
     base_url = 'https://earthengine.googleapis.com'
     url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
     return url
@@ -78,12 +76,12 @@ def get_image(img_id, instrument):
     """Check if S2 or L8 image and treat image accordingly"""
     try:
         result_img = ee.Image(img_id)
-        result_img = addNDVIBands(result_img, instrument)
+        result_img = add_indices(result_img, instrument)
         return result_img
     except:
         return None
 
-def addNDVIBands(image, instrument):
+def add_indices(image, instrument):
     if (instrument == 'landsat'):
         rawBands = [['B4', 'B3'], ['B4', 'B5'], ['B6', 'B5']]
     else:
