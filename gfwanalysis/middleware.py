@@ -130,8 +130,8 @@ def get_recent_thumbs(func):
         return func(*args, **kwargs)
     return wrapper
 
-def get_geo_by_hash(func): 
-    """Get geodata""" 
+def get_geo_by_hash(func):
+    """Get geodata"""
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
@@ -159,7 +159,7 @@ def get_composite_params(func):
     """Get instrument"""
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if request.method == 'GET':
+        if request.method in ['GET','POST']:
             instrument = request.args.get('instrument')
             if not instrument:
                 instrument = 'landsat'
@@ -172,17 +172,17 @@ def get_composite_params(func):
             classify = request.args.get('classify')
             if not classify:
                 classify = False
-            band_viz = request.args.get('band_viz')    
+            band_viz = request.args.get('band_viz')
             if not band_viz:
                 band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
-            get_dem = request.args.get('get_dem')    
+            get_dem = request.args.get('get_dem')
             if not get_dem:
                 get_dem = False
-            get_stats = request.args.get('get_stats')    
-            if not get_stats: 
+            get_stats = request.args.get('get_stats')
+            if not get_stats:
                 get_stats = False
-        kwargs['get_stats'] = get_stats       
-        kwargs['get_dem'] = get_dem        
+        kwargs['get_stats'] = get_stats
+        kwargs['get_dem'] = get_dem
         kwargs['classify'] = classify
         kwargs['thumb_size'] = thumb_size
         kwargs['date_range'] = date_range
