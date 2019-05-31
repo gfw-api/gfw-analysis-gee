@@ -2,6 +2,7 @@
 
 from functools import wraps
 from flask import request
+import json
 
 import logging
 
@@ -175,11 +176,13 @@ def get_composite_params(func):
             band_viz = request.args.get('band_viz')
             if not band_viz:
                 band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
-            get_dem = request.args.get('get_dem')    
+            else:
+                band_viz = json.loads(band_viz)
+            get_dem = request.args.get('get_dem')
             if get_dem == 'False' or not get_dem:
                 get_dem = False
-            get_stats = request.args.get('get_stats')    
-            if get_stats == 'False' or not get_stats: 
+            get_stats = request.args.get('get_stats')
+            if get_stats == 'False' or not get_stats:
                 get_stats = False
         kwargs['get_stats'] = get_stats
         kwargs['get_dem'] = get_dem
