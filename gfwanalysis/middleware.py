@@ -147,10 +147,47 @@ def get_geo_by_hash(func):
             try:
                 area_ha = AreaService.tabulate_area(geojson)
             except Exception as e:
+                logging.info(f"[middleware geo hash] Exception")
                 return error(status=500, detail=str(e))
 
         kwargs["geojson"] = geojson
         kwargs["area_ha"] = area_ha
+        return func(*args, **kwargs)
+    return wrapper
+
+def get_composite_params(func):
+    """Get instrument"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method in ['GET','POST']:
+            instrument = request.args.get('instrument')
+            if not instrument:
+                instrument = 'landsat'
+            date_range = request.args.get('date_range')
+            if not date_range:
+                date_range = ""
+            thumb_size = request.args.get('thumb_size')
+            if not thumb_size:
+                thumb_size = [500, 500]
+            classify = request.args.get('classify')
+            if classify == 'False' or not classify:
+                classify = False
+            band_viz = request.args.get('band_viz')
+            if not band_viz:
+                band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
+            get_dem = request.args.get('get_dem')    
+            if get_dem == 'False' or not get_dem:
+                get_dem = False
+            get_stats = request.args.get('get_stats')    
+            if get_stats == 'False' or not get_stats: 
+                get_stats = False
+        kwargs['get_stats'] = get_stats
+        kwargs['get_dem'] = get_dem
+        kwargs['classify'] = classify
+        kwargs['thumb_size'] = thumb_size
+        kwargs['date_range'] = date_range
+        kwargs['instrument'] = instrument
+        kwargs['band_viz'] = band_viz
         return func(*args, **kwargs)
     return wrapper
 
