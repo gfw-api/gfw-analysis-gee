@@ -1,13 +1,13 @@
 import ee
 import logging
-from shapely.geometry import shape
+from shapely.geometry import shape, GeometryCollection
 import geocoder
+
 
 def reverse_geocode_a_geostore(s):
     """ Take a shapely shape object and return geocoding results on the min/max coordinate locations"""
     min_coords = [s.bounds[1], s.bounds[0]]
     max_coords = [s.bounds[3], s.bounds[2]]
-    #logging.info(f'[Geo utils]: {min_coords}, {max_coords}')
     geocode_results = []
     for coords in [min_coords, max_coords]:
         geocode_results.append(geocoder.osm(coords, method='reverse', lang_code='en'))
@@ -19,6 +19,21 @@ def check_equivence(item1, item2):
         return None
     else:
         return item1 == item2
+
+def get_clip_vertex_list(geojson):
+    """
+    Take a geojson object and return a list of geometry vertices that ee can use as an argument to get thumbs
+    """
+    tmp_poly = []
+    s = GeometryCollection([shape(feature["geometry"]).buffer(0)for feature in geojson.get('features')])
+    simple = s[0].simplify(tolerance=0.01, preserve_topology=True)
+    try:
+        for x, y in zip(simple.exterior.coords.xy[0], simple.exterior.coords.xy[1]):
+                                tmp_poly.append([x,y])
+    except:
+        for x, y in zip(simple[0].exterior.coords.xy[0], simple[0].exterior.coords.xy[1]):
+                        tmp_poly.append([x,y])
+    return tmp_poly
 
 def human_format(num):
     magnitude = 0
