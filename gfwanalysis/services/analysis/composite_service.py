@@ -2,13 +2,14 @@ import logging
 import asyncio
 import requests
 import functools as funct
-
-
+import json
 import ee
+from shapely.geometry import shape, GeometryCollection
 from datetime import datetime, timedelta
 from gfwanalysis.errors import CompositeError
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.services.analysis.classification_service import create_model, add_indices, classify_image, get_classified_image_url
+from gfwanalysis.utils.geo import get_clip_vertex_list
 
 class CompositeService(object):
     """Gets a geostore geometry as input and returns a composite, cloud-free image within the geometry bounds.
@@ -16,23 +17,25 @@ class CompositeService(object):
     """
     def get_composite_image(geojson, instrument, date_range, thumb_size,\
                         classify, band_viz, get_dem, get_stats):
-        #date range inputted as “YYYY-MM-DD, YYYY-MM-DD”
         try:
             features = geojson.get('features')
             region = [ee.Geometry(feature['geometry']) for feature in features][0]
-            polyg_geom = [feature['geometry'] for feature in features][0]['coordinates']
+            polyg_geom = get_clip_vertex_list(geojson)
             date_range = CompositeService.get_formatted_date(date_range)
             sat_img = CompositeService.get_sat_img(instrument, region, date_range)
             if classify:
-                result_dict = CompositeService.get_classified_composite(sat_img, instrument, polyg_geom, thumb_size, get_stats)
+                result_dic = CompositeService.get_classified_composite(sat_img, instrument, polyg_geom, thumb_size, get_stats)
             else:
                 image = sat_img.visualize(**band_viz)
-                result_dict = {'thumb_url':image.getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size}),\
-                        'tile_url':CompositeService.get_image_url(image)}
+                tmp_thumb = image.getThumbUrl({'region':polyg_geom, 'dimensions': thumb_size})
+                tmp_tile = CompositeService.get_image_url(image)
+                result_dic = {'thumb_url': tmp_thumb,
+                               'tile_url': tmp_tile}
+                logging.error(f'[Composite Service]: result_dic {result_dic}')
             if get_dem:
-                result_dict['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
+                result_dic['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
                     clip(region).getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size})
-            return result_dict
+            return result_dic
         except Exception as error:
             logging.error(str(error))
             raise CompositeError(message='Error in composite imaging')
@@ -73,10 +76,10 @@ class CompositeService(object):
         classif_viz_params['dimensions'] = thumb_size
         thumb_url = classified_image.getThumbUrl(classif_viz_params)
         classified_url = get_classified_image_url(classified_image)
-        result_dict = {'thumb_url':thumb_url, 'tile_url':classified_url}
+        result_dic = {'thumb_url':thumb_url, 'tile_url':classified_url}
         if get_stats:
-            result_dict['zonal_stats'] = CompositeService.get_zonal_stats(classified_image)
-        return result_dict
+            result_dic['zonal_stats'] = CompositeService.get_zonal_stats(classified_image)
+        return result_dic
 
     @staticmethod
     def get_sat_img(instrument, region, date_range):
