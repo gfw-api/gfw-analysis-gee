@@ -34,7 +34,8 @@ class CompositeService(object):
                 logging.error(f'[Composite Service]: result_dic {result_dic}')
             if get_dem:
                 result_dic['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
-                    clip(region).getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size})
+                    clip(region).getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size,\
+                        'min':-479, 'max':8859.0})
             return result_dic
         except Exception as error:
             logging.error(str(error))
