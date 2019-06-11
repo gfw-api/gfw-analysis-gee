@@ -170,10 +170,14 @@ class GeodescriberService(object):
 
     @staticmethod
     def gen_area_sentence(area_ha, app, mountain_sentence, title_elements):
+        try:
+            title_ele = ' in ' + title_elements[0]
+        except:
+            title_ele = ''
         if app == 'gfw':
-            area_sentence = f"Area of {human_format(area_ha)}ha located in {mountain_sentence} in {title_elements[0]}."
+            area_sentence = f"Area of {human_format(area_ha)}ha located in {mountain_sentence}{title_ele}."
         else:
-            area_sentence = f"Area of {area_ha * 0.01:3,.0f}km² located in {mountain_sentence} in {title_elements[0]}."
+            area_sentence = f"Area of {area_ha * 0.01:3,.0f}km² located in {mountain_sentence}{title_ele}."
         return area_sentence
 
     @staticmethod
@@ -199,12 +203,17 @@ class GeodescriberService(object):
                                     }).getInfo()
         #logging.info(f'[Geodescriber]: stats: {stats}')
         ecoregion_sentence = GeodescriberService.gen_ecoregion_sentence(stats)
+        #logging.info(f'[Geodescriber]: ecoregion: {ecoregion_sentence}')
         intact_sentence = GeodescriberService.gen_intact_sentence(stats)
+        #logging.info(f'[Geodescriber]: intact: {intact_sentence}')
         mountain_sentence = GeodescriberService.gen_mountain_sentence(stats)
+        #logging.info(f'[Geodescriber]: ecoregion: {mountain_sentence}')
         koppen_sentence = GeodescriberService.gen_koppen_sentence(stats)
-        ecoregion_sentence = GeodescriberService.gen_ecoregion_sentence(stats)
+        #logging.info(f'[Geodescriber]: koppen: {koppen_sentence}')
         biome_sentence = GeodescriberService.gen_biome_sentence(stats)
+        #logging.info(f'[Geodescriber]: biome: {biome_sentence}')
         area_sentence = GeodescriberService.gen_area_sentence(area_ha=area_ha, app=app, mountain_sentence=mountain_sentence, title_elements=title_elements)
+        #logging.info(f'[Geodescriber]: area: {area_sentence}')
         description = f"{area_sentence} {biome_sentence} {koppen_sentence} {ecoregion_sentence} {intact_sentence}"
         if lang is not 'en':
             translator = Translator()
