@@ -51,8 +51,8 @@ class HighResTiles(object):
         """
         logging.info("[HIGH RES] function initiated")
 
-        try:            
-            point = ee.Geometry.Point(float(lat), float(lon))
+        try:
+            point = ee.Geometry.Point(float(lon), float(lat))
             S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point)
             S2_list = S2.toList(S2.size().getInfo())
 
@@ -60,7 +60,7 @@ class HighResTiles(object):
 
             for x in range (0, S2.size().getInfo()):
 
-                d = S2_list.getInfo()[x] ##access asset id 
+                d = S2_list.getInfo()[x] ##access asset id
                 S2 = ee.Image(d.get('id'))
                 S2 = S2.divide(10000)  # Convert to Top of the atmosphere reflectance
                 S2 = S2.visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)
@@ -74,13 +74,13 @@ class HighResTiles(object):
                 meta = HighResTiles.get_image_metadata2(d)
 
                 temp_output = {
-                        
+
                     'boundary_tiles': boundary_tiles,
                     'tile_url': image_tiles,
                     'thumbnail_url': thumbnail,
                     'metadata': meta,
                     'success': True
-                
+
                 }
 
                 output.append(temp_output)
