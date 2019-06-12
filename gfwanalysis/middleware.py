@@ -90,8 +90,8 @@ def get_recent_params(func):
             lon = request.args.get('lon')
             start = request.args.get('start')
             end = request.args.get('end')
-            min = request.args.get('min', 0)
-            max = request.args.get('max', 0.3)
+            min = request.args.get('min', None)
+            max = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
             bands = request.args.get('bands', None)
             if not lat or not lon or not start or not end:
@@ -100,8 +100,8 @@ def get_recent_params(func):
         kwargs["lon"] = lon
         kwargs["start"] = start
         kwargs["end"] = end
-        kwargs["min"] = float(min)
-        kwargs["max"] = float(max)
+        kwargs["min"] = min
+        kwargs["max"] = max
         kwargs["opacity"] = float(opacity)
         kwargs["bands"] = bands
         return func(*args, **kwargs)
@@ -113,8 +113,8 @@ def get_recent_tiles(func):
         if request.method == 'POST':
             data_array = request.get_json().get('source_data')
             bands = request.args.get('bands', None)
-            min = request.args.get('min', 0)
-            max = request.args.get('max', 0.3)
+            min = request.args.get('min', None)
+            max = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
             if not data_array:
                 return error(status=400, detail='[TILES] Some parameters are needed')
@@ -122,8 +122,8 @@ def get_recent_tiles(func):
         kwargs["bands"] = bands
         kwargs["data_array"] = data_array
         kwargs["bands"] = bands
-        kwargs["min"] = float(min)
-        kwargs["max"] = float(max)
+        kwargs["min"] = min
+        kwargs["max"] = max
         kwargs["opacity"] = float(opacity)
         return func(*args, **kwargs)
     return wrapper
@@ -135,8 +135,8 @@ def get_recent_thumbs(func):
         if request.method == 'POST':
             data_array = request.get_json().get('source_data')
             bands = request.args.get('bands', None)
-            min = request.args.get('min', 0)
-            max = request.args.get('max', 0.3)
+            min = request.args.get('min', None)
+            max = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
             if not data_array:
                 return error(status=400, detail='[THUMBS] Some parameters are needed')

@@ -60,10 +60,10 @@ class RecentTiles(object):
             return parsed_bands
 
     @staticmethod
-    def pansharpened_L8_image(image, bands):
+    def pansharpened_L8_image(image, bands, min, max, opacity):
         hsv2 = image.select(bands).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-        image.select('B8')]).hsvToRgb().visualize(min=0, max=0.2, gamma=[1.3, 1.3, 1.3])
+        image.select('B8')]).hsvToRgb().visualize(min=min, max=max, gamma=[1.3, 1.3, 1.3], opacity=opacity)
         return sharpened
 
 
@@ -108,16 +108,18 @@ class RecentTiles(object):
         """Takes collection data array and fetches tiles
         """
         logging.info(f"[RECENT>TILE] {col_data.get('source')}")
-        logging.info(f"[ATTR] {bands}, {min}, {max}, {opacity}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
-
+        if not min: min = 0
+        
         if 'COPERNICUS' in col_data.get('source'):
+            if not max: max = 0.3
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=min, max=max, opacity=opacity)
         elif 'LANDSAT' in col_data.get('source'):
+            if not max: max = 0.2
             tmp_im = ee.Image(col_data['source'])
-            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands)
+            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, min, max, opacity)
 
         m_id = im.getMapId()
 
@@ -136,13 +138,16 @@ class RecentTiles(object):
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
-
+        if not min: min = 0
+        
         if 'COPERNICUS' in col_data.get('source'):
+            if not max: max = 0.3
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=min, max=max, opacity=opacity)
 
         elif 'LANDSAT' in col_data.get('source'):
-            if min == 0 and max == 0.3: max = 0.2
-            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=min, max=max, gamma=[1.3,1.3,1.3], opacity=opacity)
+            if not max: max = 0.2          
+            tmp_im = ee.Image(col_data['source'])
+            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, min, max, opacity)
 
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
 
