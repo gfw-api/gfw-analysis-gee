@@ -142,8 +142,8 @@ def get_recent_thumbs(func):
                 return error(status=400, detail='[THUMBS] Some parameters are needed')
         kwargs["data_array"] = data_array
         kwargs["bands"] = bands
-        kwargs["min"] = float(min)
-        kwargs["max"] = float(max)
+        kwargs["min"] = min
+        kwargs["max"] = max
         kwargs["opacity"] = float(opacity)
         return func(*args, **kwargs)
     return wrapper
