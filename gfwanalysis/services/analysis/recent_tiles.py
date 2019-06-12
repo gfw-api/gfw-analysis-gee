@@ -4,7 +4,6 @@ import logging
 import asyncio
 import requests
 import functools as funct
-
 import ee
 from gfwanalysis.errors import RecentTilesError
 from gfwanalysis.config import SETTINGS
@@ -69,11 +68,11 @@ class RecentTiles(object):
 
 
     @staticmethod
-    async def async_fetch(loop, f, data_array, bands, fetch_type=None):
+    async def async_fetch(loop, f, data_array, bands, min, max, opacity, fetch_type=None):
         """Takes collection data array and implements batch fetches
         """
         asyncio.set_event_loop(loop)
-
+        logging.info('[RECENT>ASYNC] Initiating loop.')
         if fetch_type == 'first':
             r1 = 0
             r2 = 1
@@ -90,7 +89,7 @@ class RecentTiles(object):
         futures = [
             loop.run_in_executor(
                 None,
-                funct.partial(f, data_array[i], bands),
+                funct.partial(f, data_array[i], bands, min, max, opacity),
             )
             for i in range(r1, r2)
         ]
@@ -105,16 +104,17 @@ class RecentTiles(object):
         return data_array
 
     @staticmethod
-    def recent_tiles(col_data, bands=None):
+    def recent_tiles(col_data, bands, min, max, opacity):
         """Takes collection data array and fetches tiles
         """
         logging.info(f"[RECENT>TILE] {col_data.get('source')}")
+        logging.info(f"[ATTR] {bands}, {min}, {max}, {opacity}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
 
         if 'COPERNICUS' in col_data.get('source'):
-            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=min, max=max, opacity=opacity)
         elif 'LANDSAT' in col_data.get('source'):
             tmp_im = ee.Image(col_data['source'])
             im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands)
@@ -125,10 +125,11 @@ class RecentTiles(object):
         url = (base_url + '/map/' + m_id['mapid'] + '/{z}/{x}/{y}?token=' + m_id['token'])
 
         col_data['tile_url'] = url
+        logging.info(f'[RECENT>TILE] Tile url retrieved: {url}.')
         return col_data
 
     @staticmethod
-    def recent_thumbs(col_data, bands=None):
+    def recent_thumbs(col_data, bands, min, max, opacity):
         """Takes collection data array and fetches thumbs
         """
         logging.info(f"[RECENT>THUMB] {col_data.get('source')}")
@@ -137,10 +138,11 @@ class RecentTiles(object):
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
 
         if 'COPERNICUS' in col_data.get('source'):
-            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=min, max=max, opacity=opacity)
 
         elif 'LANDSAT' in col_data.get('source'):
-            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=0, max=0.2, gamma=[1.3, 1.3, 1.3], opacity=1.0)
+            if min == 0 and max == 0.3: max = 0.2
+            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=min, max=max, gamma=[1.3,1.3,1.3], opacity=opacity)
 
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
 
