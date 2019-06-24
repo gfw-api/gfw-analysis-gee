@@ -61,11 +61,11 @@ class GeodescriberService(object):
         if not title_elements:
             return "Area of interest"
         if len(title_elements) == 3:
-            return f"Area between {title_elements[0]} and {title_elements[1]}"
+            return f"Area between <span>{title_elements[0]}</span> and <span>{title_elements[1]}</span>,"
         elif len(title_elements) == 2:
-            return f"Area in {title_elements[0]}, {title_elements[1]}"
+            return f"Area in <span>{title_elements[0]}</span>, <span>{title_elements[1]}</span>,"
         elif len(title_elements) == 1:
-            return f"Area in {title_elements[0]}"
+            return f"Area in <span>{title_elements[0]}</span>"
         else:
             return "Area of Interest"
 
@@ -90,11 +90,11 @@ class GeodescriberService(object):
         tmp_d = GeodescriberService.give_sorted_d(ecoid_to_ecoregion, 'ecoregion', stats)
         proportion_list = list(tmp_d.keys())
         if proportion_list[0] > 75:
-            ecoregion_sentence  = f"The region's habitat is comprised of {tmp_d[proportion_list[0]]}."
+            ecoregion_sentence  = f"The region's habitat is comprised of <span>{tmp_d[proportion_list[0]]}</span>."
         elif proportion_list[0] > 50:
-            ecoregion_sentence  = f"The majority of the regions habitat is comprised of {tmp_d[proportion_list[0]]}. It also includes areas of {tmp_d[proportion_list[1]]}."
+            ecoregion_sentence  = f"The majority of the regions habitat is comprised of <span>{tmp_d[proportion_list[0]]</span>}. It also includes areas of <span>{tmp_d[proportion_list[1]]}</span>."
         else:
-            ecoregion_sentence  = f"The region is made up of different habitats, including {tmp_d[proportion_list[0]]}, and {tmp_d[proportion_list[1]]}"
+            ecoregion_sentence  = f"The region is made up of different habitats, including <span>{tmp_d[proportion_list[0]]</span>}, and <span>{tmp_d[proportion_list[1]]</span>}"
         return ecoregion_sentence
 
     @staticmethod
@@ -135,11 +135,11 @@ class GeodescriberService(object):
         tmp_d = GeodescriberService.give_sorted_d(lookup_dic=koppen_translated, key='koppen',stats=stats)
         proportion_list = list(tmp_d.keys())
         if proportion_list[0] > 75:
-            koppen_sentence = f"The area has a predominantly {tmp_d[proportion_list[0]]}."
+            koppen_sentence = f"The area has a predominantly <span>{tmp_d[proportion_list[0]]}</span>."
         elif proportion_list[0] > 50:
-            koppen_sentence = f"The majority of the region has {tmp_d[proportion_list[0]]}. It also has areas of {tmp_d[proportion_list[1]]}."
+            koppen_sentence = f"The majority of the region has <span>{tmp_d[proportion_list[0]]}</span>. It also has areas of <span>{tmp_d[proportion_list[1]]}</span>."
         else:
-            koppen_sentence = f"The most common environmental conditions of the area are {tmp_d[proportion_list[0]]}."
+            koppen_sentence = f"The most common environmental conditions of the area are <span>{tmp_d[proportion_list[0]]}</span>."
         return koppen_sentence
 
     @staticmethod
@@ -148,11 +148,11 @@ class GeodescriberService(object):
         tmp_d = GeodescriberService.give_sorted_d(ecoid_to_ecoregion, 'ecoregion', stats)
         proportion_list = list(tmp_d.keys())
         if proportion_list[0] > 75:
-            ecoregion_sentence  = f"The region's habitat is comprised of {tmp_d[proportion_list[0]]}."
+            ecoregion_sentence  = f"The region's habitat is comprised of <span>{tmp_d[proportion_list[0]]}</span>."
         elif proportion_list[0] > 50:
-            ecoregion_sentence  = f"The majority of the regions habitat is comprised of {tmp_d[proportion_list[0]]}. It also includes areas of {tmp_d[proportion_list[1]]}."
+            ecoregion_sentence  = f"The majority of the regions habitat is comprised of <span>{tmp_d[proportion_list[0]]}</span>. It also includes areas of <span>{tmp_d[proportion_list[1]]}</span>."
         else:
-            ecoregion_sentence  = f"The region is made up of different habitats, including {tmp_d[proportion_list[0]]}, and {tmp_d[proportion_list[1]]}."
+            ecoregion_sentence  = f"The region is made up of different habitats, including <span>{tmp_d[proportion_list[0]]}</span>, and <span>{tmp_d[proportion_list[1]]}</span>."
         return ecoregion_sentence
 
     @staticmethod
@@ -161,19 +161,19 @@ class GeodescriberService(object):
         tmp_d = GeodescriberService.give_sorted_d(biomeNum_2_biomeName,'biome', stats)
         proportion_list = list(tmp_d.keys())
         if proportion_list[0] > 75:
-            biome_sentence = f"It is part of the {tmp_d[proportion_list[0]]} biome."
+            biome_sentence = f"It is part of the <span>{tmp_d[proportion_list[0]]}</span> biome."
         elif proportion_list[0] > 50:
-            biome_sentence = f"The majority of the region is comprised of {tmp_d[proportion_list[0]]}. It also includes areas of {tmp_d[proportion_list[1]]}."
+            biome_sentence = f"The majority of the region is comprised of <span>{tmp_d[proportion_list[0]]}</span>. It also includes areas of <span>{tmp_d[proportion_list[1]]}</span>."
         else:
-            biome_sentence = f"The region is made up of several types of biomes, including {tmp_d[proportion_list[0]]}, and {tmp_d[proportion_list[1]]}."
+            biome_sentence = f"The region is made up of several types of biomes, including <span>{tmp_d[proportion_list[0]]}</span>, and <span>{tmp_d[proportion_list[1]]}</span>."
         return biome_sentence
 
     @staticmethod
     def gen_area_sentence(area_ha, app, mountain_sentence, title_elements):
         if app == 'gfw':
-            area_sentence = f"Area of {human_format(area_ha)}ha located in {mountain_sentence} in {title_elements[0]}."
+            area_sentence = f"Area of <span>{human_format(area_ha)}ha</span> located in {mountain_sentence} in {title_elements[0]}."
         else:
-            area_sentence = f"Area of {area_ha * 0.01:3,.0f}km² located in {mountain_sentence} in {title_elements[0]}."
+            area_sentence = f"Area of <span>{area_ha * 0.01:3,.0f}km²</span> located in {mountain_sentence} in {title_elements[0]}."
         return area_sentence
 
     @staticmethod
