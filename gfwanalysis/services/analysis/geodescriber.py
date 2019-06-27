@@ -43,31 +43,34 @@ class GeodescriberService(object):
         same_continent = check_equivence(key_locations[0].get('continent'), key_locations[1].get('continent'))
         # Set a title
         if same_region:
-            return [key_locations[0]['region'], key_locations[0]['county']]
+            title_list = [key_locations[0]['region'], key_locations[0]['county']]
         elif same_county:
-            return [key_locations[0]['county'], key_locations[0]['country']]
+            title_list = [key_locations[0]['county'], key_locations[0]['country']]
         elif same_country:
-            return [key_locations[0]['country'], key_locations[0]['continent']]
+            title_list = [key_locations[0]['country'], key_locations[0]['continent']]
         elif same_continent:
-            return [key_locations[0]['continent']]
+            title_list = [key_locations[0]['continent']]
         elif key_locations[0]['continent'] is not None and key_locations[1]['continent'] is not None:
-            return [key_locations[0]['continent'], [key_locations[1]['continent']], True]
+            title_list = [key_locations[0]['continent'], [key_locations[1]['continent']], True]
         else:
             return None
+        return [t for t in title_list if t is not None]
 
     @staticmethod
     def create_title(title_elements):
         """Create a string(title) from a list input."""
         if not title_elements:
-            return "Area of interest"
+            title = "Area of interest"
         if len(title_elements) == 3:
-            return f"Area between {title_elements[0]} and {title_elements[1]}"
+            title = f"Area between {title_elements[0]} and {title_elements[1]},"
         elif len(title_elements) == 2:
-            return f"Area in {title_elements[0]}, {title_elements[1]}"
+            title = f"Area in {title_elements[0]}, {title_elements[1]},"
         elif len(title_elements) == 1:
-            return f"Area in {title_elements[0]}"
+            title = f"Area in {title_elements[0]}"
         else:
-            return "Area of Interest"
+            title = "Area of Interest"
+        if title[-1] == ',': title = title[:-1]
+        return title
 
     @staticmethod
     def give_sorted_d(lookup_dic, key, stats):
@@ -99,13 +102,14 @@ class GeodescriberService(object):
 
     @staticmethod
     def gen_intact_sentence(stats):
-        not_intact = stats.get('intact2016').get('0', None)
-        is_intact = stats.get('intact2016').get('1', None)
+        not_intact = stats.get('intact2016').get('0', 0)
+        is_intact = stats.get('intact2016').get('1', 0)
+        total_intact = not_intact + is_intact
         intact_sentence = None
         if is_intact:
-            if is_intact/not_intact > 0.75:
+            if is_intact/total_intact > 0.75:
                 intact_sentence = "This region contains a large amount of Intact Forest."
-            elif is_intact/not_intact > 0.5:
+            elif is_intact/total_intact > 0.5:
                 intact_sentence = "This region contains Intact Forest."
             else:
                 intact_sentence = "This region contains some Intact Forest."
@@ -115,13 +119,14 @@ class GeodescriberService(object):
 
     @staticmethod
     def gen_mountain_sentence(stats):
-        is_mountain = stats.get('isMountain').get('1')
-        not_mountain = stats.get('isMountain').get('0')
+        is_mountain = stats.get('isMountain').get('1', 0)
+        not_mountain = stats.get('isMountain').get('0', 0)
+        total_mountain = not_mountain + is_mountain
         mountain_sentence = None
         if is_mountain:
-            if is_mountain/not_mountain > 0.75:
+            if is_mountain/total_mountain > 0.75:
                 mountain_sentence = "a mountainous area"
-            elif is_mountain/not_mountain > 0.5:
+            elif is_mountain/total_mountain > 0.5:
                 mountain_sentence = "a mix of lowland and mountains areas"
             else:
                 mountain_sentence = "a predominanty lowland area"
@@ -185,23 +190,23 @@ class GeodescriberService(object):
         """Recieve a geostore_id, language, and app argument and return a
         json serialised dic object response.
         """
-        #logging.info(f'[Geodescriber]: {geojson}, {app}, {lang}')
+        logging.info(f'[Geodescriber]: {geojson}, {app}, {lang}')
         features = geojson.get('features')
         s = [shape(feature['geometry']) for feature in features][0]
-        #logging.info(f'[Geodescriber]: shape: {s}')
+        logging.info(f'[Geodescriber]: shape: {s}')
         #g = LMIPy.Geometry(geostore_id)
         title_elements = GeodescriberService.create_title_elements(s)
         title = GeodescriberService.create_title(title_elements)
-        #logging.info(f'[Geodescriber]: title: {title}')
+        logging.info(f'[Geodescriber]: title: {title}')
         asset_name = SETTINGS.get('gee').get('assets').get('geodescriber')
-        #logging.info(f'[Geodescriber]: asset: {asset_name}')
+        logging.info(f'[Geodescriber]: asset: {asset_name}')
         img = ee.Image(asset_name) # Grab the layer
         region = get_region(geojson) # Create an EE feature from a geostore object
         stats = img.reduceRegion(**{'reducer': ee.Reducer.frequencyHistogram(),
                                     'geometry': region,
                                     'bestEffort': True,
                                     }).getInfo()
-        #logging.info(f'[Geodescriber]: stats: {stats}')
+        logging.info(f'[Geodescriber]: stats: {stats}')
         ecoregion_sentence = GeodescriberService.gen_ecoregion_sentence(stats)
         #logging.info(f'[Geodescriber]: ecoregion: {ecoregion_sentence}')
         intact_sentence = GeodescriberService.gen_intact_sentence(stats)
@@ -220,7 +225,7 @@ class GeodescriberService(object):
             r = translator.translate(text=[title, description], dest=lang, src='en')
             title = r[0].text
             description = r[1].text
-        #logging.info(f'[Geodescriber]: description: {description}')
+        logging.info(f'[Geodescriber]: description: {description}')
         return {'title':title, 'description':description, 'lang': lang, 'stats': stats}
 
 
