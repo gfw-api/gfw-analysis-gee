@@ -20,10 +20,9 @@ def analyze(geojson, area_ha):
     """Call Geodescriber"""
     app = request.args.get('app', 'gfw')
     lang = request.args.get('lang','en')
-    #logging.info(f'[ROUTER]: Geodescriber params {geojson}, {app}, {lang}')
     gd_result = GeodescriberService.analyze(geojson=geojson,
                                             area_ha=area_ha, app=app, lang=lang)
-    #logging.info(f'[ROUTER]: result {gd_result}')
+    logging.info(f'[ROUTER]: result {gd_result}')
     return jsonify(data=gd_result), 200
 
 
