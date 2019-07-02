@@ -276,6 +276,15 @@ class GeodescriberService(object):
                 description = r[1].text
             logging.info(f'[Geodescriber]: description: {description}')
 
+            return {
+            'title': title,
+            'title_params': {},
+            'description':description, 
+            'description_params': {}, 
+            'lang': lang,
+            'stats': stats
+            }
+
         return {
             'title': title,
             'title_params': title_params,
