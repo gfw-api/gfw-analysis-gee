@@ -60,15 +60,15 @@ class RecentTiles(object):
             return parsed_bands
 
     @staticmethod
-    def pansharpened_L8_image(image, bands, min, max, opacity):
+    def pansharpened_L8_image(image, bands, bmin, bmax, opacity):
         hsv2 = image.select(bands).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-        image.select('B8')]).hsvToRgb().visualize(min=min, max=max, gamma=[1.3, 1.3, 1.3], opacity=opacity)
+        image.select('B8')]).hsvToRgb().visualize(min=bmin, max=bmax, gamma=[1.3, 1.3, 1.3], opacity=opacity)
         return sharpened
 
 
     @staticmethod
-    async def async_fetch(loop, f, data_array, bands, min, max, opacity, fetch_type=None):
+    async def async_fetch(loop, f, data_array, bands, bmin, bmax, opacity, fetch_type=None):
         """Takes collection data array and implements batch fetches
         """
         asyncio.set_event_loop(loop)
@@ -89,7 +89,7 @@ class RecentTiles(object):
         futures = [
             loop.run_in_executor(
                 None,
-                funct.partial(f, data_array[i], bands, min, max, opacity),
+                funct.partial(f, data_array[i], bands, bmin, bmax, opacity),
             )
             for i in range(r1, r2)
         ]
@@ -104,22 +104,22 @@ class RecentTiles(object):
         return data_array
 
     @staticmethod
-    def recent_tiles(col_data, bands, min, max, opacity):
+    def recent_tiles(col_data, bands, bmin, bmax, opacity):
         """Takes collection data array and fetches tiles
         """
         logging.info(f"[RECENT>TILE] {col_data.get('source')}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
-        if not min: min = 0
-        
+        if not bmin: bmin = 0
+
         if 'COPERNICUS' in col_data.get('source'):
-            if not max: max = 0.3
-            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=min, max=max, opacity=opacity)
+            if not bmax: bmax = 0.3
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
         elif 'LANDSAT' in col_data.get('source'):
-            if not max: max = 0.2
+            if not bmax: bmax = 0.2
             tmp_im = ee.Image(col_data['source'])
-            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, min, max, opacity)
+            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, bmin, bmax, opacity)
 
         m_id = im.getMapId()
 
@@ -131,23 +131,23 @@ class RecentTiles(object):
         return col_data
 
     @staticmethod
-    def recent_thumbs(col_data, bands, min, max, opacity):
+    def recent_thumbs(col_data, bands, bmin, bmax, opacity):
         """Takes collection data array and fetches thumbs
         """
         logging.info(f"[RECENT>THUMB] {col_data.get('source')}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
-        if not min: min = 0
-        
+        if not bmin: bmin = 0
+
         if 'COPERNICUS' in col_data.get('source'):
-            if not max: max = 0.3
-            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=min, max=max, opacity=opacity)
+            if not bmax: bmax = 0.3
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
 
         elif 'LANDSAT' in col_data.get('source'):
-            if not max: max = 0.2          
+            if not bmax: bmax = 0.2
             tmp_im = ee.Image(col_data['source'])
-            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, min, max, opacity)
+            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, bmin, bmax, opacity)
 
         thumbnail = im.getThumbURL({'dimensions':[250,250]})
 
@@ -173,7 +173,7 @@ class RecentTiles(object):
                 sentinel_image = c.get('properties').get('SPACECRAFT_NAME', None)
                 landsat_image = c.get('properties').get('SPACECRAFT_ID', None)
                 if sentinel_image:
-                     
+
                     date_info = c['id'].split('COPERNICUS/S2/')[1]
                     date_time = f"{date_info[0:4]}-{date_info[4:6]}-{date_info[6:8]} {date_info[9:11]}:{date_info[11:13]}:{date_info[13:15]}Z"
                     bbox = c['properties']['system:footprint']['coordinates']
@@ -216,7 +216,7 @@ class RecentTiles(object):
                     }
                     data.append(tmp_)
             logging.info('[RECENT>DATA] sorting by cloud cover & date of acquisition')
-            sorted_data = sorted(data, key=lambda k: (-k.get('cloud_score',100), k.get('date')), reverse=True)
+            sorted_data = sorted(data, key=lambda k: (-k.get('cloud_score', 100), k.get('date')), reverse=True)
 
             return sorted_data
 
