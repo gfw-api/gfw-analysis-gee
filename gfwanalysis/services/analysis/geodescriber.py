@@ -156,7 +156,7 @@ class GeodescriberService(object):
             else:
                 tmp_config['sentence'] = "a predominanty lowland area"
         else:
-            tmp_config['sentence'] = "A lowland area."
+            tmp_config['sentence'] = "a lowland area"
         return tmp_config
 
     @staticmethod
@@ -216,10 +216,10 @@ class GeodescriberService(object):
             return None
         if app == 'gfw':
             tmp_config['sentence'] = "Area of {area_0} located in {area_1} {area_2}."
-            tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence.lower()[:-1], 'area_2': title_ele}
+            tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence, 'area_2': title_ele}
         else:
             tmp_config['sentence'] = "Area of {area_0} located in {area_1} {area_2}."
-            tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²', 'area_1': mountain_sentence.lower()[:-1], 'area_2': title_ele}
+            tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²', 'area_1': mountain_sentence, 'area_2': title_ele}
         return tmp_config
 
     @staticmethod
