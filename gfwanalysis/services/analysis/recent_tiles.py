@@ -162,7 +162,7 @@ class RecentTiles(object):
 
         try:
 
-            point = ee.Geometry.Point(float(lat), float(lon))
+            point = ee.Geometry.Point(float(lon), float(lat))
             S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point)
             L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(start,end).filterBounds(point)
 
