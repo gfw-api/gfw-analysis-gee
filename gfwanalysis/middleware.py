@@ -100,8 +100,8 @@ def get_recent_params(func):
         kwargs["lon"] = lon
         kwargs["start"] = start
         kwargs["end"] = end
-        kwargs["min"] = bmin
-        kwargs["max"] = bmax
+        kwargs["bmin"] = bmin
+        kwargs["bmax"] = bmax
         kwargs["opacity"] = float(opacity)
         kwargs["bands"] = bands
         return func(*args, **kwargs)
@@ -122,8 +122,8 @@ def get_recent_tiles(func):
         kwargs["bands"] = bands
         kwargs["data_array"] = data_array
         kwargs["bands"] = bands
-        kwargs["min"] = bmin
-        kwargs["max"] = bmax
+        kwargs["bmin"] = bmin
+        kwargs["bmax"] = bmax
         kwargs["opacity"] = float(opacity)
         return func(*args, **kwargs)
     return wrapper

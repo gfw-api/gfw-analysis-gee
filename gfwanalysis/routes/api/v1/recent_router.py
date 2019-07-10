@@ -102,6 +102,5 @@ def get_by_tile(data_array, bands, bmin, bmax, opacity):
 def get_by_thumb(data_array, bands, bmin, bmax, opacity):
     """Analyze by geostore"""
     logging.info('[ROUTER]: Getting thumb url(s) for tiles for Recent Sentinel Images')
-    #logging.info(f'[ROUTER]: {bmin}, {bmax}')
     data = analyze_recent_thumbs(data_array=data_array, bands=bands, bmin=bmin, bmax=bmax, opacity=opacity)
     return data
