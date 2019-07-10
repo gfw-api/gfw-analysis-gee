@@ -10,7 +10,9 @@ def reverse_geocode_a_geostore(s):
     max_coords = [s.bounds[3], s.bounds[2]]
     geocode_results = []
     for coords in [min_coords, max_coords]:
-        geocode_results.append(geocoder.osm(coords, method='reverse', lang_code='en'))
+        result = geocoder.osm(coords, method='reverse', lang_code='en')
+        if 'ERROR' in str(result): result = None
+        geocode_results.append(result)
     return geocode_results
 
 def check_equivence(item1, item2):

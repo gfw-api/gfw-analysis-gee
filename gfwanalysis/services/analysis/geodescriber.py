@@ -42,6 +42,7 @@ class GeodescriberService(object):
         same_country = check_equivence(key_locations[0].get('country'), key_locations[1].get('country'))
         same_continent = check_equivence(key_locations[0].get('continent'), key_locations[1].get('continent'))
         # Set a title
+        title_list = None
         if same_region:
             title_list = [key_locations[0]['region'], key_locations[0]['county']]
         elif same_county:
@@ -54,23 +55,24 @@ class GeodescriberService(object):
             title_list = [key_locations[0]['continent'], [key_locations[1]['continent']], True]
         else:
             return None
-        return [t for t in title_list if t is not None]
+        if title_list: title_list = [t for t in title_list if t is not None]
+        return title_list
 
     @staticmethod
     def create_title(title_elements):
-        """Create a string(title) from a list input."""
-        if not title_elements:
-            title = "Area of interest"
-        if len(title_elements) == 3:
-            title = f"Area between {title_elements[0]} and {title_elements[1]},"
-        elif len(title_elements) == 2:
-            title = f"Area in {title_elements[0]}, {title_elements[1]},"
-        elif len(title_elements) == 1:
-            title = f"Area in {title_elements[0]}"
+        tmp_config = {'items': {}, 'sentence': ""}
+        if title_elements and len(title_elements) == 3:
+            tmp_config['sentence'] = "Area between {ttl_0} and {ttl_1}"
+            tmp_config['items'] = {'ttl_0': title_elements[0], 'ttl_1': title_elements[1]}
+        elif title_elements and len(title_elements) == 2:
+            tmp_config['sentence'] = "Area in {ttl_0} and {ttl_1}"
+            tmp_config['items'] = {'ttl_0': title_elements[0], 'ttl_1': title_elements[1]}
+        elif title_elements and len(title_elements) == 1:
+            tmp_config['sentence'] = "Area in {ttl_0}"
+            tmp_config['items'] = {'ttl_0': title_elements[0]}
         else:
-            title = "Area of Interest"
-        if title[-1] == ',': title = title[:-1]
-        return title
+            tmp_config['sentence'] = "Area of interest"
+        return tmp_config
 
     @staticmethod
     def give_sorted_d(lookup_dic, key, stats):
@@ -92,13 +94,19 @@ class GeodescriberService(object):
         ecoregion_sentence = None
         tmp_d = GeodescriberService.give_sorted_d(ecoid_to_ecoregion, 'ecoregion', stats)
         proportion_list = list(tmp_d.keys())
-        if proportion_list[0] > 75:
-            ecoregion_sentence  = f"The region's habitat is comprised of {tmp_d[proportion_list[0]]}."
+        tmp_config = {'items': {}, 'sentence': ""}
+        if not proportion_list:
+            return None
+        elif proportion_list[0] > 75:
+            tmp_config['sentence'] = "The region's habitat is comprised of {eco_0}."
+            tmp_config['items'] = {'eco_0': tmp_d[proportion_list[0]]}
         elif proportion_list[0] > 50:
-            ecoregion_sentence  = f"The majority of the regions habitat is comprised of {tmp_d[proportion_list[0]]}. It also includes areas of {tmp_d[proportion_list[1]]}."
+            tmp_config['sentence'] = "The majority of the regions habitat is comprised of {eco_0}. It also includes areas of {eco_1}."
+            tmp_config['items'] = {'eco_0': tmp_d[proportion_list[0]], 'eco_1': tmp_d[proportion_list[1]]}
         else:
-            ecoregion_sentence  = f"The region is made up of different habitats, including {tmp_d[proportion_list[0]]}, and {tmp_d[proportion_list[1]]}"
-        return ecoregion_sentence
+            tmp_config['sentence'] = "The region is made up of different habitats, including {eco_0}, and {eco_1}."
+            tmp_config['items'] = {'eco_0': tmp_d[proportion_list[0]], 'eco_1': tmp_d[proportion_list[1]]}
+        return tmp_config
 
     @staticmethod
     def gen_intact_sentence(stats):
@@ -106,16 +114,17 @@ class GeodescriberService(object):
         is_intact = stats.get('intact2016').get('1', 0)
         total_intact = not_intact + is_intact
         intact_sentence = None
+        tmp_config = {'items': {}, 'sentence': ""}
         if is_intact:
             if is_intact/total_intact > 0.75:
-                intact_sentence = "This region contains a large amount of Intact Forest."
+                tmp_config['sentence'] = "This region contains a large amount of Intact Forest."
             elif is_intact/total_intact > 0.5:
-                intact_sentence = "This region contains Intact Forest."
+                tmp_config['sentence'] = "This region contains Intact Forest."
             else:
-                intact_sentence = "This region contains some Intact Forest."
+                tmp_config['sentence'] = "This region contains some Intact Forest."
         else:
-            intact_sentence = 'This region has no Intact Forest.'
-        return intact_sentence
+            tmp_config['sentence'] = 'This region has no Intact Forest.'
+        return tmp_config
 
     @staticmethod
     def gen_mountain_sentence(stats):
@@ -123,80 +132,91 @@ class GeodescriberService(object):
         not_mountain = stats.get('isMountain').get('0', 0)
         total_mountain = not_mountain + is_mountain
         mountain_sentence = None
+        tmp_config = {'items': {}, 'sentence': ""}
         if is_mountain:
             if is_mountain/total_mountain > 0.75:
-                mountain_sentence = "a mountainous area"
+                tmp_config['sentence'] = "a mountainous area"
             elif is_mountain/total_mountain > 0.5:
-                mountain_sentence = "a mix of lowland and mountains areas"
+                tmp_config['sentence'] = "a mix of lowland and mountains areas"
             else:
-                mountain_sentence = "a predominanty lowland area"
+                tmp_config['sentence'] = "a predominanty lowland area"
         else:
-            mountain_sentence = "A lowland area."
-        return mountain_sentence
+            tmp_config['sentence'] = "a lowland area"
+        return tmp_config
 
     @staticmethod
     def gen_koppen_sentence(stats):
         # create a sorted list of items to deal with possilities of different Koppen climates
         tmp_d = GeodescriberService.give_sorted_d(lookup_dic=koppen_translated, key='koppen',stats=stats)
         proportion_list = list(tmp_d.keys())
-        if proportion_list[0] > 75:
-            koppen_sentence = f"The area has a predominantly {tmp_d[proportion_list[0]]}."
+        tmp_config = {'items': {}, 'sentence': ""}
+        if not proportion_list:
+            return None
+        elif proportion_list[0] > 75:
+            tmp_config['sentence'] = "The area has a predominantly {kop_0}."
+            tmp_config['items'] = {'kop_0': tmp_d[proportion_list[0]]}
         elif proportion_list[0] > 50:
-            koppen_sentence = f"The majority of the region has {tmp_d[proportion_list[0]]}. It also has areas of {tmp_d[proportion_list[1]]}."
+            tmp_config['sentence'] = "The majority of the region has {kop_0}. It also has areas of {kop_1}."
+            tmp_config['items'] = {'kop_0': tmp_d[proportion_list[0]], 'kop_1': tmp_d[proportion_list[1]]}
         else:
-            koppen_sentence = f"The most common environmental conditions of the area are {tmp_d[proportion_list[0]]}."
-        return koppen_sentence
-
-    @staticmethod
-    def gen_ecoregion_sentence(stats):
-        ecoregion_sentence = None
-        tmp_d = GeodescriberService.give_sorted_d(ecoid_to_ecoregion, 'ecoregion', stats)
-        proportion_list = list(tmp_d.keys())
-        if proportion_list[0] > 75:
-            ecoregion_sentence  = f"The region's habitat is comprised of {tmp_d[proportion_list[0]]}."
-        elif proportion_list[0] > 50:
-            ecoregion_sentence  = f"The majority of the regions habitat is comprised of {tmp_d[proportion_list[0]]}. It also includes areas of {tmp_d[proportion_list[1]]}."
-        else:
-            ecoregion_sentence  = f"The region is made up of different habitats, including {tmp_d[proportion_list[0]]}, and {tmp_d[proportion_list[1]]}."
-        return ecoregion_sentence
+            tmp_config['sentence'] = "The most common environmental conditions of the area are {kop_0}."
+            tmp_config['items'] = {'kop_0': tmp_d[proportion_list[0]]}
+        return tmp_config
 
     @staticmethod
     def gen_biome_sentence(stats):
         biome_sentence = None
         tmp_d = GeodescriberService.give_sorted_d(biomeNum_2_biomeName,'biome', stats)
         proportion_list = list(tmp_d.keys())
-        if proportion_list[0] > 75:
-            biome_sentence = f"It is part of the {tmp_d[proportion_list[0]]} biome."
+        tmp_config = {'items': {}, 'sentence': ""}
+        if not proportion_list:
+            return None
+        elif proportion_list[0] > 75:
+            tmp_config['sentence'] = "It is part of the {bio_0} biome."
+            tmp_config['items'] = {'bio_0': tmp_d[proportion_list[0]]}
         elif proportion_list[0] > 50:
-            biome_sentence = f"The majority of the region is comprised of {tmp_d[proportion_list[0]]}. It also includes areas of {tmp_d[proportion_list[1]]}."
+            tmp_config['sentence'] = "The majority of the region is comprised of {bio_0}. It also includes areas of {bio_1}."
+            tmp_config['items'] = {'bio_0': tmp_d[proportion_list[0]], 'bio_1': tmp_d[proportion_list[1]]}
         else:
-            biome_sentence = f"The region is made up of several types of biomes, including {tmp_d[proportion_list[0]]}, and {tmp_d[proportion_list[1]]}."
-        return biome_sentence
+            tmp_config['sentence'] = "The region is made up of several types of biomes, including {bio_0}, and {bio_1}."
+            tmp_config['items'] = {'bio_0': tmp_d[proportion_list[0]], 'bio_1': tmp_d[proportion_list[1]]}
+
+        return tmp_config
 
     @staticmethod
     def gen_area_sentence(area_ha, app, mountain_sentence, title_elements):
-        try:
-            title_ele = ' in ' + title_elements[0]
-        except:
-            title_ele = ''
-        if app == 'gfw':
-            area_sentence = f"Area of {human_format(area_ha)}ha located in {mountain_sentence}{title_ele}."
+        tmp_config = {'items': {}, 'sentence': ""}
+        if title_elements:
+            try:
+                title_ele = 'in ' + title_elements[0]
+            except:
+                title_ele = ''
         else:
-            area_sentence = f"Area of {area_ha * 0.01:3,.0f}km² located in {mountain_sentence}{title_ele}."
-        return area_sentence
+            return None
+        if app == 'gfw':
+            tmp_config['sentence'] = "Area of {area_0} located in {area_1} {area_2}."
+            tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence, 'area_2': title_ele}
+        else:
+            tmp_config['sentence'] = "Area of {area_0} located in {area_1} {area_2}."
+            tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²', 'area_1': mountain_sentence, 'area_2': title_ele}
+        return tmp_config
 
     @staticmethod
-    def analyze(geojson, area_ha=None, lang='en', app='gfw'):
+    def analyze(geojson, area_ha=None, lang='en', app='gfw', template=False):
         """Recieve a geostore_id, language, and app argument and return a
         json serialised dic object response.
         """
-        logging.info(f'[Geodescriber]: {geojson}, {app}, {lang}')
+        
+        logging.info(f'[Geodescriber]: app={app}, lang={lang}, template={template}, for geojson={geojson}')
+        sentence_config = []
         features = geojson.get('features')
         s = [shape(feature['geometry']) for feature in features][0]
         logging.info(f'[Geodescriber]: shape: {s}')
         #g = LMIPy.Geometry(geostore_id)
+
         title_elements = GeodescriberService.create_title_elements(s)
         title = GeodescriberService.create_title(title_elements)
+
         logging.info(f'[Geodescriber]: title: {title}')
         asset_name = SETTINGS.get('gee').get('assets').get('geodescriber')
         logging.info(f'[Geodescriber]: asset: {asset_name}')
@@ -207,27 +227,83 @@ class GeodescriberService(object):
                                     'bestEffort': True,
                                     }).getInfo()
         logging.info(f'[Geodescriber]: stats: {stats}')
-        ecoregion_sentence = GeodescriberService.gen_ecoregion_sentence(stats)
-        #logging.info(f'[Geodescriber]: ecoregion: {ecoregion_sentence}')
-        intact_sentence = GeodescriberService.gen_intact_sentence(stats)
-        #logging.info(f'[Geodescriber]: intact: {intact_sentence}')
-        mountain_sentence = GeodescriberService.gen_mountain_sentence(stats)
-        #logging.info(f'[Geodescriber]: ecoregion: {mountain_sentence}')
-        koppen_sentence = GeodescriberService.gen_koppen_sentence(stats)
-        #logging.info(f'[Geodescriber]: koppen: {koppen_sentence}')
-        biome_sentence = GeodescriberService.gen_biome_sentence(stats)
-        #logging.info(f'[Geodescriber]: biome: {biome_sentence}')
-        area_sentence = GeodescriberService.gen_area_sentence(area_ha=area_ha, app=app, mountain_sentence=mountain_sentence, title_elements=title_elements)
-        #logging.info(f'[Geodescriber]: area: {area_sentence}')
-        description = f"{area_sentence} {biome_sentence} {koppen_sentence} {ecoregion_sentence} {intact_sentence}"
-        if lang is not 'en':
-            translator = Translator()
-            r = translator.translate(text=[title, description], dest=lang, src='en')
-            title = r[0].text
-            description = r[1].text
-        logging.info(f'[Geodescriber]: description: {description}')
-        return {'title':title, 'description':description, 'lang': lang, 'stats': stats}
+        
+        if any([v != {} for k,v in stats.items() if k != 'intact2016']): 
+            ecoregion_sentence = GeodescriberService.gen_ecoregion_sentence(stats)
+            if ecoregion_sentence: sentence_config.append(ecoregion_sentence)
+            # logging.info(f'[Geodescriber]: ecoregion: {ecoregion_sentence}')
 
+            intact_sentence = GeodescriberService.gen_intact_sentence(stats)
+            if intact_sentence: sentence_config.append(intact_sentence)
+            # logging.info(f'[Geodescriber]: intact: {intact_sentence}')
+
+            mountain_sentence = GeodescriberService.gen_mountain_sentence(stats)
+            # if mountain_sentence: sentence_config.append(mountain_sentence)
+            # logging.info(f'[Geodescriber]: mountain: {mountain_sentence}')
+
+            koppen_sentence = GeodescriberService.gen_koppen_sentence(stats)
+            if koppen_sentence: sentence_config.append(koppen_sentence)
+            # logging.info(f'[Geodescriber]: koppen: {koppen_sentence}')
+
+            biome_sentence = GeodescriberService.gen_biome_sentence(stats)
+            if biome_sentence: sentence_config.append(biome_sentence)
+            # logging.info(f'[Geodescriber]: biome: {biome_sentence}')
+            
+            area_sentence = GeodescriberService.gen_area_sentence(area_ha=area_ha, app=app, mountain_sentence=mountain_sentence['sentence'], title_elements=title_elements)
+            if area_sentence: sentence_config.append(area_sentence)
+            # logging.info(f'[Geodescriber]: area: {area_sentence}')
+
+        ### BUILD SENTENCE HERE IF TEMPLATE=FALSE
+        description = ""
+        description_params = {}
+        title_params = title['items']
+        title = title['sentence']
+
+        for el in sentence_config:
+            description += f"{el.get('sentence', '')} "
+            description_params = {**description_params, **el.get('items')}
+            if lang != 'en':
+                translator = Translator()
+                r = translator.translate(text=[title, description], dest=lang, src='en')
+                title = r[0].text
+                description = r[1].text
+
+                rt = translator.translate(text=[v for k,v in title_params.items()], dest=lang, src='en')
+                rd = translator.translate(text=[v for k,v in description_params.items()], dest=lang, src='en')
+
+                title_params = {k:rt[i].text for i,k in enumerate(title_params.keys())}
+                description_params = {k:rd[i].text for i,k in enumerate(description_params.keys())}
+                
+        if not template:
+            for k,v in title_params.items():
+                title = title.replace(f'{{{k}}}', v)
+            for k,v in description_params.items():
+                description = description.replace(f'{{{k}}}', v) 
+        
+            if lang is not 'en':
+                translator = Translator()
+                r = translator.translate(text=[title, description], dest=lang, src='en')
+                title = r[0].text
+                description = r[1].text
+            logging.info(f'[Geodescriber]: description: {description}')
+
+            return {
+            'title': title,
+            'title_params': {},
+            'description':description, 
+            'description_params': {}, 
+            'lang': lang,
+            'stats': stats
+            }
+
+        return {
+            'title': title,
+            'title_params': title_params,
+            'description':description, 
+            'description_params': description_params, 
+            'lang': lang,
+            'stats': stats
+            }
 
 continent_lookup = {'AF':'Africa',
                     'AN':'Antarctica',
