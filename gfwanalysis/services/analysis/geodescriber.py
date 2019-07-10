@@ -54,39 +54,24 @@ class GeodescriberService(object):
         elif key_locations[0]['continent'] is not None and key_locations[1]['continent'] is not None:
             title_list = [key_locations[0]['continent'], [key_locations[1]['continent']], True]
         else:
-            for loc in key_locations:
-                tmp_loc = [v for k,v in loc.items() if v]
-                if tmp_loc: title_list = [*tmp_loc, 'NEAR']
+            return None
         if title_list: title_list = [t for t in title_list if t is not None]
         return title_list
 
     @staticmethod
     def create_title(title_elements):
-        """Create a string(title) from a list input."""
-
         tmp_config = {'items': {}, 'sentence': ""}
-        if title_elements and 'NEAR' in title_elements:
-            sentence = "Area near "
-            title_elements = title_elements[:-1]
-            for i, el in enumerate(title_elements):
-                if i+1 < len(title_elements): sentence += f'{{ttl_{i}}}, '
-                else: sentence = sentence[:-2] + f' in {{ttl_{i}}}'
-            tmp_config['sentence'] = sentence
-            tmp_config['items'] = {f'ttl_{i}': el for i, el in enumerate(title_elements)}       
+        if title_elements and len(title_elements) == 3:
+            tmp_config['sentence'] = "Area between {ttl_0} and {ttl_1}"
+            tmp_config['items'] = {'ttl_0': title_elements[0], 'ttl_1': title_elements[1]}
+        elif title_elements and len(title_elements) == 2:
+            tmp_config['sentence'] = "Area in {ttl_0} and {ttl_1}"
+            tmp_config['items'] = {'ttl_0': title_elements[0], 'ttl_1': title_elements[1]}
+        elif title_elements and len(title_elements) == 1:
+            tmp_config['sentence'] = "Area in {ttl_0}"
+            tmp_config['items'] = {'ttl_0': title_elements[0]}
         else:
-            if not title_elements:
-                tmp_config['sentence'] = "Area of interest"
-            elif len(title_elements) == 3:
-                tmp_config['sentence'] = "Area between {ttl_0} and {ttl_1}"
-                tmp_config['items'] = {'ttl_0': title_elements[0], 'ttl_1': title_elements[1]}
-            elif len(title_elements) == 2:
-                tmp_config['sentence'] = "Area in {ttl_0} and {ttl_1}"
-                tmp_config['items'] = {'ttl_0': title_elements[0], 'ttl_1': title_elements[1]}
-            elif len(title_elements) == 1:
-                tmp_config['sentence'] = "Area in {ttl_0}"
-                tmp_config['items'] = {'ttl_0': title_elements[0]}
-            else:
-                tmp_config['sentence'] = "Area of interest"
+            tmp_config['sentence'] = "Area of interest"
         return tmp_config
 
     @staticmethod
@@ -201,13 +186,7 @@ class GeodescriberService(object):
     @staticmethod
     def gen_area_sentence(area_ha, app, mountain_sentence, title_elements):
         tmp_config = {'items': {}, 'sentence': ""}
-        if title_elements and 'NEAR' in title_elements:
-            title_elements = title_elements[:-1]
-            try:
-                title_ele = 'near the ' + title_elements[0]
-            except:
-                title_ele = ''
-        elif title_elements:
+        if title_elements:
             try:
                 title_ele = 'in ' + title_elements[0]
             except:
