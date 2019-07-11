@@ -17,6 +17,10 @@ class HansenError(Error):
     pass
 
 
+class GeodescriberError(Error):
+    pass
+
+  
 class HistogramError(Error):
     pass
 
@@ -41,6 +45,10 @@ class RecentTilesError(Error):
     pass
 
 
+class CompositeError(Error):
+    pass    
+
+
 class FormaError(Error):
     pass
 
@@ -48,7 +56,7 @@ class FormaError(Error):
 class WHRCBiomassError(Error):
     pass
 
-class BiomassLossError(Error):    
+class BiomassLossError(Error):
     pass
 
 class MangroveBiomassError(Error):

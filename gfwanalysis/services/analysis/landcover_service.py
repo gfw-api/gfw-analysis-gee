@@ -42,7 +42,6 @@ class LandcoverService(object):
                            'maxPixels': 1e13}
 
             area_stats = lulc_band.reduceRegion(**reduce_args).getInfo()
-
             if count_pixels:
                 area_stats = area_stats[band_name]
 

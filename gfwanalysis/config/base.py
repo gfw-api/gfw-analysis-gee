@@ -14,10 +14,11 @@ SETTINGS = {
     'gee': {
         'service_account': '390573081381-lm51tabsc8q8b33ik497hc66qcmbj11d@developer.gserviceaccount.com',
         'privatekey_file': BASE_DIR + '/privatekey.pem',
-        'assets': { 
+        'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_18',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
-            'hansen_2017_v1_5': 'UMD/hansen/global_forest_change_2017_v1_5',
+            'hansen_2017_v1_5':'UMD/hansen/global_forest_change_2017_v1_5',
+            'geodescriber':'users/benlaken/geodesriber-asset',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
@@ -27,6 +28,7 @@ SETTINGS = {
             'mangrove_biomass': 'projects/wri-datalab/mangrove_aboveground_biomass_density_2005',
             'soils_30m':'projects/wri-datalab/Soil_Organic_Carbon_30m',
             'primary-forest': 'projects/wri-datalab/gfw-api/primary-forest',
+            'gfw-landcover-2000': 'projects/wri-datalab/ESACCI-LC-IPCC-img/LC_2000',
             'gfw-landcover-2015': 'projects/wri-datalab/gfw-api/globcover-2015-reclassified',
             'idn-landcover': 'projects/wri-datalab/gfw-api/idn-landcover',
             'sea-landcover': 'projects/wri-datalab/gfw-api/sea-landcover',

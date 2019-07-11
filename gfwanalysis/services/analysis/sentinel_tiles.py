@@ -51,7 +51,7 @@ class SentinelTiles(object):
         end = '2017-03-01'
         """
         try:
-            point = ee.Geometry.Point(float(lat), float(lon))
+            point = ee.Geometry.Point(float(lon), float(lat))
             S2 = ee.ImageCollection('COPERNICUS/S2'
                                     ).filterDate(
                 start, end).filterBounds(

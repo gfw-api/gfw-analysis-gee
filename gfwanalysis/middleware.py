@@ -2,6 +2,7 @@
 
 from flask import request
 from functools import wraps
+import json
 
 from gfwanalysis.errors import GeostoreNotFound
 from gfwanalysis.routes.api import error
@@ -95,6 +96,9 @@ def get_recent_params(func):
             lon = request.args.get('lon')
             start = request.args.get('start')
             end = request.args.get('end')
+            bmin = request.args.get('min', None)
+            bmax = request.args.get('max', None)
+            opacity = request.args.get('opacity', 1.0)
             bands = request.args.get('bands', None)
             if not lat or not lon or not start or not end:
                 return error(status=400, detail='[RECENT] Parameters: (lat, lon. start, end) are needed')
@@ -102,6 +106,9 @@ def get_recent_params(func):
         kwargs["lon"] = lon
         kwargs["start"] = start
         kwargs["end"] = end
+        kwargs["bmin"] = bmin
+        kwargs["bmax"] = bmax
+        kwargs["opacity"] = float(opacity)
         kwargs["bands"] = bands
         return func(*args, **kwargs)
 
@@ -111,15 +118,21 @@ def get_recent_params(func):
 def get_recent_tiles(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         if request.method == 'POST':
             data_array = request.get_json().get('source_data')
-            bands = request.get_json().get('bands', None)
+            bands = request.args.get('bands', None)
+            bmin = request.args.get('min', None)
+            bmax = request.args.get('max', None)
+            opacity = request.args.get('opacity', 1.0)
             if not data_array:
                 return error(status=400, detail='[TILES] Some parameters are needed')
         kwargs["data_array"] = data_array
         kwargs["bands"] = bands
-
+        kwargs["data_array"] = data_array
+        kwargs["bands"] = bands
+        kwargs["bmin"] = bmin
+        kwargs["bmax"] = bmax
+        kwargs["opacity"] = float(opacity)
         return func(*args, **kwargs)
 
     return wrapper
@@ -131,12 +144,17 @@ def get_recent_thumbs(func):
 
         if request.method == 'POST':
             data_array = request.get_json().get('source_data')
-            bands = request.get_json().get('bands', None)
+            bands = request.args.get('bands', None)
+            bmin = request.args.get('min', None)
+            bmax = request.args.get('max', None)
+            opacity = request.args.get('opacity', 1.0)
             if not data_array:
                 return error(status=400, detail='[THUMBS] Some parameters are needed')
         kwargs["data_array"] = data_array
         kwargs["bands"] = bands
-
+        kwargs["bmin"] = bmin
+        kwargs["bmax"] = bmax
+        kwargs["opacity"] = float(opacity)
         return func(*args, **kwargs)
 
     return wrapper
@@ -160,12 +178,72 @@ def get_geo_by_hash(func):
             try:
                 area_ha = AreaService.tabulate_area(geojson)
             except Exception as e:
+                logging.info(f"[middleware geo hash] Exception")
                 return error(status=500, detail=str(e))
 
         kwargs["geojson"] = geojson
         kwargs["area_ha"] = area_ha
         return func(*args, **kwargs)
 
+    return wrapper
+
+def get_composite_params(func):
+    """Get instrument"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method in ['GET','POST']:
+            instrument = request.args.get('instrument')
+            if not instrument:
+                instrument = 'landsat'
+            date_range = request.args.get('date_range')
+            if not date_range:
+                date_range = ""
+            thumb_size = request.args.get('thumb_size')
+            if not thumb_size:
+                thumb_size = [500, 500]
+            classify = request.args.get('classify')
+            if classify == 'False' or not classify:
+                classify = False
+            band_viz = request.args.get('band_viz')
+            if not band_viz:
+                band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
+            else:
+                band_viz = json.loads(band_viz)
+            get_dem = request.args.get('get_dem')
+            if get_dem == 'False' or not get_dem:
+                get_dem = False
+            get_stats = request.args.get('get_stats')
+            if get_stats == 'False' or not get_stats:
+                get_stats = False
+        kwargs['get_stats'] = get_stats
+        kwargs['get_dem'] = get_dem
+        kwargs['classify'] = classify
+        kwargs['thumb_size'] = thumb_size
+        kwargs['date_range'] = date_range
+        kwargs['instrument'] = instrument
+        kwargs['band_viz'] = band_viz
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def get_geo_by_geom(func):
+    """Get geometry data"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'GET':
+            #logging.info(f'[decorater - geom]: Getting area by GET {request}')
+            geojson = request.args.get('geojson')
+            if not geojson:
+                return error(status=400, detail='geojson is required')
+        elif request.method == 'POST':
+            geojson = request.get_json().get('geojson', None) if request.get_json() else None
+        try:
+            area_ha = AreaService.tabulate_area(geojson)
+        except Exception as e:
+            return error(status=500, detail=str(e))
+        kwargs["geojson"] = geojson
+        kwargs['area_ha'] = area_ha
+        return func(*args, **kwargs)
     return wrapper
 
 
