@@ -1,10 +1,10 @@
 """HANSEN SERVICE"""
 
+import ee
 import logging
 
-import ee
-from gfwanalysis.errors import HansenError
 from gfwanalysis.config import SETTINGS
+from gfwanalysis.errors import HansenError
 from gfwanalysis.utils.geo import get_region, squaremeters_to_ha
 
 
@@ -52,16 +52,16 @@ class HansenService(object):
             cover_band = 'tree_{0}'.format(threshold)
             # Identify 2000 forest cover at given threshold
             tree_area = hansen_v1_5.select('treecover2000').gt(float(threshold)).multiply(
-                            ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
+                ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
             d['tree_extent'] = squaremeters_to_ha(tree_area['treecover2000'])
             # Identify 2010 forest cover at given threshold
             extent2010_image = ee.Image(extent_2010_asset)
             extent2010_area = extent2010_image.gt(float(threshold)).multiply(
-                                ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
+                ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
             d['tree_extent2010'] = squaremeters_to_ha(extent2010_area['b1'])
             # Identify tree gain over data collection period
             gain = gfw_data.select('gain').divide(255.0).multiply(
-                            ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
+                ee.Image.pixelArea()).reduceRegion(**reduce_args).getInfo()
             d['gain'] = squaremeters_to_ha(gain['gain'])
             # Mask loss with itself to avoid overcounting errors
             tmp_img = gfw_data.select(loss_band).mask(gfw_data.select(loss_band))
@@ -78,11 +78,11 @@ class HansenService(object):
 
                 ## Calculate annual biomass loss - add subset images to a collection and then map a reducer to it
                 collectionG = ee.ImageCollection([tmp_img.updateMask(tmp_img.eq(year)).divide(year).multiply(
-                                ee.Image.pixelArea()).set({'year': 2000+year}) for year in range(begin, end + 1)])
+                    ee.Image.pixelArea()).set({'year': 2000 + year}) for year in range(begin, end + 1)])
                 output = collectionG.map(reduceFunction).getInfo()
                 d['loss'] = {}
-                for row, yr in zip(output.get('features'), range(begin, end+1)):
-                    d['loss'][yr+2000] = squaremeters_to_ha(row.get('properties').get(loss_band))
+                for row, yr in zip(output.get('features'), range(begin, end + 1)):
+                    d['loss'][yr + 2000] = squaremeters_to_ha(row.get('properties').get(loss_band))
             return d
         except Exception as error:
             logging.error(str(error))

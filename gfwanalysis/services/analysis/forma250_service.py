@@ -1,10 +1,10 @@
 """FORMA250GFW SERVICE"""
 
+import ee
 import logging
 
-import ee
-from gfwanalysis.errors import FormaError
 from gfwanalysis.config import SETTINGS
+from gfwanalysis.errors import FormaError
 from gfwanalysis.utils.geo import get_region, squaremeters_to_ha
 
 
@@ -29,13 +29,13 @@ class Forma250Service(object):
             region = get_region(geojson)
             asset_id = SETTINGS.get('gee').get('assets').get('forma250GFW')
             logging.info(asset_id)
-            ic=ee.ImageCollection(asset_id).sort('system:time_start', False)
+            ic = ee.ImageCollection(asset_id).sort('system:time_start', False)
             latest = ee.Image(ic.first())
             alert_date_band = latest.select('alert_date')
             milisec_date_start = ee.Date(start_date).millis()
             milisec_date_end = ee.Date(end_date).millis()
             date_mask = alert_date_band.gte(milisec_date_start).And(
-                            alert_date_band.lte(milisec_date_end))
+                alert_date_band.lte(milisec_date_end))
             reduce_sum_args = {'reducer': ee.Reducer.sum().unweighted(),
                                'geometry': region,
                                'bestEffort': True,
@@ -43,12 +43,12 @@ class Forma250Service(object):
                                'crs': "EPSG:4326",
                                'maxPixels': 9999999999}
             area_m2 = latest.select('alert_delta').mask(date_mask).divide(100).multiply(
-                        ee.Image.pixelArea()).reduceRegion(**reduce_sum_args).getInfo()
+                ee.Image.pixelArea()).reduceRegion(**reduce_sum_args).getInfo()
             alert_area_ha = squaremeters_to_ha(area_m2['alert_delta'])
             tmp_counts = date_mask.gt(0).reduceRegion(**reduce_sum_args).getInfo()
             alert_counts = int(tmp_counts['alert_date'])
-            #logging.info(f"Number of alerts over time period = {alert_counts}")
-            #logging.info(f"Estimated area loss over time period = {alert_area_ha} ha")
+            # logging.info(f"Number of alerts over time period = {alert_counts}")
+            # logging.info(f"Estimated area loss over time period = {alert_area_ha} ha")
             #
             # Need to pass the area from the geojson object to area_ha, and also add the
             # 'area_ha_loss' key/value into the json that is passed to the front-end.
@@ -64,7 +64,7 @@ class Forma250Service(object):
         try:
             asset_id = SETTINGS.get('gee').get('assets').get('forma250GFW')
             logging.info(asset_id)
-            ic=ee.ImageCollection(asset_id)
+            ic = ee.ImageCollection(asset_id)
             latest_im = ic.toList(ic.size()).get(-1).getInfo()
             latest_date = latest_im['properties']['date']
 

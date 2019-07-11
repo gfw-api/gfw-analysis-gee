@@ -1,8 +1,8 @@
 """-"""
 
 import os
-from gfwanalysis.utils.files import BASE_DIR
 
+from gfwanalysis.utils.files import BASE_DIR
 
 SETTINGS = {
     'logging': {
@@ -33,7 +33,7 @@ SETTINGS = {
             'idn-landcover': 'projects/wri-datalab/gfw-api/idn-landcover',
             'sea-landcover': 'projects/wri-datalab/gfw-api/sea-landcover',
             'forma250GFW': 'projects/wri-datalab/FORMA250',
-            'whrc_biomass':'projects/wri-datalab/WHRC_CARBON',
+            'whrc_biomass': 'projects/wri-datalab/WHRC_CARBON',
             'biomassloss_v1': {
                 'hansen_loss_thresh': 'HANSEN/gfw_loss_by_year_threshold_2015',
                 'biomass_2000': 'users/davethau/whrc_carbon_test/carbon'

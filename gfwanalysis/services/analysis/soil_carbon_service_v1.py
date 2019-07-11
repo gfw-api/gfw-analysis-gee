@@ -1,10 +1,11 @@
 """Soil Carbon SERVICE"""
 
-import logging
 import ee
-from gfwanalysis.errors import soilCarbonError
+import logging
+
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.geo import get_region, squaremeters_to_ha
+from gfwanalysis.errors import soilCarbonError
+from gfwanalysis.utils.geo import get_region
 
 
 class SoilCarbonService(object):
@@ -14,7 +15,7 @@ class SoilCarbonService(object):
         """For a given Hansen threshold mask on WHRC biomass data
         and geometry return a dictionary of total t/ha.
         """
-        #logging.info('[Soil Carbon Service]: In Soil carbon service')
+        # logging.info('[Soil Carbon Service]: In Soil carbon service')
         try:
             d = {}
             hansen_asset = SETTINGS.get('gee').get('assets').get('hansen')
@@ -29,7 +30,7 @@ class SoilCarbonService(object):
             # Identify soil carbon value
             sc_value = sc.reduceRegion(**reduce_args).getInfo()
             d['total_soil_carbon'] = sc_value
-            #logging.info(f'[Soil Carbon Service]:d = {d}')
+            # logging.info(f'[Soil Carbon Service]:d = {d}')
             return d
         except Exception as error:
             logging.error(str(error))

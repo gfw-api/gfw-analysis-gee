@@ -1,9 +1,10 @@
 """Geostore SERVICE"""
 
-from gfwanalysis.errors import GeostoreNotFound
 from CTRegisterMicroserviceFlask import request_to_microservice
+
+from gfwanalysis.errors import GeostoreNotFound
 from gfwanalysis.utils.geo import admin_0_simplify, admin_1_simplify
-import logging
+
 
 class GeostoreService(object):
     """."""
@@ -41,7 +42,7 @@ class GeostoreService(object):
     @staticmethod
     def get(geostore):
         config = {
-            'uri': '/geostore/'+geostore,
+            'uri': '/geostore/' + geostore,
             'method': 'GET'
         }
         return GeostoreService.execute(config)
@@ -49,9 +50,9 @@ class GeostoreService(object):
     @staticmethod
     def get_national(iso):
         # Lookup table here to reduce complexity
-        #logging.info('[geostore service]: in get_national function')
+        # logging.info('[geostore service]: in get_national function')
         simplification = admin_0_simplify(iso)
-        #logging.info(f'[geostore service]: simplification={simplification}')
+        # logging.info(f'[geostore service]: simplification={simplification}')
         if simplification:
             url = f'/v2/geostore/admin/{iso}?simplify={simplification}'
         else:
@@ -65,9 +66,9 @@ class GeostoreService(object):
 
     @staticmethod
     def get_subnational(iso, id1):
-        #logging.info('[geostore service]: in get_subnational function')
+        # logging.info('[geostore service]: in get_subnational function')
         simplification = admin_1_simplify(iso, id1)
-        #logging.info(f'[geostore service]: simplification={simplification}')
+        # logging.info(f'[geostore service]: simplification={simplification}')
         if simplification:
             url = f'/v2/geostore/admin/{iso}/{id1}?simplify={simplification}'
         else:
@@ -82,7 +83,7 @@ class GeostoreService(object):
     @staticmethod
     def get_regional(iso, id1, id2):
         config = {
-            'uri': '/v2/geostore/admin/'+iso+'/'+id1+'/'+id2,
+            'uri': '/v2/geostore/admin/' + iso + '/' + id1 + '/' + id2,
             'method': 'GET',
             'ignore_version': True
         }
@@ -91,7 +92,7 @@ class GeostoreService(object):
     @staticmethod
     def get_use(name, use_id):
         config = {
-            'uri': '/geostore/use/'+name+'/'+use_id,
+            'uri': '/geostore/use/' + name + '/' + use_id,
             'method': 'GET'
         }
         return GeostoreService.execute(config)
@@ -99,7 +100,7 @@ class GeostoreService(object):
     @staticmethod
     def get_wdpa(wdpa_id):
         config = {
-            'uri': '/geostore/wdpa/'+wdpa_id,
+            'uri': '/geostore/wdpa/' + wdpa_id,
             'method': 'GET'
         }
         return GeostoreService.execute(config)

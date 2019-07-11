@@ -1,14 +1,15 @@
 """EE LANDSAT TILE URL SERVICE"""
 
+import ee
+import json
 import logging
 import redis
-import json
-import ee
 
-from gfwanalysis.errors import LandsatTilesError
 from gfwanalysis.config import SETTINGS
+from gfwanalysis.errors import LandsatTilesError
 
 r = redis.StrictRedis.from_url(url=SETTINGS.get('redis').get('url'))
+
 
 class RedisService(object):
 
@@ -58,37 +59,36 @@ class LandsatTiles(object):
         else:
             map_object = image.getMapId()
         base_url = 'https://earthengine.googleapis.com'
-        url = f'{base_url}/map/'+ map_object['mapid']+f'/{z}/{x}/{y}'+'?token='+ map_object['token']
+        url = f'{base_url}/map/' + map_object['mapid'] + f'/{z}/{x}/{y}' + '?token=' + map_object['token']
         return url, map_object
 
     @staticmethod
     def pansharpened_L8_image(year):
         collection = ee.ImageCollection('LANDSAT/LC8_L1T').filterDate(
-                            "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year))
+            "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year))
         composite = ee.Algorithms.Landsat.simpleComposite(collection=collection,
-                            percentile=50, maxDepth=80, cloudScoreRange=1, asFloat=True)
+                                                          percentile=50, maxDepth=80, cloudScoreRange=1, asFloat=True)
         hsv2 = composite.select(['B4', 'B3', 'B2']).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-                            composite.select('B8')]).hsvToRgb().visualize(
-                            gain=1000, gamma= [1.15, 1.4, 1.15])
+                                  composite.select('B8')]).hsvToRgb().visualize(
+            gain=1000, gamma=[1.15, 1.4, 1.15])
         return sharpened
 
     @staticmethod
     def pansharpened_L7_image(year):
         collection = ee.ImageCollection('LANDSAT/LE07/C01/T1_TOA').filterDate(
-                            "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year)).filter(
-                                ee.Filter.lt('CLOUD_COVER_LAND', 5))
+            "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year)).filter(
+            ee.Filter.lt('CLOUD_COVER_LAND', 5))
 
         composite = collection.median()
 
         hsv2 = composite.select(['B3', 'B2', 'B1']).rgbToHsv()
 
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-                            composite.select('B8')]).hsvToRgb().visualize(
-                            gain=1000, gamma= [1.15, 1.4, 1.15])
+                                  composite.select('B8')]).hsvToRgb().visualize(
+            gain=1000, gamma=[1.15, 1.4, 1.15])
 
         return sharpened
-    
 
     @staticmethod
     def analyze(year, z, x, y, map_object):
@@ -117,7 +117,7 @@ class LandsatTiles(object):
                     RedisService.set_year_mapid(year, map_object.get('mapid'), map_object.get('token'))
                 else:
                     base_url = 'https://earthengine.googleapis.com'
-                    url = f'{base_url}/map/'+ map_object['mapid']+f'/{z}/{x}/{y}'+'?token='+ map_object['token']
+                    url = f'{base_url}/map/' + map_object['mapid'] + f'/{z}/{x}/{y}' + '?token=' + map_object['token']
                     d['url'] = url
 
             return d

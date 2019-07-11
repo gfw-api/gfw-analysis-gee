@@ -1,10 +1,7 @@
 """EE SENTINEL TILE URL SERVICE"""
 
-import logging
-
 import ee
-from gfwanalysis.errors import LandsatTilesError
-from gfwanalysis.config import SETTINGS
+import logging
 
 
 class SentinelTiles(object):
@@ -56,17 +53,18 @@ class SentinelTiles(object):
         try:
             point = ee.Geometry.Point(float(lon), float(lat))
             S2 = ee.ImageCollection('COPERNICUS/S2'
-                                   ).filterDate(
-                                    start, end).filterBounds(
-                                    point).sort('CLOUDY_PIXEL_PERCENTAGE', True).first()
+                                    ).filterDate(
+                start, end).filterBounds(
+                point).sort('CLOUDY_PIXEL_PERCENTAGE', True).first()
             S2 = ee.Image(S2)
-            d = S2.getInfo()       # grab a dictionary of the image metadata
+            d = S2.getInfo()  # grab a dictionary of the image metadata
             # logging.debug(d)
             S2 = S2.divide(10000)  # Convert to Top of the atmosphere reflectance
-            S2 = S2.visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0) # Convert to styled RGB image
+            S2 = S2.visualize(bands=["B4", "B3", "B2"], min=0, max=0.3, opacity=1.0)  # Convert to styled RGB image
             image_tiles = SentinelTiles.tile_url(S2)
             logging.info(image_tiles)
-            boundary = ee.Feature(ee.Geometry.LinearRing(d.get('properties').get("system:footprint").get('coordinates')))
+            boundary = ee.Feature(
+                ee.Geometry.LinearRing(d.get('properties').get("system:footprint").get('coordinates')))
             boundary_tiles = SentinelTiles.tile_url(boundary, {'color': '4eff32'})
             meta = SentinelTiles.get_image_metadata(d)
             logging.info(meta)
@@ -85,8 +83,8 @@ class SentinelTiles(object):
         """Return a dictionary of metadata"""
         image_name = d.get('id')
         date_info = image_name.split('COPERNICUS/S2/')[1]
-        date_time = ''.join([date_info[0:4],'-',date_info[4:6],'-',date_info[6:8],' ',
-                          date_info[9:11],':',date_info[11:13],':',date_info[13:15],"Z"])
+        date_time = ''.join([date_info[0:4], '-', date_info[4:6], '-', date_info[6:8], ' ',
+                             date_info[9:11], ':', date_info[11:13], ':', date_info[13:15], "Z"])
         product_id = d.get('properties').get('PRODUCT_ID')
         meta = {}
         meta = {'image_name': image_name, 'date_time': date_time, 'product_id': product_id}

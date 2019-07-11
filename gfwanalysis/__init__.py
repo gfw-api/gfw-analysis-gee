@@ -4,14 +4,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import json
-import logging
+import CTRegisterMicroserviceFlask
 import ee
-
+import logging
+import os
+from flask import Flask
 from oauth2client.service_account import ServiceAccountCredentials
 
-from flask import Flask
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.routes.api import error
 from gfwanalysis.routes.api.v1 import hansen_endpoints_v1, forma250_endpoints_v1, \
@@ -22,7 +21,6 @@ from gfwanalysis.routes.api.v1 import hansen_endpoints_v1, forma250_endpoints_v1
     recent_tiles_classifier_v1, composite_service_v1, geodescriber_endpoints_v1
 from gfwanalysis.routes.api.v2 import biomass_loss_endpoints_v2, landsat_tiles_endpoints_v2
 from gfwanalysis.utils.files import load_config_json
-import CTRegisterMicroserviceFlask
 
 logging.basicConfig(
     level=SETTINGS.get('logging', {}).get('level'),
@@ -72,10 +70,12 @@ CTRegisterMicroserviceFlask.register(
     name='gfw-umd',
     info=info,
     swagger=swagger,
-    mode=CTRegisterMicroserviceFlask.AUTOREGISTER_MODE if os.getenv('CT_REGISTER_MODE') and os.getenv('CT_REGISTER_MODE') == 'auto' else CTRegisterMicroserviceFlask.NORMAL_MODE,
+    mode=CTRegisterMicroserviceFlask.AUTOREGISTER_MODE if os.getenv('CT_REGISTER_MODE') and os.getenv(
+        'CT_REGISTER_MODE') == 'auto' else CTRegisterMicroserviceFlask.NORMAL_MODE,
     ct_url=os.getenv('CT_URL'),
     url=os.getenv('LOCAL_URL')
 )
+
 
 @app.errorhandler(403)
 def forbidden(e):

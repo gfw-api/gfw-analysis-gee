@@ -1,10 +1,9 @@
 """EE LANDSAT TILE URL SERVICE"""
 
+import ee
 import logging
 
-import ee
 from gfwanalysis.errors import LandsatTilesError
-from gfwanalysis.config import SETTINGS
 
 
 class LandsatTiles(object):
@@ -31,13 +30,13 @@ class LandsatTiles(object):
     @staticmethod
     def pansharpened_L8_image(year):
         collection = ee.ImageCollection('LANDSAT/LC8_L1T').filterDate(
-                            "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year))
+            "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year))
         composite = ee.Algorithms.Landsat.simpleComposite(collection=collection,
-                            percentile=50, maxDepth=80, cloudScoreRange=1, asFloat=True)
+                                                          percentile=50, maxDepth=80, cloudScoreRange=1, asFloat=True)
         hsv2 = composite.select(['B4', 'B3', 'B2']).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-                            composite.select('B8')]).hsvToRgb().visualize(
-                            gain=1000, gamma= [1.15, 1.4, 1.15])
+                                  composite.select('B8')]).hsvToRgb().visualize(
+            gain=1000, gamma=[1.15, 1.4, 1.15])
         return sharpened
 
     @staticmethod

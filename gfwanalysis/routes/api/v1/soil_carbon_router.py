@@ -5,35 +5,36 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+from flask import jsonify, Blueprint
 
-from flask import jsonify, request, Blueprint
-from gfwanalysis.routes.api import error, set_params
-from gfwanalysis.services.analysis.soil_carbon_service_v1 import SoilCarbonService
-from gfwanalysis.validators import validate_geostore
+from gfwanalysis.errors import soilCarbonError
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
-from gfwanalysis.errors import soilCarbonError
+from gfwanalysis.routes.api import error, set_params
 from gfwanalysis.serializers import serialize_soil_carbon
+from gfwanalysis.services.analysis.soil_carbon_service_v1 import SoilCarbonService
+from gfwanalysis.validators import validate_geostore
 
 soil_carbon_endpoints_v1 = Blueprint('soil_carbon', __name__)
 
+
 def analyze(geojson, area_ha):
     """Analyze Soil Carbon"""
-    #logging.info('[ROUTER]: In Soil carbon router')
+    # logging.info('[ROUTER]: In Soil carbon router')
     if not geojson:
         return error(status=400, detail='A Geojson argument is required')
     threshold, start, end, table = set_params()
-    #logging.info(f'[ROUTER]: soil carbon params {threshold}, {start}, {end}')
+    # logging.info(f'[ROUTER]: soil carbon params {threshold}, {start}, {end}')
     try:
         data = SoilCarbonService.analyze(
             geojson=geojson,
             threshold=threshold)
 
     except soilCarbonError as e:
-        logging.error('[ROUTER]: '+e.message)
+        logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
     data['area_ha'] = area_ha
     data['soil_carbon_density'] = data['total_soil_carbon'].get('b1_first') / area_ha
@@ -79,6 +80,7 @@ def get_by_subnational(iso, id1, geojson, area_ha):
     """Subnational Endpoint"""
     logging.info('[ROUTER]: Getting  soil carbon loss by admin1')
     return analyze(geojson, area_ha)
+
 
 @soil_carbon_endpoints_v1.route('/admin/<iso>/<id1>/<id2>', strict_slashes=False, methods=['GET'])
 @get_geo_by_regional

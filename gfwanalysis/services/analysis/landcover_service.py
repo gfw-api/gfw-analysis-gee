@@ -1,10 +1,10 @@
 """HISTOGRAM SERVICE"""
 
+import ee
 import logging
 
-import ee
-from gfwanalysis.errors import LandcoverError
 from gfwanalysis.config import SETTINGS
+from gfwanalysis.errors import LandcoverError
 from gfwanalysis.utils.geo import get_region
 from gfwanalysis.utils.landcover_lookup import lookup
 from gfwanalysis.utils.parse_gee_response import flatten_area_hist

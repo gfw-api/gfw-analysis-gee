@@ -1,20 +1,19 @@
 """MIDDLEWARE"""
 
-from functools import wraps
 from flask import request
+from functools import wraps
 import json
 
-import logging
-
-from gfwanalysis.routes.api import error
-from gfwanalysis.services.geostore_service import GeostoreService
-from gfwanalysis.services.area_service import AreaService
 from gfwanalysis.errors import GeostoreNotFound
+from gfwanalysis.routes.api import error
 from gfwanalysis.services.analysis.landsat_tiles_v2 import RedisService
+from gfwanalysis.services.area_service import AreaService
+from gfwanalysis.services.geostore_service import GeostoreService
 
 
 def exist_tile(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         url = RedisService.get(request.path)
@@ -22,16 +21,19 @@ def exist_tile(func):
             return func(*args, **kwargs)
         else:
             return redirect(url)
+
     return wrapper
 
 
 def exist_mapid(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         year = kwargs['year']
         kwargs["map_object"] = RedisService.check_year_mapid(year)
         return func(*args, **kwargs)
+
     return wrapper
 
 def get_classification_params(func):
@@ -61,7 +63,9 @@ def get_sentinel_params(func):
         kwargs["start"] = start
         kwargs["end"] = end
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def get_highres_params(func):
     @wraps(func)
@@ -79,7 +83,9 @@ def get_highres_params(func):
         kwargs["start"] = start
         kwargs["end"] = end
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def get_recent_params(func):
     @wraps(func)
@@ -105,7 +111,9 @@ def get_recent_params(func):
         kwargs["opacity"] = float(opacity)
         kwargs["bands"] = bands
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def get_recent_tiles(func):
     @wraps(func)
@@ -126,7 +134,9 @@ def get_recent_tiles(func):
         kwargs["bmax"] = bmax
         kwargs["opacity"] = float(opacity)
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def get_recent_thumbs(func):
     @wraps(func)
@@ -146,10 +156,13 @@ def get_recent_thumbs(func):
         kwargs["bmax"] = bmax
         kwargs["opacity"] = float(opacity)
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def get_geo_by_hash(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
@@ -171,6 +184,7 @@ def get_geo_by_hash(func):
         kwargs["geojson"] = geojson
         kwargs["area_ha"] = area_ha
         return func(*args, **kwargs)
+
     return wrapper
 
 def get_composite_params(func):
@@ -235,6 +249,7 @@ def get_geo_by_geom(func):
 
 def get_geo_by_national(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
@@ -246,11 +261,13 @@ def get_geo_by_national(func):
             kwargs["geojson"] = geojson
             kwargs["area_ha"] = area_ha
         return func(*args, **kwargs)
+
     return wrapper
 
 
 def get_geo_by_subnational(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
@@ -263,10 +280,13 @@ def get_geo_by_subnational(func):
             kwargs["geojson"] = geojson
             kwargs["area_ha"] = area_ha
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def get_geo_by_regional(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
@@ -280,10 +300,13 @@ def get_geo_by_regional(func):
             kwargs["geojson"] = geojson
             kwargs["area_ha"] = area_ha
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def get_geo_by_use(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
@@ -296,11 +319,13 @@ def get_geo_by_use(func):
             kwargs["geojson"] = geojson
             kwargs["area_ha"] = area_ha
         return func(*args, **kwargs)
+
     return wrapper
 
 
 def get_geo_by_wdpa(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
@@ -312,4 +337,5 @@ def get_geo_by_wdpa(func):
             kwargs["geojson"] = geojson
             kwargs["area_ha"] = area_ha
         return func(*args, **kwargs)
+
     return wrapper

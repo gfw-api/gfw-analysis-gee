@@ -4,13 +4,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import ee
 import logging
 
-import ee
-from gfwanalysis.errors import BiomassLossError
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.geo import get_thresh_image, get_region, dict_unit_transform, \
-     sum_range, dates_selector, squaremeters_to_ha
+from gfwanalysis.errors import BiomassLossError
+from gfwanalysis.utils.geo import get_region
 
 
 class BiomassLossService(object):
@@ -57,8 +56,9 @@ class BiomassLossService(object):
 
             # Calculate annual biomass loss - add subset images to a collection and then map a reducer to it
             # Calculate stats 10000 ha, 10^6 to transform from Mg (10^6g) to Tg(10^12g) and 255 as is the pixel value
-            collectionG = ee.ImageCollection([biomass.multiply(ee.Image.pixelArea().divide(10000)).mask(hansen.updateMask(hansen.eq(year))).set({'year': 2000+year})
-                                               for year in range(start_year, end_year + 1)])
+            collectionG = ee.ImageCollection([biomass.multiply(ee.Image.pixelArea().divide(10000)).mask(
+                hansen.updateMask(hansen.eq(year))).set({'year': 2000 + year})
+                                              for year in range(start_year, end_year + 1)])
             output = collectionG.map(reduceFunction).getInfo()
 
             # # Convert to carbon and co2 values and add to output dictionary

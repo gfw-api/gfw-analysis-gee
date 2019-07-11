@@ -4,5 +4,19 @@ test:
     service: base
   container_name: gfw-analysis-gee-test
   environment:
+    CT_REGISTER_MODE: auto
     DEBUG: "True"
+    CT_URL: http://mymachine:9000
+    CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
+    LOCAL_URL: http://mymachine:4500
+    EE_PRIVATE_KEY: ${EE_PRIVATE_KEY}
+    API_VERSION: v1
+    REDIS_URL: redis://redis:6379
+    CARTODB_USER: wri-01
   command: test
+  volumes:
+    - ./gfwanalysis:/opt/gfwanalysis/gfwanalysis
+  links:
+    - redis
+redis:
+  image: redis
