@@ -24,22 +24,24 @@ def test_known_area_loss():
     geojson = {'features': [{'properties': None,
                 'type': 'Feature',
                 'geometry': {'type': 'Polygon',
-                    'coordinates': [[[-0.5712890625, 51.2619148530845],
-                    [0.3515625, 51.2619148530845],
-                    [0.3515625, 51.6861795485562],
-                    [-0.5712890625, 51.6861795485562],
-                    [-0.5712890625, 51.2619148530845]]]}}],
+                    'coordinates': [[[-6.73366859055412, 38.0606044937922],
+                                    [-6.72390101244522, 37.81409203032],
+                                    [-6.39668714569399, 37.8179501435771],
+                                    [-6.42110609099208, 38.068294681143],
+                                    [-6.73366859055412, 38.0606044937922]]]
+                    }}],
                 'crs': {},
                 'type': 'FeatureCollection'}
     kwargs = {'geojson': geojson, 'threshold':30, 'begin':'2001-01-01', 'end':'2018-12-31'}
     method_response = HansenService.analyze(**kwargs)
-    #logging.info(f'[Test]: umd d={method_response}')
+    logging.info(f'[Test example]: umd d={method_response}')
     verify = {'loss_start_year': 1,
                 'loss_end_year': 18,
-                'tree_extent': 47223.84,
-                'tree_extent2010': 51725.06,
-                'gain': 1102.2,
-                'loss': 322.96}
+                'tree_extent': 29442.49,
+                'tree_extent2010': 30682.67,
+                'gain': 1121.27,
+                'loss': 3463.48}
+
     assert method_response.get('tree_extent') == verify.get('tree_extent')
     assert method_response.get('tree_extent2010') == verify.get('tree_extent2010')
     assert method_response.get('gain') == verify.get('gain')
