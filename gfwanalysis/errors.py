@@ -16,11 +16,13 @@ class Error(Exception):
 class HansenError(Error):
     pass
 
+class MCAnalysisError(Error):
+    pass
 
 class GeodescriberError(Error):
     pass
 
-  
+
 class HistogramError(Error):
     pass
 
@@ -46,7 +48,7 @@ class RecentTilesError(Error):
 
 
 class CompositeError(Error):
-    pass    
+    pass
 
 
 class FormaError(Error):

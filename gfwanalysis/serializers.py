@@ -18,6 +18,21 @@ def serialize_umd(analysis, type):
         }
     }
 
+
+def serialize_mc(analysis, type):
+    """serialised function for the Monte Carlo Analysis"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'window': analysis.get('window', None)
+            'mc_number': analysis.get('mc_number', None)
+            'bin_number': analysis.get('bin_number', None)
+
+        }
+    }
+
+
 def serialize_classifier_output(analysis, type):
     """."""
     return {
@@ -34,7 +49,7 @@ def serialize_composite_output(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'thumb_url': analysis.get('thumb_url', None), 
+            'thumb_url': analysis.get('thumb_url', None),
             'tile_url':analysis.get('tile_url', None),
             'dem':analysis.get('dem', None),
             'zonal_stats':analysis.get('zonal_stats', None)
