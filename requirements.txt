@@ -13,3 +13,6 @@ pytest-cov
 oauth2client
 googletrans==2.4.0
 geocoder==1.38.1
+numpy
+scipy
+pandas
