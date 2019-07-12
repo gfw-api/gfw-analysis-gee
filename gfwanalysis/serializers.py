@@ -25,10 +25,9 @@ def serialize_mc(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'window': analysis.get('window', None)
-            'mc_number': analysis.get('mc_number', None)
+            'window': analysis.get('window', None),
+            'mc_number': analysis.get('mc_number', None),
             'bin_number': analysis.get('bin_number', None)
-
         }
     }
 

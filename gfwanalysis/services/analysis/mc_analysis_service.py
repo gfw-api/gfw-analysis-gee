@@ -2,10 +2,7 @@
 
 import ee
 import logging
-
-from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import MCAnalysisError
-
 
 
 class MCAnalysisService(object):

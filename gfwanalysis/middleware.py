@@ -164,7 +164,6 @@ def get_mc_info(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'POST':
-            logging.info(f"[middleware_mc] {request.get_json()}")
             data_array = request.get_json().get('timeseries')
             window = request.args.get('window', None)
             mc_number = request.args.get('mc_number', None)
