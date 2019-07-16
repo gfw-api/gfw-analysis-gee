@@ -2,18 +2,38 @@ import ee
 import logging
 from shapely.geometry import shape, GeometryCollection
 import geocoder
+import asyncio
+import functools as funct
 
+def get_geocode(point):
+    result = geocoder.osm(point, method='reverse', lang_code='en')
+    if 'ERROR' in str(result): result = None
+    return result
 
-def reverse_geocode_a_geostore(s):
+def loop_future(loop, f, a):
+    return loop.run_in_executor(
+            None,
+            funct.partial(f, a),
+        )
+
+async def reverse_geocode_a_geostore(loop, shape):
     """ Take a shapely shape object and return geocoding results on the min/max coordinate locations"""
-    min_coords = [s.bounds[1], s.bounds[0]]
-    max_coords = [s.bounds[3], s.bounds[2]]
-    geocode_results = []
-    for coords in [min_coords, max_coords]:
-        result = geocoder.osm(coords, method='reverse', lang_code='en')
-        if 'ERROR' in str(result): result = None
-        geocode_results.append(result)
-    return geocode_results
+    w, s, e, n = shape.bounds
+    bl = [s, w]
+    br = [s, e]
+    tl = [n, w]
+    tr = [n, e]
+    cd = list(shape.centroid.coords[0])[::-1]
+    locs = [bl, tr, br, tl, cd]
+
+    asyncio.set_event_loop(loop)
+
+    futures = [loop_future(loop, get_geocode, loc) for loc in locs]
+    for response in await asyncio.gather(*futures):
+        logging.info(f'Response: {response}')
+        pass
+
+    return [future.result() for future in futures]
 
 def check_equivence(item1, item2):
     """Check to see if the two items are equal and neither is equal to None"""

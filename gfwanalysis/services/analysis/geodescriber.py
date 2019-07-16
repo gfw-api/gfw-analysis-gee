@@ -5,6 +5,7 @@ from gfwanalysis.utils.geo import get_region, human_format, reverse_geocode_a_ge
 from googletrans import Translator
 import ee
 import json
+import asyncio
 from shapely.geometry import shape
 
 class GeodescriberService(object):
@@ -15,7 +16,9 @@ class GeodescriberService(object):
             Extract the region, county, country, continent attributes of the locations.
             Use the overlap to set an appropriate title.
         """
-        geocode_results = reverse_geocode_a_geostore(s)
+        loop = asyncio.new_event_loop()
+        func = reverse_geocode_a_geostore(loop, s)
+        geocode_results = loop.run_until_complete(func)
         key_locations = []
         for result in geocode_results:
             d = {}
@@ -222,12 +225,16 @@ class GeodescriberService(object):
         logging.info(f'[Geodescriber]: asset: {asset_name}')
         img = ee.Image(asset_name) # Grab the layer
         region = get_region(geojson) # Create an EE feature from a geostore object
-        stats = img.reduceRegion(**{'reducer': ee.Reducer.frequencyHistogram(),
-                                    'geometry': region,
-                                    'bestEffort': True,
-                                    }).getInfo()
+        try:
+            stats = img.reduceRegion(**{'reducer': ee.Reducer.frequencyHistogram(),
+                                        'geometry': region,
+                                        'bestEffort': True,
+                                        }).getInfo()
+        except:
+            logging.error('EE failed.')
+            return None
+
         logging.info(f'[Geodescriber]: stats: {stats}')
-        
         if any([v != {} for k,v in stats.items() if k != 'intact2016']): 
             ecoregion_sentence = GeodescriberService.gen_ecoregion_sentence(stats)
             if ecoregion_sentence: sentence_config.append(ecoregion_sentence)
