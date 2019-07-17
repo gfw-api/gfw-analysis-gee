@@ -121,20 +121,19 @@ class GeodescriberService(object):
         land = stats.get('seaLandFreshwater').get('0', 0)
         sea = stats.get('seaLandFreshwater').get('1', 0)
         fresh = stats.get('seaLandFreshwater').get('2', 0)
+        water = sea + fresh
 
         total_land_sea = land + sea + fresh
         land_sea_sentence = None
-        if (sea + fresh)/total_land_sea > 0.5:
-            if sea/total_land_sea > 0.5:
-                land_sea_sentence = "Saltwater"
-            elif fresh/total_land_sea > 0.5:
-                land_sea_sentence = "Freshwater"
-            else:
-                land_sea_sentence = "Brackish"
-        elif (sea + fresh)/total_land_sea > 0.25:
-            land_sea_sentence = "Coastal"
-        elif land:
-            land_sea_sentence = 'Inland'
+
+        if land/total_land_sea > 0.66:
+            land_sea_sentence = "Predominantly inland"
+        elif sea/water > 0.5:
+                land_sea_sentence = "Predominantly saltwater"
+        elif fresh/water > 0.5:        
+            land_sea_sentence = "Predominantly freshwater"
+        else:        
+            land_sea_sentence = "Brackish"
         return land_sea_sentence
 
     @staticmethod
