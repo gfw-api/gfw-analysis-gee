@@ -30,7 +30,7 @@ async def reverse_geocode_a_geostore(loop, shape):
 
     futures = [loop_future(loop, get_geocode, loc) for loc in locs]
     for response in await asyncio.gather(*futures):
-        logging.info(f'Response: {response}')
+        # logging.info(f'Response: {response}')
         pass
 
     return [future.result() for future in futures]
