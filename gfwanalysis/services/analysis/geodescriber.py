@@ -64,7 +64,6 @@ class GeodescriberService(object):
     @staticmethod
     def create_title(title_elements, land_sea):
         tmp_config = {'items': {}, 'sentence': ""}
-        logging.info(f"\n\n\n--------------land_sea-------------------\n\n{land_sea}\n\n\n")
         if land_sea:
             if title_elements and len(title_elements) == 3:
                 tmp_config['sentence'] = "{ttl_0} area between {ttl_1} and {ttl_2}"
