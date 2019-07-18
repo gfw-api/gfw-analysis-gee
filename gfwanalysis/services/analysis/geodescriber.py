@@ -25,8 +25,10 @@ class GeodescriberService(object):
         parsed_results = []
         
         for result in geocode_results:
-            
-            temp_json= result.geojson.get('features')[0].get('properties')   
+            if result:
+                temp_json= result.geojson.get('features')[0].get('properties')  
+            else:
+                temp_json = {}
 
         # Filtering out the locations we care about
             parsed_results.append(
@@ -53,22 +55,66 @@ class GeodescriberService(object):
 
         logging.info(f'\n\n\n--------geocode_results----------\n\n\n{title_dict}\n\n\n')
 
-
-
         return title_dict
 
     @staticmethod
     def create_title(title_elements, land_sea):
         tmp_config = {'items': {}, 'sentence': ""}
+        #  title_elements == title_dict
+        logging.info(f'\n\n\n--------title_elements----------\n\n\n{title_elements}\n\n\n')
 
+        truth_dict ={
+            'country':None,
+            'county': None,
+            'continent': None,
+            'region': None
+        } 
+    
+        for key,value in title_elements.items():
+            truth_dict[key] = len(set(value)) == 1
 
+        logging.info(f'\n\n\n--------truth_results----------\n\n\n{truth_dict}\n\n\n')
         
+        # Create the title based on the thruth dictionary
 
+        temp_sentence = {'sentence':""}
+        temp_list = list(truth_dict.values())
+    
+        country_list = title_elements['country']
+        county_list = title_elements['county']
+        continent_list = title_elements['continent']
+        region_list = title_elements['region']
 
+        # logging.info(f'\n\n\n--------country_list----------\n\n\n{country_list}\n\n\n')    
+        # logging.info(f'\n\n\n--------county_list----------\n\n\n{county_list}\n\n\n')
+        # logging.info(f'\n\n\n--------continent_list----------\n\n\n{continent_list}\n\n\n')   
+        # logging.info(f'\n\n\n--------region_list----------\n\n\n{region_list}\n\n\n')
+        first_elem = [val for val in truth_dict.values()][0]
+        logging.info(f'\n\n\n--------first_elem----------\n\n\n{first_elem}\n\n\n')
 
-
-
-
+        if all([val for val in truth_dict.values()]) == True:
+        
+            temp_sentence['sentence'] = f'Area of Interest in {county_list[0]} in {region_list[0]}, {country_list[0]}'
+        
+        elif all([val for val in truth_dict.values()])  == False:
+        
+            temp_sentence['sentence'] = f'Area of Interest'
+        
+        elif all([val for key, val in truth_dict.items() if key in ['country', 'county', 'continent'] ]) == True:
+        
+            temp_sentence['sentence'] = f'Area of Interest in {region_list[0]} in {country_list[0]}'
+        
+        elif all([val for key, val in truth_dict.items() if key in ['country', 'county'] ])== True:
+        
+            temp_sentence['sentence'] = f'Area of Interest between {region_list[0]} and {region_list[1]} in {country_list[0]}'
+    
+        else:
+        
+            temp_sentence['sentence'] = f'AOI between {country_list[0]} and {country_list[1]} in {continent_list[0]}'
+        
+        logging.info(f'\n\n\n--------temp_sentence----------\n\n\n{temp_sentence}\n\n\n')
+        return temp_sentence
+        
 
 
         # if land_sea:
@@ -87,7 +133,7 @@ class GeodescriberService(object):
         # else:
         #     tmp_config['sentence'] = "Area of interest"
         # return tmp_config
-        return None
+        
 
     @staticmethod
     def give_sorted_d(lookup_dic, key, stats):
@@ -354,7 +400,9 @@ continent_lookup = {'AF':'Africa',
                     'OC':'Oceania',
                     'SA':'South america'}
 
-iso_to_continent = {'AD':'EU',
+iso_to_continent = {
+'': None,
+'AD':'EU',
 'AE':'AS',
 'AF':'AS',
 'AG':'NA',
