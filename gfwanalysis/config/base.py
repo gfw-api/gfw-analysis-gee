@@ -2,7 +2,7 @@
 
 import os
 
-from gfwanalysis.utils.files import BASE_DIR
+from gfwanalysis.utils.files import BASE_DIR, PROJECT_DIR
 
 SETTINGS = {
     'logging': {
@@ -12,8 +12,8 @@ SETTINGS = {
         'port': 4500
     },
     'gee': {
-        'service_account': '390573081381-lm51tabsc8q8b33ik497hc66qcmbj11d@developer.gserviceaccount.com',
-        'privatekey_file': BASE_DIR + '/privatekey.pem',
+        'service_account': 'skydipper@skydipper-196010.iam.gserviceaccount.com',
+        'privatekey_file': BASE_DIR + '/privatekey.json',
         'assets': {
             'hansen': 'projects/wri-datalab/HansenComposite_18',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',

@@ -6,11 +6,11 @@ shapely==1.7a1
 pyproj==1.9.6
 redis==2.10.6
 pytest
-oauth2client
+oauth2client==4.1.3
+pycrypto==2.6.1
 python-dotenv==0.10.1
 google-cloud==0.34.0
 pytest-cov
-oauth2client
 googletrans==2.4.0
 geocoder==1.38.1
 numpy==1.16.2
