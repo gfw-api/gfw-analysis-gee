@@ -19,67 +19,75 @@ class GeodescriberService(object):
         loop = asyncio.new_event_loop()
         func = reverse_geocode_a_geostore(loop, s)
         geocode_results = loop.run_until_complete(func)
-        key_locations = []
+
+        #parsed_results = [result.geojson.get('features')[0].get('properties') for result in geocode_results]
+        
+        parsed_results = []
+        
         for result in geocode_results:
-            d = {}
-            try:
-                d['region'] = result.geojson.get('features')[0].get('properties').get('region')
-            except:
-                d['region'] = None
-            try:
-                d['county'] = result.geojson.get('features')[0].get('properties').get('county')
-            except:
-                d['county'] = None
-            try:
-                d['country'] = result.geojson.get('features')[0].get('properties').get('country')
-            except:
-                d['country'] = None
-            try:
-                d['continent'] = continent_lookup[iso_to_continent[result.geojson.get('features')[0].get('properties').get('country_code').upper()]]
-            except:
-                d['continent'] = None
-            key_locations.append(d)
-        # Check for overlap between upper and lower bounds
-        same_region = check_equivence(key_locations[0].get('region'), key_locations[1].get('region'))
-        same_county = check_equivence(key_locations[0].get('county'), key_locations[1].get('county'))
-        same_country = check_equivence(key_locations[0].get('country'), key_locations[1].get('country'))
-        same_continent = check_equivence(key_locations[0].get('continent'), key_locations[1].get('continent'))
-        # Set a title
-        title_list = None
-        if same_region:
-            title_list = [key_locations[0]['region'], key_locations[0]['county']]
-        elif same_county:
-            title_list = [key_locations[0]['county'], key_locations[0]['country']]
-        elif same_country:
-            title_list = [key_locations[0]['country'], key_locations[0]['continent']]
-        elif same_continent:
-            title_list = [key_locations[0]['continent']]
-        elif key_locations[0]['continent'] is not None and key_locations[1]['continent'] is not None:
-            title_list = [key_locations[0]['continent'], [key_locations[1]['continent']], True]
-        else:
-            return None
-        if title_list: title_list = [t for t in title_list if t is not None]
-        return title_list
+            
+            temp_json= result.geojson.get('features')[0].get('properties')   
+
+        # Filtering out the locations we care about
+            parsed_results.append(
+                {'country': temp_json.get('country', None), 
+                'county': temp_json.get('county', None), 
+                'region': temp_json.get('region', None), 
+                'continent': iso_to_continent[temp_json.get('country_code', '').upper()]}
+                )
+
+        #Getting the data structure
+    
+            title_dict={
+                'country':[] ,
+                'county': [],
+                'continent': [],
+                'region': []
+            }
+            
+        for key in title_dict.keys():
+            for item in parsed_results:
+                value = item[key]
+                if value not in title_dict[key]:
+                    title_dict[key].append(value)
+
+        logging.info(f'\n\n\n--------geocode_results----------\n\n\n{title_dict}\n\n\n')
+
+
+
+        return title_dict
 
     @staticmethod
     def create_title(title_elements, land_sea):
         tmp_config = {'items': {}, 'sentence': ""}
-        if land_sea:
-            if title_elements and len(title_elements) == 3:
-                tmp_config['sentence'] = "{ttl_0} area between {ttl_1} and {ttl_2}"
-                tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0], 'ttl_2': title_elements[1]}
-            elif title_elements and len(title_elements) == 2:
-                tmp_config['sentence'] = "{ttl_0} area in {ttl_1} and {ttl_2}"
-                tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0], 'ttl_2': title_elements[1]}
-            elif title_elements and len(title_elements) == 1:
-                tmp_config['sentence'] = "{ttl_0} area in {ttl_1}"
-                tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0]}
-            else:
-                tmp_config['sentence'] = "{ttl_0} area of interest"
-                tmp_config['items'] = {'ttl_0': land_sea}
-        else:
-            tmp_config['sentence'] = "Area of interest"
-        return tmp_config
+
+
+        
+
+
+
+
+
+
+
+
+        # if land_sea:
+        #     if title_elements and len(title_elements) == 3:
+        #         tmp_config['sentence'] = "{ttl_0} area between {ttl_1} and {ttl_2}"
+        #         tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0], 'ttl_2': title_elements[1]}
+        #     elif title_elements and len(title_elements) == 2:
+        #         tmp_config['sentence'] = "{ttl_0} area in {ttl_1} and {ttl_2}"
+        #         tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0], 'ttl_2': title_elements[1]}
+        #     elif title_elements and len(title_elements) == 1:
+        #         tmp_config['sentence'] = "{ttl_0} area in {ttl_1}"
+        #         tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0]}
+        #     else:
+        #         tmp_config['sentence'] = "{ttl_0} area of interest"
+        #         tmp_config['items'] = {'ttl_0': land_sea}
+        # else:
+        #     tmp_config['sentence'] = "Area of interest"
+        # return tmp_config
+        return None
 
     @staticmethod
     def give_sorted_d(lookup_dic, key, stats):
