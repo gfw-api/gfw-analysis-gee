@@ -8,8 +8,6 @@ In progress..
 
 You need to install Docker in your machine if you haven't already [Docker](https://www.docker.com/)
 
-You will also need to create a `privatekey.json` file for Earth Engine authentication follwing the EE service account instructions. A template of how the final file should look is given in `sample.privatekey.json`.
-
 ### Development
 
 Follow the next steps to set up the development environment in your machine.
