@@ -33,7 +33,6 @@ class MCAnalysisService(object):
         logging.info(f"[MC service] pandas: {tn_sigma}")
         cumulative_sigma = np.sqrt(t0_sigma**2 + tn_sigma**2)
         logging.info(f"[MC service] pandas: {cumulative_sigma}")
-        logging.info(f"[MC service] pandas: {cumulative_sigma}")
         boxcar_values = boxcar.carbon_emissions.values
         mask = np.isnan(boxcar_values)
         cleaned_boxcar_values = boxcar_values[mask != True]
@@ -43,6 +42,27 @@ class MCAnalysisService(object):
         logging.info(f"[MC service] pandas: {tn}")
         anomaly = tn - t0
         logging.info(f"[MC service] pandas: {anomaly}")
+
+        # Build the Monte Carlo distribution (null cases)
+        values = list(df.values.flatten())
+        logging.info(f"[MC service] pandas: {values}")
+
+        mc_pop = []
+        for draw in range(mc_number):
+            tmp_mean1 = np.array(random.choices(population=values, k=window)).mean()
+            tmp_mean2 = np.array(random.choices(population=values, k=window)).mean()
+            tmp_anom = tmp_mean1 - tmp_mean2
+            mc_pop.append(tmp_anom)
+
+        hist = np.histogram(mc_pop, bins=bin_number)   
+        bins = hist[1]
+        density = hist[0] / hist[0].sum()
+        step = (bins[1] - bins[0])
+        bcenter = [bpos + step for bpos in bins[:-1]] 
+
+
+
+
 
 
         return d
