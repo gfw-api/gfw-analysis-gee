@@ -32,7 +32,7 @@ RUN cd /opt/$NAME && pip install -r requirements.txt
 COPY entrypoint.sh /opt/$NAME/entrypoint.sh
 COPY main.py /opt/$NAME/main.py
 COPY gunicorn.py /opt/$NAME/gunicorn.py
-COPY privatekey.json /opt/$NAME/privatekey.json
+#COPY privatekey.json /opt/$NAME/privatekey.json
 
 # Copy the application folder inside the container
 WORKDIR /opt/$NAME
