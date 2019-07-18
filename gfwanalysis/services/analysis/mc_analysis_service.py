@@ -5,6 +5,7 @@ import logging
 import pandas as pd
 import numpy as np
 from gfwanalysis.errors import MCAnalysisError
+import random
 
 
 class MCAnalysisService(object):
@@ -21,12 +22,13 @@ class MCAnalysisService(object):
             mc_number = 1000
         logging.info(f"[MC Service] {timeseries}, {window}, {bin_number}, {mc_number}")
         logging.info(f"[MC service] pandas: {pd.__version__}")
+        logging.info(f"[MC service] window: {type(window)}")
         d={}
         d["window"]=window
         d["bin_number"]=bin_number
         d["mc_number"]=mc_number
-        df = pd.DataFrame(list(timeseries.values()), index= list(timeseries.keys()), columns = ["Carbon_emissions"])
-        boxcar = df.rolling(window=window, min_periods=window,win_type="boxcar", center=True).mean()
+        df = pd.DataFrame(list(timeseries.values()), index= list(timeseries.keys()), columns = ["carbon_emissions"])
+        boxcar = df.rolling(window=window, min_periods=window, win_type="boxcar", center=True).mean()
         t0_sigma=np.std(df.values[0:window])
         logging.info(f"[MC service] pandas: {t0_sigma}")
         tn_sigma=np.std(df.values[-window:])
@@ -54,11 +56,11 @@ class MCAnalysisService(object):
             tmp_anom = tmp_mean1 - tmp_mean2
             mc_pop.append(tmp_anom)
 
-        hist = np.histogram(mc_pop, bins=bin_number)   
+        hist = np.histogram(mc_pop, bins=bin_number)
         bins = hist[1]
         density = hist[0] / hist[0].sum()
         step = (bins[1] - bins[0])
-        bcenter = [bpos + step for bpos in bins[:-1]] 
+        bcenter = [bpos + step for bpos in bins[:-1]]
 
 
 
