@@ -87,7 +87,7 @@ class GeodescriberService(object):
 
         if all([val == True for val in truth_dict.values()]):
             # If all points in the same Continents, Country, Region, and County
-            tmp_config['sentence'] = '{ttl_0} in {ttl_1} in {ttl_2}, {ttl_3}'
+            tmp_config['sentence'] = '{ttl_0} in {ttl_1}, {ttl_2}, {ttl_3}'
             tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': county_list[0], 'ttl_2': region_list[0], 'ttl_3': country_list[0]}
         
         elif all([val == False for val in truth_dict.values()]):
@@ -103,7 +103,7 @@ class GeodescriberService(object):
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country']]):
             # If Continents, Country in the same place, but not Region or County
             if len(set(region_list)) == 2:
-                tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, in {ttl_3}'
+                tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, {ttl_3}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[0], 'ttl_2': region_list[1], 'ttl_3': country_list[0]}
             elif len(set(region_list)) > 2:
                 # If location across multiple regions (get the centroid's region)
@@ -158,30 +158,67 @@ class GeodescriberService(object):
         return tmp_config
 
     @staticmethod
-    def gen_land_sea_sentence(stats):
+    def gen_land_sea_title(stats):
         land = stats.get('seaLandFreshwater').get('0', 0)
         sea = stats.get('seaLandFreshwater').get('1', 0)
         fresh = stats.get('seaLandFreshwater').get('2', 0)
         water = sea + fresh
 
         total_land_sea = land + sea + fresh
-        land_sea_sentence = None
+        land_sea_sentence = ''
 
-        if land/total_land_sea > 0.95:
-            land_sea_sentence = "Inland"
-        elif sea/total_land_sea > 0.95:
-            land_sea_sentence = "Saltwater"
-        elif fresh/total_land_sea > 0.95:
+        if sea/total_land_sea > 0.66:
+            land_sea_sentence = "Marine"
+        elif fresh/total_land_sea > 0.66:
             land_sea_sentence = "Freshwater"
-        elif land/total_land_sea > 0.66:
-            land_sea_sentence = "Predominantly inland"
-        elif sea/water > 0.66:
-                land_sea_sentence = "Predominantly saltwater"
-        elif fresh/water > 0.66:        
-            land_sea_sentence = "Predominantly freshwater"
-        else:        
-            land_sea_sentence = "Brackish"
         return land_sea_sentence
+
+    @staticmethod
+    def gen_land_sea_sentence(stats):
+        tmp_config = {'items': {}, 'sentence': ""}
+
+        land = stats.get('seaLandFreshwater').get('0', 0)
+        sea = stats.get('seaLandFreshwater').get('1', 0)
+        fresh = stats.get('seaLandFreshwater').get('2', 0)
+        total_land_sea = land + sea + fresh
+        land_sea_list = sorted([l for l in [
+            {"type": 'land area', "value": land/total_land_sea},
+            {"type": 'marine areas', "value": sea/total_land_sea},
+            {"type": 'freshwater bodies', "value": fresh/total_land_sea}]
+            if l['value']], key=lambda k: k['value'], reverse=True) 
+        
+        logging.info(f'[Geodescriber]: land_sea: {land_sea_list}')
+        
+        land_sea_sentence = ''
+        
+        if len(land_sea_list) == 1:
+            tmp_config['sentence'] = "The location is entirely comprised of {lsf_0}."
+            tmp_config['items'] = {'lsf_0': land_sea_list[0]['type']}
+        elif land_sea_list[0]['value'] > 0.9:
+            tmp_config['sentence'] = "The location is predominantly comprised of {lsf_0}."
+            tmp_config['items'] = {'lsf_0': land_sea_list[0]['type']}
+        elif len(land_sea_list) == 2:
+            if land_sea_list[0]['value'] > 0.75:
+                tmp_config['sentence'] = "The location is mostly comprised of {lsf_0} with some {lsf_1}."
+                tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type']}
+            else:
+                tmp_config['sentence'] = "The location is mostly comprised of {lsf_0} with a large proportion of {lsf_1}."
+                tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type']}
+        elif land_sea_list[0]['value'] > 0.5:
+            if land_sea_list[1]['value'] > (1 - land_sea_list[0]['value']) * 0.75:
+                tmp_config['sentence'] = "The location is mostly comprised of {lsf_0} with some {lsf_1}."
+                tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type']}
+            else:
+                tmp_config['sentence'] = "The location is mostly comprised of {lsf_0} with some mixed {lsf_1}/{lsf_2}."
+                tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type'], 'lsf_2': land_sea_list[2]['type']}
+        elif land_sea_list[0]['value'] + land_sea_list[1]['value'] > 0.5:
+                tmp_config['sentence'] = "The location is mostly comprised of a mix of {lsf_0} and {lsf_1}."
+                tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type']}
+        else:
+            tmp_config['sentence'] = "The location contains a comprised of mix of {lsf_0}, {lsf_1} and {lsf_2}."
+            tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type'], 'lsf_2': land_sea_list[2]['type']}
+        
+        return tmp_config
 
     @staticmethod
     def gen_intact_sentence(stats):
@@ -263,16 +300,16 @@ class GeodescriberService(object):
         tmp_config = {'items': {}, 'sentence': ""}
         if title_elements:
             try:
-                title_ele = 'in ' + title_elements[0]
+                title_ele = ' in ' + title_elements[0]
             except:
                 title_ele = ''
         else:
             return None
         if app == 'gfw':
-            tmp_config['sentence'] = "Area of {area_0} located in {area_1} {area_2}."
+            tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
             tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence, 'area_2': title_ele}
         else:
-            tmp_config['sentence'] = "Area of {area_0} located in {area_1} {area_2}."
+            tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
             tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²', 'area_1': mountain_sentence, 'area_2': title_ele}
         return tmp_config
 
@@ -303,7 +340,7 @@ class GeodescriberService(object):
             logging.error('[Geodescriber]: EE failed.')
             stats = {}
 
-        land_sea_sentence = GeodescriberService.gen_land_sea_sentence(stats)
+        land_sea_sentence = GeodescriberService.gen_land_sea_title(stats)
         title_elements = GeodescriberService.create_title_elements(s)
         title = GeodescriberService.create_title(title_elements, land_sea_sentence)
         logging.info(f'[Geodescriber]: title: {title}')
@@ -328,6 +365,10 @@ class GeodescriberService(object):
 
             biome_sentence = GeodescriberService.gen_biome_sentence(stats)
             if biome_sentence: sentence_config.append(biome_sentence)
+            # logging.info(f'[Geodescriber]: biome: {biome_sentence}')
+
+            land_sea_sentence = GeodescriberService.gen_land_sea_sentence(stats)
+            if land_sea_sentence: sentence_config.append(land_sea_sentence)
             # logging.info(f'[Geodescriber]: biome: {biome_sentence}')
 
             area_sentence = GeodescriberService.gen_area_sentence(area_ha=area_ha, app=app, mountain_sentence=mountain_sentence['sentence'], title_elements=title_elements)
@@ -371,7 +412,7 @@ class GeodescriberService(object):
             return {
             'title': title,
             'title_params': {},
-            'description':description, 
+            'description':description[:-1], 
             'description_params': {}, 
             'lang': lang,
             'stats': stats
@@ -380,7 +421,7 @@ class GeodescriberService(object):
         return {
             'title': title,
             'title_params': title_params,
-            'description':description, 
+            'description':description[:-1], 
             'description_params': description_params, 
             'lang': lang,
             'stats': stats
