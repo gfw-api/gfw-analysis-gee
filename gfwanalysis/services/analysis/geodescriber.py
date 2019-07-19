@@ -167,11 +167,17 @@ class GeodescriberService(object):
         total_land_sea = land + sea + fresh
         land_sea_sentence = None
 
-        if land/total_land_sea > 0.66:
+        if land/total_land_sea > 0.95:
+            land_sea_sentence = "Inland"
+        elif sea/total_land_sea > 0.95:
+            land_sea_sentence = "Saltwater"
+        elif fresh/total_land_sea > 0.95:
+            land_sea_sentence = "Freshwater"
+        elif land/total_land_sea > 0.66:
             land_sea_sentence = "Predominantly inland"
-        elif sea/water > 0.5:
+        elif sea/water > 0.66:
                 land_sea_sentence = "Predominantly saltwater"
-        elif fresh/water > 0.5:        
+        elif fresh/water > 0.66:        
             land_sea_sentence = "Predominantly freshwater"
         else:        
             land_sea_sentence = "Brackish"
