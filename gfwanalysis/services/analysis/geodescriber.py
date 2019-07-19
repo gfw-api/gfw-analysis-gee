@@ -34,7 +34,7 @@ class GeodescriberService(object):
                     'country': temp_json.get('country', None), 
                     'county': temp_json.get('county', None), 
                     'region': temp_json.get('region', None), 
-                    'continent': iso_to_continent[temp_json.get('country_code', '').upper()]}
+                    'continent': continent_lookup[iso_to_continent[temp_json.get('country_code', '').upper()]]}
                 )
 
         #Getting the data structure
@@ -380,13 +380,16 @@ class GeodescriberService(object):
             'stats': stats
             }
 
-continent_lookup = {'AF':'Africa',
-                    'AN':'Antarctica',
-                    'AS':'Asia',
-                    'EU':'Europe',
-                    'NA':'North america',
-                    'OC':'Oceania',
-                    'SA':'South america'}
+continent_lookup = {
+    None: None,
+    'AF':'Africa',
+    'AN':'Antarctica',
+    'AS':'Asia',
+    'EU':'Europe',
+    'NA':'North america',
+    'OC':'Oceania',
+    'SA':'South america'
+    }
 
 iso_to_continent = {
 '': None,
