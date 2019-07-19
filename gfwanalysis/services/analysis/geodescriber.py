@@ -103,22 +103,22 @@ class GeodescriberService(object):
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country']]):
             # If Continents, Country in the same place, but not Region or County
             if len(set(region_list)) == 2:
-                tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2} in {ttl_3}'
+                tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, in {ttl_3}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[0], 'ttl_2': region_list[1], 'ttl_3': country_list[0]}
             elif len(set(region_list)) > 2:
                 # If location across multiple regions (get the centroid's region)
-                tmp_config['sentence'] = '{ttl_0} near {ttl_1} in {ttl_2}'
+                tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[-1], 'ttl_2': country_list[0]}
     
         else:
             # If only Continents
             if len(set(country_list)) == 2:
                 # If location across two countries
-                tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2} in {ttl_3}'
+                tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, in {ttl_3}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[0], 'ttl_2': country_list[1], 'ttl_3': continent_list[0]}
             elif len(set(country_list)) > 2:
                 # If location across multiple countries (get the centroid's country)   
-                tmp_config['sentence'] = '{ttl_0} near {ttl_1} in {ttl_2}'
+                tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[-1], 'ttl_3': continent_list[0]}
         
         return tmp_config
