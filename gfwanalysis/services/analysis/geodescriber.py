@@ -32,15 +32,16 @@ class GeodescriberService(object):
 
         # Filtering out the locations we care about
             parsed_results.append(
-                {'country': temp_json.get('country', None), 
-                'county': temp_json.get('county', None), 
-                'region': temp_json.get('region', None), 
-                'continent': iso_to_continent[temp_json.get('country_code', '').upper()]}
+                {
+                    'country': temp_json.get('country', None), 
+                    'county': temp_json.get('county', None), 
+                    'region': temp_json.get('region', None), 
+                    'continent': iso_to_continent[temp_json.get('country_code', '').upper()]}
                 )
 
         #Getting the data structure
     
-            title_dict={
+            title_dict = {
                 'country':[] ,
                 'county': [],
                 'continent': [],
@@ -50,8 +51,8 @@ class GeodescriberService(object):
         for key in title_dict.keys():
             for item in parsed_results:
                 value = item[key]
-                if value not in title_dict[key]:
-                    title_dict[key].append(value)
+                # if value not in title_dict[key]:
+                title_dict[key].append(value)
 
         logging.info(f'\n\n\n--------geocode_results----------\n\n\n{title_dict}\n\n\n')
 
@@ -74,43 +75,45 @@ class GeodescriberService(object):
             truth_dict[key] = len(set(value)) == 1
 
         logging.info(f'\n\n\n--------truth_results----------\n\n\n{truth_dict}\n\n\n')
+        logging.info(f'\n\n\n--------truth_comp----------\n\n\n{[val for val in truth_dict.values()]}\n\n\n')
         
         # Create the title based on the thruth dictionary
 
         temp_sentence = {'sentence':""}
-        temp_list = list(truth_dict.values())
     
         country_list = title_elements['country']
         county_list = title_elements['county']
         continent_list = title_elements['continent']
         region_list = title_elements['region']
 
-        # logging.info(f'\n\n\n--------country_list----------\n\n\n{country_list}\n\n\n')    
-        # logging.info(f'\n\n\n--------county_list----------\n\n\n{county_list}\n\n\n')
-        # logging.info(f'\n\n\n--------continent_list----------\n\n\n{continent_list}\n\n\n')   
-        # logging.info(f'\n\n\n--------region_list----------\n\n\n{region_list}\n\n\n')
-        first_elem = [val for val in truth_dict.values()][0]
-        logging.info(f'\n\n\n--------first_elem----------\n\n\n{first_elem}\n\n\n')
-
-        if all([val for val in truth_dict.values()]) == True:
-        
+        if all([val == True for val in truth_dict.values()]):
+            # If all points in the same Continents, Country, Region, and County
             temp_sentence['sentence'] = f'Area of Interest in {county_list[0]} in {region_list[0]}, {country_list[0]}'
         
-        elif all([val for val in truth_dict.values()])  == False:
-        
+        elif all([val == False for val in truth_dict.values()]):
+            # If no points in the same Continents, Country, Region, and County
             temp_sentence['sentence'] = f'Area of Interest'
         
-        elif all([val for key, val in truth_dict.items() if key in ['country', 'county', 'continent'] ]) == True:
+        elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country', 'region'] ]):
+            # If Continents, Country, Region in the same place, but not County
+            temp_sentence['sentence'] = f'Area of Interest in {region_list[0]}, {country_list[0]}'
         
-            temp_sentence['sentence'] = f'Area of Interest in {region_list[0]} in {country_list[0]}'
-        
-        elif all([val for key, val in truth_dict.items() if key in ['country', 'county'] ])== True:
-        
-            temp_sentence['sentence'] = f'Area of Interest between {region_list[0]} and {region_list[1]} in {country_list[0]}'
+        elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country']]):
+            # If Continents, Country in the same place, but not Region or County
+            if len(region_list) == 2:
+                temp_sentence['sentence'] = f'Area of Interest between {region_list[0]} and {region_list[1]} in {country_list[0]}'
+            elif len(region_list) > 2:
+                # If location across multiple regions (get the centroid's region)
+                temp_sentence['sentence'] = f'Area of Interest near {region_list[-1]} in {country_list[0]}'
     
         else:
-        
-            temp_sentence['sentence'] = f'AOI between {country_list[0]} and {country_list[1]} in {continent_list[0]}'
+            # If only Continents
+            if len(country_list) == 2:
+                # If location across two countries    
+                temp_sentence['sentence'] = f'Area of interest between {country_list[0]} and {country_list[1]} in {continent_list[0]}'
+            elif len(country_list) > 2:
+                # If location across multiple countries (get the centroid's country)   
+                temp_sentence['sentence'] = f'Area of interest near {country_list[-1]} in {continent_list[0]}'
         
         logging.info(f'\n\n\n--------temp_sentence----------\n\n\n{temp_sentence}\n\n\n')
         return temp_sentence
