@@ -20,8 +20,6 @@ class GeodescriberService(object):
         func = reverse_geocode_a_geostore(loop, s)
         geocode_results = loop.run_until_complete(func)
 
-        #parsed_results = [result.geojson.get('features')[0].get('properties') for result in geocode_results]
-        
         parsed_results = []
         
         for result in geocode_results:
@@ -40,7 +38,6 @@ class GeodescriberService(object):
                 )
 
         #Getting the data structure
-    
             title_dict = {
                 'country':[] ,
                 'county': [],
@@ -54,16 +51,11 @@ class GeodescriberService(object):
                 # if value not in title_dict[key]:
                 title_dict[key].append(value)
 
-        logging.info(f'\n\n\n--------geocode_results----------\n\n\n{title_dict}\n\n\n')
-
         return title_dict
 
     @staticmethod
     def create_title(title_elements, land_sea):
         tmp_config = {'items': {}, 'sentence': ""}
-        #  title_elements == title_dict
-        logging.info(f'\n\n\n--------title_elements----------\n\n\n{title_elements}\n\n\n')
-
         truth_dict ={
             'country':None,
             'county': None,
@@ -84,8 +76,6 @@ class GeodescriberService(object):
             distinct_locs[key] = locs
             truth_dict[key] = len(set(locs)) == 1
 
-        logging.info(f'\n\n\n--------truth_results----------\n\n\n{truth_dict}\n\n\n')
-        
         country_list = distinct_locs['country']
         county_list = distinct_locs['county']
         continent_list = distinct_locs['continent']
@@ -128,8 +118,6 @@ class GeodescriberService(object):
         logging.info(f'\n\n\n--------temp_sentence----------\n\n\n{temp_sentence}\n\n\n')
         return temp_sentence
         
-
-
         # if land_sea:
         #     if title_elements and len(title_elements) == 3:
         #         tmp_config['sentence'] = "{ttl_0} area between {ttl_1} and {ttl_2}"
