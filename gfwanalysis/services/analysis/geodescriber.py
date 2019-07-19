@@ -38,6 +38,7 @@ class GeodescriberService(object):
                 )
 
         #Getting the data structure
+    
             title_dict = {
                 'country':[] ,
                 'county': [],
@@ -48,7 +49,6 @@ class GeodescriberService(object):
         for key in title_dict.keys():
             for item in parsed_results:
                 value = item[key]
-                # if value not in title_dict[key]:
                 title_dict[key].append(value)
 
         return title_dict
@@ -56,6 +56,7 @@ class GeodescriberService(object):
     @staticmethod
     def create_title(title_elements, land_sea):
         tmp_config = {'items': {}, 'sentence': ""}
+       
         truth_dict ={
             'country':None,
             'county': None,
@@ -72,7 +73,7 @@ class GeodescriberService(object):
     
         # Create the title based on the thruth dictionary
         for key,value in title_elements.items():
-            locs = [v for v in value if value]
+            locs = [v for v in value if v is not None]
             distinct_locs[key] = locs
             truth_dict[key] = len(set(locs)) == 1
 
@@ -84,7 +85,7 @@ class GeodescriberService(object):
         temp_sentence = {'sentence':""}
 
         if land_sea: land_sea_phrase = f'{land_sea} area'
-        else: land_sea_phrase = 'Area of interest'
+        else: land_sea_phrase = 'Area'
 
         if all([val == True for val in truth_dict.values()]):
             # If all points in the same Continents, Country, Region, and County
@@ -92,7 +93,7 @@ class GeodescriberService(object):
         
         elif all([val == False for val in truth_dict.values()]):
             # If no points in the same Continents, Country, Region, and County
-            temp_sentence['sentence'] = f'{land_sea_phrase}'
+            temp_sentence['sentence'] = f'{land_sea_phrase} of interest'
         
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country', 'region'] ]):
             # If Continents, Country, Region in the same place, but not County
@@ -118,6 +119,8 @@ class GeodescriberService(object):
         logging.info(f'\n\n\n--------temp_sentence----------\n\n\n{temp_sentence}\n\n\n')
         return temp_sentence
         
+
+
         # if land_sea:
         #     if title_elements and len(title_elements) == 3:
         #         tmp_config['sentence'] = "{ttl_0} area between {ttl_1} and {ttl_2}"
