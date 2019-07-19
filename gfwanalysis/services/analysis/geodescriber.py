@@ -82,63 +82,47 @@ class GeodescriberService(object):
         continent_list = distinct_locs['continent']
         region_list = distinct_locs['region']
 
-        temp_sentence = {'sentence':""}
-
         if land_sea: land_sea_phrase = f'{land_sea} area'
         else: land_sea_phrase = 'Area'
 
         if all([val == True for val in truth_dict.values()]):
             # If all points in the same Continents, Country, Region, and County
-            temp_sentence['sentence'] = f'{land_sea_phrase} in {county_list[0]} in {region_list[0]}, {country_list[0]}'
+            tmp_config['sentence'] = '{ttl_0} in {ttl_1} in {ttl_2}, {ttl_3}'
+            tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': county_list[0], 'ttl_2': region_list[0], 'ttl_3': country_list[0]}
         
         elif all([val == False for val in truth_dict.values()]):
             # If no points in the same Continents, Country, Region, and County
-            temp_sentence['sentence'] = f'{land_sea_phrase} of interest'
+            tmp_config['sentence'] = '{ttl_0} of interest'
+            tmp_config['items'] = {'ttl_0': land_sea_phrase}
         
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country', 'region'] ]):
             # If Continents, Country, Region in the same place, but not County
-            temp_sentence['sentence'] = f'{land_sea_phrase} in {region_list[0]}, {country_list[0]}'
+            tmp_config['sentence'] = '{ttl_0} in {ttl_1}, {ttl_3}'
+            tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[0], 'ttl_2': country_list[0]}
         
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country']]):
             # If Continents, Country in the same place, but not Region or County
             if len(set(region_list)) == 2:
-                temp_sentence['sentence'] = f'{land_sea_phrase} between {region_list[0]} and {region_list[1]} in {country_list[0]}'
+                tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2} in {ttl_3}'
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[0], 'ttl_2': region_list[1], 'ttl_3': country_list[0]}
             elif len(set(region_list)) > 2:
                 # If location across multiple regions (get the centroid's region)
-                temp_sentence['sentence'] = f'{land_sea_phrase} near {region_list[-1]} in {country_list[0]}'
+                tmp_config['sentence'] = '{ttl_0} near {ttl_1} in {ttl_2}'
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[-1], 'ttl_2': country_list[0]}
     
         else:
             # If only Continents
             if len(set(country_list)) == 2:
                 # If location across two countries
-                temp_sentence['sentence'] = f'{land_sea_phrase} between {country_list[0]} and {country_list[1]} in {continent_list[0]}'
+                tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2} in {ttl_3}'
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[0], 'ttl_2': country_list[1], 'ttl_3': continent_list[0]}
             elif len(set(country_list)) > 2:
                 # If location across multiple countries (get the centroid's country)   
-                temp_sentence['sentence'] = f'{land_sea_phrase} near {country_list[-1]} in {continent_list[0]}'
+                tmp_config['sentence'] = '{ttl_0} near {ttl_1} in {ttl_2}'
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[-1], 'ttl_3': continent_list[0]}
         
-        logging.info(f'\n\n\n--------temp_sentence----------\n\n\n{temp_sentence}\n\n\n')
-        return temp_sentence
+        return tmp_config
         
-
-
-        # if land_sea:
-        #     if title_elements and len(title_elements) == 3:
-        #         tmp_config['sentence'] = "{ttl_0} area between {ttl_1} and {ttl_2}"
-        #         tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0], 'ttl_2': title_elements[1]}
-        #     elif title_elements and len(title_elements) == 2:
-        #         tmp_config['sentence'] = "{ttl_0} area in {ttl_1} and {ttl_2}"
-        #         tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0], 'ttl_2': title_elements[1]}
-        #     elif title_elements and len(title_elements) == 1:
-        #         tmp_config['sentence'] = "{ttl_0} area in {ttl_1}"
-        #         tmp_config['items'] = {'ttl_0': land_sea, 'ttl_1': title_elements[0]}
-        #     else:
-        #         tmp_config['sentence'] = "{ttl_0} area of interest"
-        #         tmp_config['items'] = {'ttl_0': land_sea}
-        # else:
-        #     tmp_config['sentence'] = "Area of interest"
-        # return tmp_config
-        
-
     @staticmethod
     def give_sorted_d(lookup_dic, key, stats):
         """Return a dic with keys as integer percentage of coverage proportion."""
