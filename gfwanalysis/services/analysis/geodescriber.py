@@ -93,37 +93,37 @@ class GeodescriberService(object):
 
         temp_sentence = {'sentence':""}
 
-        if land_sea: land_sea_phrase = f'{land_sea} a'
-        else: land_sea_phrase = 'A'
+        if land_sea: land_sea_phrase = f'{land_sea} area'
+        else: land_sea_phrase = 'Area of interest'
 
         if all([val == True for val in truth_dict.values()]):
             # If all points in the same Continents, Country, Region, and County
-            temp_sentence['sentence'] = f'{land_sea_phrase}rea of interest in {county_list[0]} in {region_list[0]}, {country_list[0]}'
+            temp_sentence['sentence'] = f'{land_sea_phrase} in {county_list[0]} in {region_list[0]}, {country_list[0]}'
         
         elif all([val == False for val in truth_dict.values()]):
             # If no points in the same Continents, Country, Region, and County
-            temp_sentence['sentence'] = f'{land_sea_phrase}rea of interest'
+            temp_sentence['sentence'] = f'{land_sea_phrase}'
         
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country', 'region'] ]):
             # If Continents, Country, Region in the same place, but not County
-            temp_sentence['sentence'] = f'{land_sea_phrase}rea of interest in {region_list[0]}, {country_list[0]}'
+            temp_sentence['sentence'] = f'{land_sea_phrase} in {region_list[0]}, {country_list[0]}'
         
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country']]):
             # If Continents, Country in the same place, but not Region or County
             if len(set(region_list)) == 2:
-                temp_sentence['sentence'] = f'{land_sea_phrase}rea of interest between {region_list[0]} and {region_list[1]} in {country_list[0]}'
+                temp_sentence['sentence'] = f'{land_sea_phrase} between {region_list[0]} and {region_list[1]} in {country_list[0]}'
             elif len(set(region_list)) > 2:
                 # If location across multiple regions (get the centroid's region)
-                temp_sentence['sentence'] = f'{land_sea_phrase}rea of interest near {region_list[-1]} in {country_list[0]}'
+                temp_sentence['sentence'] = f'{land_sea_phrase} near {region_list[-1]} in {country_list[0]}'
     
         else:
             # If only Continents
             if len(set(country_list)) == 2:
                 # If location across two countries
-                temp_sentence['sentence'] = f'{land_sea_phrase}rea of interest between {country_list[0]} and {country_list[1]} in {continent_list[0]}'
+                temp_sentence['sentence'] = f'{land_sea_phrase} between {country_list[0]} and {country_list[1]} in {continent_list[0]}'
             elif len(set(country_list)) > 2:
                 # If location across multiple countries (get the centroid's country)   
-                temp_sentence['sentence'] = f'{land_sea_phrase}rea of interest near {country_list[-1]} in {continent_list[0]}'
+                temp_sentence['sentence'] = f'{land_sea_phrase} near {country_list[-1]} in {continent_list[0]}'
         
         logging.info(f'\n\n\n--------temp_sentence----------\n\n\n{temp_sentence}\n\n\n')
         return temp_sentence
