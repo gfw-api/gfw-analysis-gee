@@ -62,9 +62,15 @@ class MCAnalysisService(object):
         step = (bins[1] - bins[0])
         bcenter = [bpos + step for bpos in bins[:-1]]
 
+        #Gaus fit
+
+        mu, sigma = np.mean(mc_pop), np.std(mc_pop)
+        logging.info(f"[MC service] pandas: {mu}")
+        logging.info(f"[MC service] pandas: {sigma}")
+        ygauss = stats.norm.pdf(bins, mu, sigma) # a function from matplotlib.mlab.
+        ynormgauss = ygauss/sum(ygauss) # Normalize distribution so sum is 1.0
+        
+        results = integrate_fits(anomaly=anomaly, mu=mu, sigma=sigma, anomaly_uncertainty=cumulative_sigma)
 
 
-
-
-
-        return d
+        return results
