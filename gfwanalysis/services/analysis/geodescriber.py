@@ -183,7 +183,7 @@ class GeodescriberService(object):
         total_land_sea = land + sea + fresh
         land_sea_list = sorted([l for l in [
             {"type": 'land area', "value": land/total_land_sea},
-            {"type": 'marine areas', "value": sea/total_land_sea},
+            {"type": 'marine area', "value": sea/total_land_sea},
             {"type": 'inland water', "value": fresh/total_land_sea}]
             if l['value']], key=lambda k: k['value'], reverse=True) 
         
