@@ -170,7 +170,7 @@ class GeodescriberService(object):
         if sea/total_land_sea > 0.66:
             land_sea_sentence = "Marine"
         elif fresh/total_land_sea > 0.66:
-            land_sea_sentence = "Freshwater"
+            land_sea_sentence = "Inland water"
         return land_sea_sentence
 
     @staticmethod
