@@ -97,7 +97,7 @@ class GeodescriberService(object):
         
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country', 'region'] ]):
             # If Continents, Country, Region in the same place, but not County
-            tmp_config['sentence'] = '{ttl_0} in {ttl_1}, {ttl_3}'
+            tmp_config['sentence'] = '{ttl_0} in {ttl_1}, {ttl_2}'
             tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[0], 'ttl_2': country_list[0]}
         
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country']]):
@@ -184,38 +184,35 @@ class GeodescriberService(object):
         land_sea_list = sorted([l for l in [
             {"type": 'land area', "value": land/total_land_sea},
             {"type": 'marine areas', "value": sea/total_land_sea},
-            {"type": 'freshwater bodies', "value": fresh/total_land_sea}]
+            {"type": 'inland water', "value": fresh/total_land_sea}]
             if l['value']], key=lambda k: k['value'], reverse=True) 
         
         logging.info(f'[Geodescriber]: land_sea: {land_sea_list}')
         
         land_sea_sentence = ''
         
-        if len(land_sea_list) == 1:
-            tmp_config['sentence'] = "The location is entirely comprised of {lsf_0}."
-            tmp_config['items'] = {'lsf_0': land_sea_list[0]['type']}
-        elif land_sea_list[0]['value'] > 0.9:
-            tmp_config['sentence'] = "The location is predominantly comprised of {lsf_0}."
+        if land_sea_list[0]['value'] > 0.9:
+            tmp_config['sentence'] = "The location is predominantly {lsf_0}."
             tmp_config['items'] = {'lsf_0': land_sea_list[0]['type']}
         elif len(land_sea_list) == 2:
             if land_sea_list[0]['value'] > 0.75:
-                tmp_config['sentence'] = "The location is mostly comprised of {lsf_0} with some {lsf_1}."
+                tmp_config['sentence'] = "The location is mostly {lsf_0} with some {lsf_1}."
                 tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type']}
             else:
-                tmp_config['sentence'] = "The location is mostly comprised of {lsf_0} with a large proportion of {lsf_1}."
+                tmp_config['sentence'] = "The location is mostly {lsf_0} with a large proportion of {lsf_1}."
                 tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type']}
         elif land_sea_list[0]['value'] > 0.5:
             if land_sea_list[1]['value'] > (1 - land_sea_list[0]['value']) * 0.75:
-                tmp_config['sentence'] = "The location is mostly comprised of {lsf_0} with some {lsf_1}."
+                tmp_config['sentence'] = "The location is mostly {lsf_0} with some {lsf_1}."
                 tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type']}
             else:
-                tmp_config['sentence'] = "The location is mostly comprised of {lsf_0} with some mixed {lsf_1}/{lsf_2}."
+                tmp_config['sentence'] = "The location is mostly {lsf_0} with a mix of {lsf_1} and {lsf_2}."
                 tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type'], 'lsf_2': land_sea_list[2]['type']}
         elif land_sea_list[0]['value'] + land_sea_list[1]['value'] > 0.5:
-                tmp_config['sentence'] = "The location is mostly comprised of a mix of {lsf_0} and {lsf_1}."
+                tmp_config['sentence'] = "The location is mostly a mix of {lsf_0} and {lsf_1}."
                 tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type']}
         else:
-            tmp_config['sentence'] = "The location contains a comprised of mix of {lsf_0}, {lsf_1} and {lsf_2}."
+            tmp_config['sentence'] = "The location contains a mix of {lsf_0}, {lsf_1} and {lsf_2}."
             tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type'], 'lsf_2': land_sea_list[2]['type']}
         
         return tmp_config
