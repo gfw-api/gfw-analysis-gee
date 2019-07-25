@@ -4,7 +4,6 @@ import asyncio
 import requests
 import functools as funct
 import ee
-import functools as funct
 import logging
 
 from gfwanalysis.errors import RecentTilesError
