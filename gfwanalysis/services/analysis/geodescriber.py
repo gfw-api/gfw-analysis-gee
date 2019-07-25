@@ -18,8 +18,15 @@ class GeodescriberService(object):
         """
         loop = asyncio.new_event_loop()
         func = reverse_geocode_a_geostore(loop, s)
-        geocode_results = loop.run_until_complete(func)
-
+        try:
+            geocode_results = loop.run_until_complete(func)
+        except:
+            return {
+                'country':[None],
+                'county': [None],
+                'continent': [None],
+                'region': [None]
+            }
         parsed_results = []
         
         for result in geocode_results:
@@ -76,7 +83,7 @@ class GeodescriberService(object):
             locs = [v for v in value if v is not None]
             distinct_locs[key] = locs
             truth_dict[key] = len(set(locs)) == 1
-
+            logging.info(f'[truth:]: n/n/n/{truth_dict}n/n/n/')
         country_list = distinct_locs['country']
         county_list = distinct_locs['county']
         continent_list = distinct_locs['continent']
@@ -228,9 +235,9 @@ class GeodescriberService(object):
         is_marine = stats.get('seaLandFreshwater').get('1', 0)
         is_fresh = stats.get('seaLandFreshwater').get('2', 0)
 
-        if is_marine and is_land + is_fresh == 0: return tmp_config
 
         tmp_config = {'items': {}, 'sentence': ""}
+        if is_marine and is_land + is_fresh == 0: return tmp_config
         if is_intact:
             if is_intact/total_intact > 0.75:
                 tmp_config['sentence'] = "This region contains a large amount of Intact Forest."
@@ -248,7 +255,9 @@ class GeodescriberService(object):
         not_mountain = stats.get('isMountain').get('0', 0)
         total_mountain = not_mountain + is_mountain
         mountain_sentence = None
+
         tmp_config = {'items': {}, 'sentence': ""}
+
         if is_mountain:
             if is_mountain/total_mountain > 0.75:
                 tmp_config['sentence'] = "a mountainous area"
@@ -300,7 +309,7 @@ class GeodescriberService(object):
         return tmp_config
 
     @staticmethod
-    def gen_area_sentence(area_ha, app, mountain_sentence, title_elements):
+    def gen_area_sentence(area_ha, app, mountain_sentence, title_elements, stats):
         tmp_config = {'items': {}, 'sentence': ""}
         if title_elements:
             try:
@@ -309,12 +318,25 @@ class GeodescriberService(object):
                 title_ele = ''
         else:
             return None
+        
+        is_land = stats.get('seaLandFreshwater').get('0', 0)
+        is_marine = stats.get('seaLandFreshwater').get('1', 0)
+        is_fresh = stats.get('seaLandFreshwater').get('2', 0) 
+          
         if app == 'gfw':
-            tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
-            tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence, 'area_2': title_ele}
+            if is_marine and (is_land + is_fresh) / is_marine < 0.01: 
+               tmp_config['sentence'] = "It has a total area of {area_0}." 
+               tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha'}
+            else:  
+                tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
+                tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence, 'area_2': title_ele}
         else:
-            tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
-            tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²', 'area_1': mountain_sentence, 'area_2': title_ele}
+            if is_marine and (is_land + is_fresh) / is_marine < 0.01: 
+               tmp_config['sentence'] = "It has a total area of {area_0}. " 
+               tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²'}
+            else:
+                tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
+                tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²', 'area_1': mountain_sentence, 'area_2': title_ele}
         return tmp_config
 
     @staticmethod
@@ -375,7 +397,7 @@ class GeodescriberService(object):
             if land_sea_sentence: sentence_config.append(land_sea_sentence)
             # logging.info(f'[Geodescriber]: biome: {biome_sentence}')
 
-            area_sentence = GeodescriberService.gen_area_sentence(area_ha=area_ha, app=app, mountain_sentence=mountain_sentence['sentence'], title_elements=title_elements)
+            area_sentence = GeodescriberService.gen_area_sentence(area_ha=area_ha, app=app, mountain_sentence=mountain_sentence['sentence'], title_elements=title_elements, stats=stats)
             if area_sentence: sentence_config.append(area_sentence)
             # logging.info(f'[Geodescriber]: area: {area_sentence}')
 
