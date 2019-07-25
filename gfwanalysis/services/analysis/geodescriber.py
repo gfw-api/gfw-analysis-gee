@@ -104,7 +104,7 @@ class GeodescriberService(object):
             # If Continents, Country in the same place, but not Region or County
             if len(set(region_list)) == 2:
                 tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, {ttl_3}'
-                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[0], 'ttl_2': region_list[1], 'ttl_3': country_list[0]}
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': list(set(region_list))[0], 'ttl_2': list(set(region_list))[1], 'ttl_3': country_list[0]}
             elif len(set(region_list)) > 2:
                 # If location across multiple regions (get the centroid's region)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
@@ -115,7 +115,7 @@ class GeodescriberService(object):
             if len(set(country_list)) == 2:
                 # If location across two countries
                 tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, in {ttl_3}'
-                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[0], 'ttl_2': country_list[1], 'ttl_3': continent_list[0]}
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': list(set(country_list))[0], 'ttl_2': list(set(country_list))[1], 'ttl_3': continent_list[0]}
             elif len(set(country_list)) > 2:
                 # If location across multiple countries (get the centroid's country)   
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
@@ -170,7 +170,7 @@ class GeodescriberService(object):
         if sea/total_land_sea > 0.66:
             land_sea_sentence = "Marine"
         elif fresh/total_land_sea > 0.66:
-            land_sea_sentence = "Freshwater"
+            land_sea_sentence = "Inland water"
         return land_sea_sentence
 
     @staticmethod
@@ -183,7 +183,7 @@ class GeodescriberService(object):
         total_land_sea = land + sea + fresh
         land_sea_list = sorted([l for l in [
             {"type": 'land area', "value": land/total_land_sea},
-            {"type": 'marine areas', "value": sea/total_land_sea},
+            {"type": 'marine area', "value": sea/total_land_sea},
             {"type": 'inland water', "value": fresh/total_land_sea}]
             if l['value']], key=lambda k: k['value'], reverse=True) 
         
@@ -222,7 +222,14 @@ class GeodescriberService(object):
         not_intact = stats.get('intact2016').get('0', 0)
         is_intact = stats.get('intact2016').get('1', 0)
         total_intact = not_intact + is_intact
-        intact_sentence = None
+        intact_sentence = ""
+
+        is_land = stats.get('seaLandFreshwater').get('0', 0)
+        is_marine = stats.get('seaLandFreshwater').get('1', 0)
+        is_fresh = stats.get('seaLandFreshwater').get('2', 0)
+
+        if is_marine and is_land + is_fresh == 0: return tmp_config
+
         tmp_config = {'items': {}, 'sentence': ""}
         if is_intact:
             if is_intact/total_intact > 0.75:
