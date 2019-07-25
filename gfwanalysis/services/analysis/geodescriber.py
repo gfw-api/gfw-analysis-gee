@@ -222,7 +222,14 @@ class GeodescriberService(object):
         not_intact = stats.get('intact2016').get('0', 0)
         is_intact = stats.get('intact2016').get('1', 0)
         total_intact = not_intact + is_intact
-        intact_sentence = None
+        intact_sentence = ""
+
+        is_land = stats.get('seaLandFreshwater').get('0', 0)
+        is_marine = stats.get('seaLandFreshwater').get('1', 0)
+        is_fresh = stats.get('seaLandFreshwater').get('2', 0)
+
+        if is_marine and is_land + is_fresh == 0: return tmp_config
+
         tmp_config = {'items': {}, 'sentence': ""}
         if is_intact:
             if is_intact/total_intact > 0.75:
