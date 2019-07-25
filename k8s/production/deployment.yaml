@@ -1,6 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
+  namespace: gfw
   labels:
     name: {name}
     app: gfw
@@ -9,8 +10,6 @@ spec:
   revisionHistoryLimit: 2
   template:
     metadata:
-      annotations:
-        chaos.alpha.kubernetes.io/enabled: "true"
       labels:
         name: {name}
     spec:
@@ -45,7 +44,7 @@ spec:
           - name: ENVIRONMENT
             value: prod
           - name: LOCAL_URL
-            value: http://{name}.default.svc.cluster.local:4500
+            value: http://{name}.gfw.svc.cluster.local:4500
           - name: CT_URL
             valueFrom:
                 secretKeyRef:
