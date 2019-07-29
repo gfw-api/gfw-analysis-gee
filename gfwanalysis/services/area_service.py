@@ -1,13 +1,7 @@
-import json
-import os
-import logging
-from functools import partial
-
 import pyproj
-from shapely.geometry import shape
+from functools import partial
 from shapely.geometry import shape
 from shapely.ops import transform
-from flask import request
 
 
 class AreaService(object):

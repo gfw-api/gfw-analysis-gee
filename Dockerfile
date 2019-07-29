@@ -1,5 +1,5 @@
-FROM python:3.6-alpine
-MAINTAINER Sergio Gordillo sergio.gordillo@vizzuality.com
+FROM python:3.6.8-alpine
+MAINTAINER Vizzuality info@vizzuality.com
 
 ENV NAME gfwanalysis
 ENV USER gfwanalysis
@@ -32,7 +32,7 @@ WORKDIR /opt/$NAME
 
 COPY ./$NAME /opt/$NAME/$NAME
 COPY ./microservice /opt/$NAME/microservice
-COPY ./tests /opt/$NAME/tests
+#COPY ./tests /opt/$NAME/tests
 RUN chown $USER:$USER /opt/$NAME
 
 # Tell Docker we are going to use this ports

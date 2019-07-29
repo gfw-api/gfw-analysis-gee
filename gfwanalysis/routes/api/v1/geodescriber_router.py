@@ -20,8 +20,9 @@ def analyze(geojson, area_ha):
     """Call Geodescriber"""
     app = request.args.get('app', 'gfw')
     lang = request.args.get('lang','en')
+    template = request.args.get('template', '').lower() in ['t', 'true']
     gd_result = GeodescriberService.analyze(geojson=geojson,
-                                            area_ha=area_ha, app=app, lang=lang)
+                                            area_ha=area_ha, app=app, lang=lang, template=template)
     logging.info(f'[ROUTER]: result {gd_result}')
     return jsonify(data=gd_result), 200
 
@@ -35,7 +36,7 @@ def get_by_geostore(geojson, area_ha):
     return analyze(geojson, area_ha)
 
 
-@geodescriber_endpoints_v1.route('/geom/', strict_slashes=False, methods=['GET','POST'])
+@geodescriber_endpoints_v1.route('/geom', strict_slashes=False, methods=['GET','POST'])
 @get_geo_by_geom
 def get_by_geom(geojson, area_ha):
     """By Geostore Endpoint"""

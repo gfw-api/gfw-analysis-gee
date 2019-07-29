@@ -1,6 +1,3 @@
-import logging
-
-
 def flatten_area_hist(area_hist):
     out_dict = {}
 

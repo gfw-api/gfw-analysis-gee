@@ -1,11 +1,11 @@
 """WHRC BIOMASS SERVICE"""
 
+import ee
 import logging
 
-import ee
-from gfwanalysis.errors import WHRCBiomassError
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.geo import get_region, squaremeters_to_ha, admin_0_simplify
+from gfwanalysis.errors import WHRCBiomassError
+from gfwanalysis.utils.geo import get_region
 
 
 class WHRCBiomassService(object):
@@ -18,13 +18,13 @@ class WHRCBiomassService(object):
         try:
             d = {}
             hansen_asset = SETTINGS.get('gee').get('assets').get('hansen')
-            biomass_asset= SETTINGS.get('gee').get('assets').get('whrc_biomass')
+            biomass_asset = SETTINGS.get('gee').get('assets').get('whrc_biomass')
             region = get_region(geojson)
             reduce_args = {'reducer': ee.Reducer.sum().unweighted(),
                            'geometry': region,
                            'bestEffort': True,
                            'scale': 30}
-            tc_mask = ee.Image(hansen_asset).select('tree_'+ str(threshold)).gt(0)
+            tc_mask = ee.Image(hansen_asset).select('tree_' + str(threshold)).gt(0)
             biomass = ee.ImageCollection(biomass_asset).max().multiply(ee.Image.pixelArea().divide(10000)).mask(tc_mask)
             # Identify thresholded biomass value
             biomass_value = biomass.reduceRegion(**reduce_args).getInfo()

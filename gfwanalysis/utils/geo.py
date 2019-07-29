@@ -2,16 +2,38 @@ import ee
 import logging
 from shapely.geometry import shape, GeometryCollection
 import geocoder
+import asyncio
+import functools as funct
 
+def get_geocode(point):
+    result = geocoder.osm(point, method='reverse', lang_code='en')
+    if 'ERROR' in str(result): result = None
+    return result
 
-def reverse_geocode_a_geostore(s):
+def loop_future(loop, f, a):
+    return loop.run_in_executor(
+            None,
+            funct.partial(f, a),
+        )
+
+async def reverse_geocode_a_geostore(loop, shape):
     """ Take a shapely shape object and return geocoding results on the min/max coordinate locations"""
-    min_coords = [s.bounds[1], s.bounds[0]]
-    max_coords = [s.bounds[3], s.bounds[2]]
-    geocode_results = []
-    for coords in [min_coords, max_coords]:
-        geocode_results.append(geocoder.osm(coords, method='reverse', lang_code='en'))
-    return geocode_results
+    w, s, e, n = shape.bounds
+    bl = [s, w]
+    br = [s, e]
+    tl = [n, w]
+    tr = [n, e]
+    cd = list(shape.centroid.coords[0])[::-1]
+    locs = [bl, tr, br, tl, cd]
+
+    asyncio.set_event_loop(loop)
+
+    futures = [loop_future(loop, get_geocode, loc) for loc in locs]
+    for response in await asyncio.gather(*futures):
+        # logging.info(f'Response: {response}')
+        pass
+
+    return [future.result() for future in futures]
 
 def check_equivence(item1, item2):
     """Check to see if the two items are equal and neither is equal to None"""
@@ -44,6 +66,7 @@ def human_format(num):
     return '%.2f%s' % (num, ['', 'k', 'M', 'G', 'T', 'P'][magnitude])
 
 
+
 def get_region(geom):
     """Take a valid geojson object, iterate over all features in that object.
         Build up a list of EE Polygons, and finally return an EE Feature
@@ -65,7 +88,7 @@ def get_region(geom):
 
 def squaremeters_to_ha(value):
     """Converts square meters to hectares, and gives val to 2 decimal places"""
-    tmp = value/10000.
+    tmp = value / 10000.
     return float('{0:4.2f}'.format(tmp))
 
 
@@ -89,7 +112,7 @@ def get_thresh_image(thresh, asset_id):
 def dict_unit_transform(data, num):
     dasy = {}
     for key in data:
-        dasy[key] = data[key]*num
+        dasy[key] = data[key] * num
 
     return dasy
 
@@ -105,6 +128,7 @@ def indicator_selector(row, indicator, begin, end):
             dasy[str(row[i]['year'])] = row[i]['value']
 
     return dasy
+
 
 def dates_selector(data, begin, end):
     """Return Tons of biomass loss."""
@@ -122,133 +146,133 @@ def sum_range(data, begin, end):
 
 def admin_0_simplify(iso):
     """Check admin areas and return a relevant simplification or None"""
-    #logging.info(f'[admin_0_simplify]: passed {iso}')
+    # logging.info(f'[admin_0_simplify]: passed {iso}')
     admin_0_dic = {'ATA': 0.3,
-                    'RUS': 0.3,
-                    'CAN': 0.3,
-                    'GRL': 0.3,
-                    'USA': 0.3,
-                    'CHN': 0.3,
-                    'AUS': 0.1,
-                    'BRA': 0.1,
-                    'KAZ': 0.1,
-                    'ARG': 0.1,
-                    'IND': 0.1,
-                    'MNG': 0.1,
-                    'DZA': 0.1,
-                    'MEX': 0.1,
-                    'COD': 0.1,
-                    'SAU': 0.1,
-                    'IRN': 0.1,
-                    'SWE': 0.1,
-                    'LBY': 0.1,
-                    'SDN': 0.1,
-                    'IDN': 0.1,
-                    'FIN': 0.01,
-                    'NOR': 0.01,
-                    'SJM': 0.01,
-                    'ZAF': 0.01,
-                    'UKR': 0.01,
-                    'MLI': 0.01,
-                    'TCD': 0.01,
-                    'PER': 0.01,
-                    'AGO': 0.01,
-                    'NER': 0.01,
-                    'CHL': 0.01,
-                    'TUR': 0.01,
-                    'EGY': 0.01,
-                    'MRT': 0.01,
-                    'BOL': 0.01,
-                    'PAK': 0.01,
-                    'ETH': 0.01,
-                    'FRA': 0.01,
-                    'COL': 0.01}
+                   'RUS': 0.3,
+                   'CAN': 0.3,
+                   'GRL': 0.3,
+                   'USA': 0.3,
+                   'CHN': 0.3,
+                   'AUS': 0.1,
+                   'BRA': 0.1,
+                   'KAZ': 0.1,
+                   'ARG': 0.1,
+                   'IND': 0.1,
+                   'MNG': 0.1,
+                   'DZA': 0.1,
+                   'MEX': 0.1,
+                   'COD': 0.1,
+                   'SAU': 0.1,
+                   'IRN': 0.1,
+                   'SWE': 0.1,
+                   'LBY': 0.1,
+                   'SDN': 0.1,
+                   'IDN': 0.1,
+                   'FIN': 0.01,
+                   'NOR': 0.01,
+                   'SJM': 0.01,
+                   'ZAF': 0.01,
+                   'UKR': 0.01,
+                   'MLI': 0.01,
+                   'TCD': 0.01,
+                   'PER': 0.01,
+                   'AGO': 0.01,
+                   'NER': 0.01,
+                   'CHL': 0.01,
+                   'TUR': 0.01,
+                   'EGY': 0.01,
+                   'MRT': 0.01,
+                   'BOL': 0.01,
+                   'PAK': 0.01,
+                   'ETH': 0.01,
+                   'FRA': 0.01,
+                   'COL': 0.01}
     simplification = admin_0_dic.get(iso, None)
     return simplification
 
 
 def admin_1_simplify(iso, admin1):
-    #logging.info(f'[admin_1_simplify]: passed {iso}/{admin1}')
+    # logging.info(f'[admin_1_simplify]: passed {iso}/{admin1}')
     admin_1_dic = {'RUS': {60: 0.3,
-                            35: 0.3,
-                            12: 0.1,
-                            80: 0.1,
-                            18: 0.1,
-                            28: 0.1,
-                            30: 0.1,
-                            4: 0.1,
-                            40: 0.1,
-                            32: 0.1,
-                            24: 0.1,
-                            83: 0.1,
-                            3: 0.01,
-                            69: 0.01,
-                            9: 0.01,
-                            46: 0.01,
-                            26: 0.01,
-                            45: 0.01,
-                            66: 0.01,
-                            55: 0.01,
-                            50: 0.01},
-                            'CAN': {8: 0.3,
-                            6: 0.3,
-                            11: 0.3,
-                            9: 0.1,
-                            2: 0.1,
-                            1: 0.1,
-                            3: 0.1,
-                            12: 0.1,
-                            13: 0.1,
-                            5: 0.1},
-                            'GRL': {2: 0.3, 3: 0.3, 5: 0.1},
-                            'USA': {2: 0.3,
-                            44: 0.1,
-                            27: 0.01,
-                            5: 0.01,
-                            32: 0.01,
-                            29: 0.01,
-                            3: 0.01,
-                            23: 0.01,
-                            38: 0.01,
-                            6: 0.01,
-                            51: 0.01,
-                            24: 0.01,
-                            13: 0.01},
-                            'AUS': {11: 0.3, 7: 0.3, 6: 0.1, 8: 0.1, 5: 0.1},
-                            'CHN': {28: 0.3,
-                            19: 0.1,
-                            29: 0.1,
-                            21: 0.1,
-                            11: 0.1,
-                            26: 0.01,
-                            5: 0.01,
-                            30: 0.01},
-                            'BRA': {4: 0.1,
-                            14: 0.1,
-                            12: 0.1,
-                            13: 0.01,
-                            5: 0.01,
-                            11: 0.01,
-                            9: 0.01,
-                            10: 0.01,
-                            21: 0.01},
-                            'NER': {1: 0.1},
-                            'DZA': {41: 0.01, 1: 0.01, 22: 0.01},
-                            'KAZ': {9: 0.01, 3: 0.01, 5: 0.01, 11: 0.01, 10: 0.01, 1: 0.01},
-                            'SAU': {8: 0.01, 7: 0.01},
-                            'MLI': {9: 0.01},
-                            'LBY': {6: 0.01},
-                            'EGY': {14: 0.01},
-                            'ZAF': {8: 0.01},
-                            'PAK': {2: 0.01},
-                            'SDN': {10: 0.01, 8: 0.01},
-                            'IND': {29: 0.01, 19: 0.01, 20: 0.01},
-                            'ARG': {1: 0.01, 20: 0.01, 4: 0.01},
-                            'PER': {17: 0.01},
-                            'BOL': {8: 0.01},
-                            'ETH': {8: 0.01, 9: 0.01},
-                            'IDN': {23: 0.01},
-                            'SJM': {2: 0.01}}
+                           35: 0.3,
+                           12: 0.1,
+                           80: 0.1,
+                           18: 0.1,
+                           28: 0.1,
+                           30: 0.1,
+                           4: 0.1,
+                           40: 0.1,
+                           32: 0.1,
+                           24: 0.1,
+                           83: 0.1,
+                           3: 0.01,
+                           69: 0.01,
+                           9: 0.01,
+                           46: 0.01,
+                           26: 0.01,
+                           45: 0.01,
+                           66: 0.01,
+                           55: 0.01,
+                           50: 0.01},
+                   'CAN': {8: 0.3,
+                           6: 0.3,
+                           11: 0.3,
+                           9: 0.1,
+                           2: 0.1,
+                           1: 0.1,
+                           3: 0.1,
+                           12: 0.1,
+                           13: 0.1,
+                           5: 0.1},
+                   'GRL': {2: 0.3, 3: 0.3, 5: 0.1},
+                   'USA': {2: 0.3,
+                           44: 0.1,
+                           27: 0.01,
+                           5: 0.01,
+                           32: 0.01,
+                           29: 0.01,
+                           3: 0.01,
+                           23: 0.01,
+                           38: 0.01,
+                           6: 0.01,
+                           51: 0.01,
+                           24: 0.01,
+                           13: 0.01},
+                   'AUS': {11: 0.3, 7: 0.3, 6: 0.1, 8: 0.1, 5: 0.1},
+                   'CHN': {28: 0.3,
+                           19: 0.1,
+                           29: 0.1,
+                           21: 0.1,
+                           11: 0.1,
+                           26: 0.01,
+                           5: 0.01,
+                           30: 0.01},
+                   'BRA': {4: 0.1,
+                           14: 0.1,
+                           12: 0.1,
+                           13: 0.01,
+                           5: 0.01,
+                           11: 0.01,
+                           9: 0.01,
+                           10: 0.01,
+                           21: 0.01},
+                   'NER': {1: 0.1},
+                   'DZA': {41: 0.01, 1: 0.01, 22: 0.01},
+                   'KAZ': {9: 0.01, 3: 0.01, 5: 0.01, 11: 0.01, 10: 0.01, 1: 0.01},
+                   'SAU': {8: 0.01, 7: 0.01},
+                   'MLI': {9: 0.01},
+                   'LBY': {6: 0.01},
+                   'EGY': {14: 0.01},
+                   'ZAF': {8: 0.01},
+                   'PAK': {2: 0.01},
+                   'SDN': {10: 0.01, 8: 0.01},
+                   'IND': {29: 0.01, 19: 0.01, 20: 0.01},
+                   'ARG': {1: 0.01, 20: 0.01, 4: 0.01},
+                   'PER': {17: 0.01},
+                   'BOL': {8: 0.01},
+                   'ETH': {8: 0.01, 9: 0.01},
+                   'IDN': {23: 0.01},
+                   'SJM': {2: 0.01}}
     try:
         admin1 = int(admin1)
     except:

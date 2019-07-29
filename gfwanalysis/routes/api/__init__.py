@@ -3,9 +3,10 @@ from __future__ import division
 from __future__ import print_function
 
 import datetime
-
 from flask import jsonify, request
+
 from gfwanalysis.utils.landcover_lookup import get_landcover_types
+
 
 # GENERIC Error
 
@@ -34,8 +35,10 @@ def set_params():
         second = period.split(',')[1]
         try:
             if len(first.split('-')) > 2 and len(second.split('-')) > 2:
-                datetime.datetime(year=int(first.split('-')[0]), month=int(first.split('-')[1]), day=int(first.split('-')[2]))
-                datetime.datetime(year=int(second.split('-')[0]), month=int(second.split('-')[1]), day=int(second.split('-')[2]))
+                datetime.datetime(year=int(first.split('-')[0]), month=int(first.split('-')[1]),
+                                  day=int(first.split('-')[2]))
+                datetime.datetime(year=int(second.split('-')[0]), month=int(second.split('-')[1]),
+                                  day=int(second.split('-')[2]))
                 begin = first
                 end = second
             else:
@@ -45,6 +48,7 @@ def set_params():
     else:
         pass
     return threshold, begin, end, table
+
 
 def get_layer():
     valid_layers = get_landcover_types()
@@ -56,8 +60,8 @@ def get_layer():
     else:
         return None
 
-def return_pixel_count():
 
+def return_pixel_count():
     if request.method == 'GET':
         pixel_count = request.args.get('pixel_count', None)
     else:

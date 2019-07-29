@@ -27,6 +27,19 @@ cd gfw-analysis-gee
 
 If this is the first time you run it, it may take a few minutes.
 
+### Tests
+
+Run the tests via docker with:
+```ssh
+./gfwanalysis.sh test
+```
+
+Or nativley via:
+```ssh
+pip install -r requirements.txt
+pytest --cov=gfwanalysis gfwanalysis/tests/
+```
+
 ### Code structure
 
 The API has been packed in a Python module (gfwanalysis). It creates and exposes a WSGI application. The core functionality

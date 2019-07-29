@@ -5,15 +5,14 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
-
 from flask import jsonify, request, Blueprint
+
+from gfwanalysis.errors import HansenError
+from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa
 from gfwanalysis.routes.api import error, set_params
+from gfwanalysis.serializers import serialize_umd, serialize_table_umd
 from gfwanalysis.services.analysis.hansen_service import HansenService
 from gfwanalysis.validators import validate_geostore
-from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
-    get_geo_by_national, get_geo_by_subnational
-from gfwanalysis.errors import HansenError
-from gfwanalysis.serializers import serialize_umd, serialize_table_umd
 
 hansen_endpoints_v1 = Blueprint('hansen_endpoints_v1', __name__)
 
@@ -37,10 +36,10 @@ def analyze(geojson, area_ha):
             end=end,
             aggregate_values=aggregate_values)
     except HansenError as e:
-        logging.error('[ROUTER]: '+e.message)
+        logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha

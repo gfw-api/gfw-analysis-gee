@@ -1,13 +1,12 @@
 """EE SENTINEL TILE URL SERVICE"""
 
-import logging
 import asyncio
 import requests
 import functools as funct
-
 import ee
+import logging
+
 from gfwanalysis.errors import RecentTilesError
-from gfwanalysis.config import SETTINGS
 
 SENTINEL_BANDS = ['B1', 'B2', 'B3', 'B4', 'B5', 'B6', 'B7', 'B8', 'B8A', 'B9', 'B10', 'B11', 'B12']
 S2_TO_L8_DICT = {
@@ -25,6 +24,7 @@ S2_TO_L8_DICT = {
     'B2': 'B2',
 }
 
+
 class RecentTiles(object):
     """Create dictionary with two urls to be used as webmap tiles for Sentinel 2
     data. One should be the tile outline, and the other is the RGB data visulised.
@@ -38,42 +38,41 @@ class RecentTiles(object):
     def validate_bands(bands, instrument):
         """Validate and serialide bands
         """
-        #Format
+        # Format
         if type(bands) == str:
             bands = bands[1:-1].split(',')
-        parsed_bands = [ b.upper() if b.upper() in SENTINEL_BANDS else None for b in bands ]
+        parsed_bands = [b.upper() if b.upper() in SENTINEL_BANDS else None for b in bands]
 
         # Check for dupes
         seen = set()
         uniq = [b for b in bands if b not in seen and not seen.add(b)]
 
-        #Convert if Landsat
+        # Convert if Landsat
         if 'LANDSAT' in instrument:
-            parsed_bands = [ S2_TO_L8_DICT[b] for b in parsed_bands ]
+            parsed_bands = [S2_TO_L8_DICT[b] for b in parsed_bands]
 
         logging.info(f"[RECENT>BANDS] parsed bands: {parsed_bands}")
-        #Validate bands
-        if(len(parsed_bands) != 3 or len(uniq) != 3):
+        # Validate bands
+        if (len(parsed_bands) != 3 or len(uniq) != 3):
             raise RecentTilesError('Must contain 3 unique elements in the format: [r,b,g].')
-        elif(None in parsed_bands):
+        elif (None in parsed_bands):
             raise RecentTilesError('One or more bands are invalid.')
         else:
             return parsed_bands
 
     @staticmethod
-    def pansharpened_L8_image(image, bands):
+    def pansharpened_L8_image(image, bands, bmin, bmax, opacity):
         hsv2 = image.select(bands).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-        image.select('B8')]).hsvToRgb().visualize(min=0, max=0.2, gamma=[1.3, 1.3, 1.3])
+        image.select('B8')]).hsvToRgb().visualize(min=bmin, max=bmax, gamma=[1.3, 1.3, 1.3], opacity=opacity)
         return sharpened
 
-
     @staticmethod
-    async def async_fetch(loop, f, data_array, bands, fetch_type=None):
+    async def async_fetch(loop, f, data_array, bands, bmin, bmax, opacity, fetch_type=None):
         """Takes collection data array and implements batch fetches
         """
         asyncio.set_event_loop(loop)
-
+        logging.info('[RECENT>ASYNC] Initiating loop.')
         if fetch_type == 'first':
             r1 = 0
             r2 = 1
@@ -90,7 +89,7 @@ class RecentTiles(object):
         futures = [
             loop.run_in_executor(
                 None,
-                funct.partial(f, data_array[i], bands),
+                funct.partial(f, data_array[i], bands, bmin, bmax, opacity),
             )
             for i in range(r1, r2)
         ]
@@ -105,19 +104,22 @@ class RecentTiles(object):
         return data_array
 
     @staticmethod
-    def recent_tiles(col_data, bands=None):
+    def recent_tiles(col_data, bands, bmin, bmax, opacity):
         """Takes collection data array and fetches tiles
         """
         logging.info(f"[RECENT>TILE] {col_data.get('source')}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
+        if not bmin: bmin = 0
 
         if 'COPERNICUS' in col_data.get('source'):
-            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
+            if not bmax: bmax = 0.3
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
         elif 'LANDSAT' in col_data.get('source'):
+            if not bmax: bmax = 0.2
             tmp_im = ee.Image(col_data['source'])
-            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands)
+            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, bmin, bmax, opacity)
 
         m_id = im.getMapId()
 
@@ -125,24 +127,29 @@ class RecentTiles(object):
         url = (base_url + '/map/' + m_id['mapid'] + '/{z}/{x}/{y}?token=' + m_id['token'])
 
         col_data['tile_url'] = url
+        logging.info(f'[RECENT>TILE] Tile url retrieved: {url}.')
         return col_data
 
     @staticmethod
-    def recent_thumbs(col_data, bands=None):
+    def recent_thumbs(col_data, bands, bmin, bmax, opacity):
         """Takes collection data array and fetches thumbs
         """
         logging.info(f"[RECENT>THUMB] {col_data.get('source')}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
+        if not bmin: bmin = 0
 
         if 'COPERNICUS' in col_data.get('source'):
-            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=0, max=0.3, opacity=1.0)
+            if not bmax: bmax = 0.3
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
 
         elif 'LANDSAT' in col_data.get('source'):
-            im = ee.Image(col_data['source']).visualize(bands=validated_bands, min=0, max=0.2, gamma=[1.3, 1.3, 1.3], opacity=1.0)
+            if not bmax: bmax = 0.2
+            tmp_im = ee.Image(col_data['source'])
+            im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, bmin, bmax, opacity)
 
-        thumbnail = im.getThumbURL({'dimensions':[250,250]})
+        thumbnail = im.getThumbURL({'dimensions': [250, 250]})
 
         col_data['thumb_url'] = thumbnail
 
@@ -150,23 +157,17 @@ class RecentTiles(object):
 
     @staticmethod
     def recent_data(lat, lon, start, end):
-
         logging.info("[RECENT>DATA] function initiated")
-
         try:
-
-            point = ee.Geometry.Point(float(lat), float(lon))
+            point = ee.Geometry.Point(float(lon), float(lat))
             S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point)
             L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(start,end).filterBounds(point)
-
             collection = S2.toList(52).cat(L8.toList(52)).getInfo()
             data = []
             for c in collection:
-
                 sentinel_image = c.get('properties').get('SPACECRAFT_NAME', None)
                 landsat_image = c.get('properties').get('SPACECRAFT_ID', None)
                 if sentinel_image:
-                     
                     date_info = c['id'].split('COPERNICUS/S2/')[1]
                     date_time = f"{date_info[0:4]}-{date_info[4:6]}-{date_info[6:8]} {date_info[9:11]}:{date_info[11:13]}:{date_info[13:15]}Z"
                     bbox = c['properties']['system:footprint']['coordinates']
@@ -185,33 +186,27 @@ class RecentTiles(object):
                             }
                     data.append(tmp_)
                     logging.info(f"[RECENT>TILE] [Sentinel]:{sentinel_image} {date_time}")
-
                 elif landsat_image:
-
                     date_info = c['id'].split('LANDSAT/LC08/C01/T1_RT_TOA/LC08_')[1].split('_')[1]
                     time_info = c['properties']['SCENE_CENTER_TIME'].split('.')[0]
                     date_time = f"{date_info[0:4]}-{date_info[4:6]}-{date_info[6:8]} {time_info}Z"
                     bbox = c['properties']['system:footprint']['coordinates']
                     tmp_ = {
-
                         'source': c['id'],
                         'cloud_score': c['properties']['CLOUD_COVER'],
                         'bbox': {
-                                "geometry": {
+                            "geometry": {
                                 "type": "Polygon",
                                 "coordinates": bbox
-                                }
-                            },
+                            }
+                        },
                         'spacecraft': c['properties']['SPACECRAFT_ID'],
                         'product_id': c['properties']['LANDSAT_PRODUCT_ID'],
                         'date': date_time
-
                     }
                     data.append(tmp_)
             logging.info('[RECENT>DATA] sorting by cloud cover & date of acquisition')
-            sorted_data = sorted(data, key=lambda k: (-k.get('cloud_score',100), k.get('date')), reverse=True)
-
+            sorted_data = sorted(data, key=lambda k: (k.get('date'), -k.get('cloud_score', 100)), reverse=True)
             return sorted_data
-
         except:
             raise RecentTilesError('Recent Images service failed to return image.')

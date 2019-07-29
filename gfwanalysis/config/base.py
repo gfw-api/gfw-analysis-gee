@@ -1,8 +1,8 @@
 """-"""
 
 import os
-from gfwanalysis.utils.files import BASE_DIR
 
+from gfwanalysis.utils.files import BASE_DIR
 
 SETTINGS = {
     'logging': {
@@ -18,7 +18,7 @@ SETTINGS = {
             'hansen': 'projects/wri-datalab/HansenComposite_18',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
             'hansen_2017_v1_5':'UMD/hansen/global_forest_change_2017_v1_5',
-            'geodescriber':'users/benlaken/geodesriber-asset',
+            'geodescriber':'projects/wri-datalab/geodesriber-asset-v2',
             'globcover': 'ESA/GLOBCOVER_L4_200901_200912_V2_3',
             'foraf': 'projects/wri-datalab/gfw-api/central-africa_veg_foraf',
             'liberia': 'projects/wri-datalab/gfw-api/lbr-landcover',
@@ -33,7 +33,7 @@ SETTINGS = {
             'idn-landcover': 'projects/wri-datalab/gfw-api/idn-landcover',
             'sea-landcover': 'projects/wri-datalab/gfw-api/sea-landcover',
             'forma250GFW': 'projects/wri-datalab/FORMA250',
-            'whrc_biomass':'projects/wri-datalab/WHRC_CARBON',
+            'whrc_biomass': 'projects/wri-datalab/WHRC_CARBON',
             'biomassloss_v1': {
                 'hansen_loss_thresh': 'HANSEN/gfw_loss_by_year_threshold_2015',
                 'biomass_2000': 'users/davethau/whrc_carbon_test/carbon'

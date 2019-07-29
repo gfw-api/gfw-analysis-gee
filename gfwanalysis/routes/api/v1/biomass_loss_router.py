@@ -5,15 +5,15 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+from flask import jsonify, Blueprint
 
-from flask import jsonify, request, Blueprint
-from gfwanalysis.routes.api import error, set_params
-from gfwanalysis.services.analysis.biomass_loss_service_v1 import BiomassLossService
-from gfwanalysis.validators import validate_geostore
+from gfwanalysis.errors import BiomassLossError
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
-from gfwanalysis.errors import BiomassLossError
-from gfwanalysis.serializers import serialize_biomass_v1,serialize_biomass_table_v1
+from gfwanalysis.routes.api import error, set_params
+from gfwanalysis.serializers import serialize_biomass_v1, serialize_biomass_table_v1
+from gfwanalysis.services.analysis.biomass_loss_service_v1 import BiomassLossService
+from gfwanalysis.validators import validate_geostore
 
 biomass_loss_endpoints_v1 = Blueprint('biomass_loss_endpoints_v1', __name__)
 
@@ -31,10 +31,10 @@ def analyze(geojson, area_ha):
             begin=begin,
             end=end)
     except BiomassLossError as e:
-        logging.error('[ROUTER]: '+e.message)
+        logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: '+str(e))
+        logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
@@ -42,6 +42,7 @@ def analyze(geojson, area_ha):
         return jsonify(data=serialize_biomass_table_v1(data, 'biomasses')), 200
     else:
         return jsonify(data=serialize_biomass_v1(data, 'biomasses')), 200
+
 
 @biomass_loss_endpoints_v1.route('/', strict_slashes=False, methods=['GET', 'POST'])
 @validate_geostore
@@ -83,6 +84,7 @@ def get_by_subnational(iso, id1, geojson, area_ha):
     logging.info('[ROUTER]: Getting biomassloss by admin1')
     logging.info(f'[ROUTER]: admin1 area_ha = {area_ha}')
     return analyze(geojson, area_ha)
+
 
 @biomass_loss_endpoints_v1.route('/admin/<iso>/<id1>/<id2>', strict_slashes=False, methods=['GET'])
 @get_geo_by_regional

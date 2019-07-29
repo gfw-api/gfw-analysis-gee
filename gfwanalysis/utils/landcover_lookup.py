@@ -19,8 +19,8 @@ def lookup(layer, result_dict, count_pixels):
             landcover_name = lkp[key]
 
             result_dict = {'resultType': area_type,
-                        'className': landcover_name,
-                        'classVal': key}
+                           'className': landcover_name,
+                           'classVal': key}
 
             # unpack year dict into array of dicts
             if isinstance(val, dict):
@@ -32,8 +32,10 @@ def lookup(layer, result_dict, count_pixels):
 
     return output_list
 
+
 def valid_lulc_codes(layer):
     return [int(x) for x in all_lulc_dict[layer].keys()]
+
 
 def get_landcover_types():
     return list(all_lulc_dict.keys())
@@ -64,9 +66,9 @@ all_lulc_dict = {
         '210': 'Water bodies',
         '220': 'Permanent snow and ice',
         '230': 'Unclassified'
-        },
+    },
 
-    'foraf':  {
+    'foraf': {
         '1': 'Dense moist forest',
         '2': 'Submontane forest',
         '3': 'Mountain forest',
@@ -87,7 +89,7 @@ all_lulc_dict = {
         '18': 'Bare areas',
         '19': 'Artificial surfaces and associated areas',
         '20': 'Water Bodies'
-        },
+    },
 
     'gfw-landcover-2000':  {
         '1': 'Agriculture',
@@ -113,9 +115,9 @@ all_lulc_dict = {
         '8': 'Bare',
         '9': 'Water',
         '10': 'Permanent snow and ice'
-        },
+    },
 
-    'liberia':  {
+    'liberia': {
         '0': 'NoData',
         '1': 'Forest >80%',
         '2': 'Forest 30 - 80%',
@@ -128,16 +130,16 @@ all_lulc_dict = {
         '10': 'Bare soil',
         '11': 'Ecosystem complex (rock & sand)',
         '25': 'Clouds'
-        },
+    },
 
     'ifl2000': {
         '1': 'Intact Forest Landscape 2000'
-        },
+    },
 
     'primary-forest': {
         '0': 'Not Primary Forest',
         '1': 'Primary Forest'
-        },
+    },
 
     'mangroves': {
         '1': 'Landsat Mangroves 2000'
