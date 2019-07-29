@@ -236,7 +236,7 @@ def get_geo_by_geom(func):
             if not geojson:
                 return error(status=400, detail='geojson is required')
         elif request.method == 'POST':
-            geojson = json.loads(request.get_json()).get('geojson', None) if request.get_json() else None
+            geojson = request.get_json().get('geojson', None) if request.get_json() else None
         try:
             area_ha = AreaService.tabulate_area(geojson)
         except Exception as e:
