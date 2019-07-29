@@ -45,7 +45,6 @@ class GeodescriberService(object):
                 )
 
         #Getting the data structure
-    
             title_dict = {
                 'country':[] ,
                 'county': [],
@@ -57,7 +56,6 @@ class GeodescriberService(object):
             for item in parsed_results:
                 value = item[key]
                 title_dict[key].append(value)
-
         return title_dict
 
     @staticmethod
@@ -83,7 +81,7 @@ class GeodescriberService(object):
             locs = [v for v in value if v is not None]
             distinct_locs[key] = locs
             truth_dict[key] = len(set(locs)) == 1
-            logging.info(f'[truth:]: n/n/n/{truth_dict}n/n/n/')
+            
         country_list = distinct_locs['country']
         county_list = distinct_locs['county']
         continent_list = distinct_locs['continent']
@@ -235,7 +233,6 @@ class GeodescriberService(object):
         is_marine = stats.get('seaLandFreshwater').get('1', 0)
         is_fresh = stats.get('seaLandFreshwater').get('2', 0)
 
-
         tmp_config = {'items': {}, 'sentence': ""}
         if is_marine and is_land + is_fresh == 0: return tmp_config
         if is_intact:
@@ -262,7 +259,7 @@ class GeodescriberService(object):
             if is_mountain/total_mountain > 0.75:
                 tmp_config['sentence'] = "a mountainous area"
             elif is_mountain/total_mountain > 0.5:
-                tmp_config['sentence'] = "a mix of lowland and mountains areas"
+                tmp_config['sentence'] = "a mix of lowland and mountainous areas"
             else:
                 tmp_config['sentence'] = "a predominanty lowland area"
         else:
@@ -344,13 +341,11 @@ class GeodescriberService(object):
         """Recieve a geostore_id, language, and app argument and return a
         json serialised dic object response.
         """
-        
         logging.info(f'[Geodescriber]: app={app}, lang={lang}, template={template}, for geojson={geojson}')
         sentence_config = []
         features = geojson.get('features')
         s = [shape(feature['geometry']) for feature in features][0]
         logging.info(f'[Geodescriber]: shape: {s}')
-        #g = LMIPy.Geometry(geostore_id)
 
         asset_name = SETTINGS.get('gee').get('assets').get('geodescriber')
         logging.info(f'[Geodescriber]: asset: {asset_name}')
