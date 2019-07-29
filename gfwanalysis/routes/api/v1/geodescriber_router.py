@@ -18,13 +18,20 @@ geodescriber_endpoints_v1 = Blueprint('geodescriber_endpoints_v1', __name__)
 
 def analyze(geojson, area_ha):
     """Call Geodescriber"""
-    app = request.args.get('app', 'gfw')
-    lang = request.args.get('lang','en')
-    template = request.args.get('template', '').lower() in ['t', 'true']
-    gd_result = GeodescriberService.analyze(geojson=geojson,
-                                            area_ha=area_ha, app=app, lang=lang, template=template)
-    logging.info(f'[ROUTER]: result {gd_result}')
-    return jsonify(data=gd_result), 200
+    try:
+        app = request.args.get('app', 'gfw')
+        lang = request.args.get('lang','en')
+        template = request.args.get('template', '').lower() in ['t', 'true']
+        gd_result = GeodescriberService.analyze(geojson=geojson,
+                                                area_ha=area_ha, app=app, lang=lang, template=template)
+        logging.info(f'[Geodescriber ROUTER]: result {gd_result}')
+        return jsonify(data=gd_result), 200
+    except GeodescriberError as e:
+        logging.error(f'[Geodescriber ROUTER]: {e.message}')
+        return error(status=500, detail=e.message)
+    except Exception as e:
+        logging.error(f'[Geodescriber ROUTER]: {e}')
+        return error(status=500, detail='Generic Error')
 
 
 @geodescriber_endpoints_v1.route('/', strict_slashes=False, methods=['GET'])
