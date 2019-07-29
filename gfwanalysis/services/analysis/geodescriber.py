@@ -257,13 +257,13 @@ class GeodescriberService(object):
 
         if is_mountain:
             if is_mountain/total_mountain > 0.75:
-                tmp_config['sentence'] = "a mountainous area"
+                tmp_config['sentence'] = "a mountainous area."
             elif is_mountain/total_mountain > 0.5:
-                tmp_config['sentence'] = "a mix of lowland and mountainous areas"
+                tmp_config['sentence'] = "a mix of lowland and mountainous areas."
             else:
-                tmp_config['sentence'] = "a predominanty lowland area"
+                tmp_config['sentence'] = "a predominanty lowland area."
         else:
-            tmp_config['sentence'] = "a lowland area"
+            tmp_config['sentence'] = "a lowland area."
         return tmp_config
 
     @staticmethod
@@ -407,7 +407,9 @@ class GeodescriberService(object):
             description_params = {**description_params, **el.get('items')}
             if lang != 'en' and template:
                 translator = Translator()
+                logging.info(f'[Geodescriber]: lang bug: {title} || {description}')
                 r = translator.translate(text=[title, description], dest=lang, src='en')
+                logging.info(f'[Geodescriber]: r: {type(r)}, {r}')
                 title = r[0].text
                 description = r[1].text
 
