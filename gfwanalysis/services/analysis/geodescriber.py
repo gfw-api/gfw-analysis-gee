@@ -86,6 +86,7 @@ class GeodescriberService(object):
         county_list = distinct_locs['county']
         continent_list = distinct_locs['continent']
         region_list = distinct_locs['region']
+        logging.info(f"[Country List]:{country_list}")
 
         if land_sea: land_sea_phrase = f'{land_sea} area'
         else: land_sea_phrase = 'Area'
@@ -124,7 +125,7 @@ class GeodescriberService(object):
             elif len(set(country_list)) > 2:
                 # If location across multiple countries (get the centroid's country)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
-                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[-1], 'ttl_3': continent_list[0]}
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[-1], 'ttl_2': continent_list[0]}
 
         return tmp_config
 
