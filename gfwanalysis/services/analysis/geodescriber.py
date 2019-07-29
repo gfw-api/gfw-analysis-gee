@@ -28,19 +28,19 @@ class GeodescriberService(object):
                 'region': [None]
             }
         parsed_results = []
-        
+
         for result in geocode_results:
             if result:
-                temp_json= result.geojson.get('features')[0].get('properties')  
+                temp_json= result.geojson.get('features')[0].get('properties')
             else:
                 temp_json = {}
 
         # Filtering out the locations we care about
             parsed_results.append(
                 {
-                    'country': temp_json.get('country', None), 
-                    'county': temp_json.get('county', None), 
-                    'region': temp_json.get('region', None), 
+                    'country': temp_json.get('country', None),
+                    'county': temp_json.get('county', None),
+                    'region': temp_json.get('region', None),
                     'continent': continent_lookup[iso_to_continent[temp_json.get('country_code', '').upper()]]}
                 )
 
@@ -51,7 +51,7 @@ class GeodescriberService(object):
                 'continent': [],
                 'region': []
             }
-            
+
         for key in title_dict.keys():
             for item in parsed_results:
                 value = item[key]
@@ -61,27 +61,27 @@ class GeodescriberService(object):
     @staticmethod
     def create_title(title_elements, land_sea):
         tmp_config = {'items': {}, 'sentence': ""}
-       
+
         truth_dict ={
             'country':None,
             'county': None,
             'continent': None,
             'region': None
-        } 
+        }
 
         distinct_locs ={
             'country':[],
             'county': [],
             'continent': [],
             'region': []
-        } 
-    
+        }
+
         # Create the title based on the thruth dictionary
         for key,value in title_elements.items():
             locs = [v for v in value if v is not None]
             distinct_locs[key] = locs
             truth_dict[key] = len(set(locs)) == 1
-            
+
         country_list = distinct_locs['country']
         county_list = distinct_locs['county']
         continent_list = distinct_locs['continent']
@@ -94,17 +94,17 @@ class GeodescriberService(object):
             # If all points in the same Continents, Country, Region, and County
             tmp_config['sentence'] = '{ttl_0} in {ttl_1}, {ttl_2}, {ttl_3}'
             tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': county_list[0], 'ttl_2': region_list[0], 'ttl_3': country_list[0]}
-        
+
         elif all([val == False for val in truth_dict.values()]):
             # If no points in the same Continents, Country, Region, and County
             tmp_config['sentence'] = '{ttl_0} of interest'
             tmp_config['items'] = {'ttl_0': land_sea_phrase}
-        
+
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country', 'region'] ]):
             # If Continents, Country, Region in the same place, but not County
             tmp_config['sentence'] = '{ttl_0} in {ttl_1}, {ttl_2}'
             tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[0], 'ttl_2': country_list[0]}
-        
+
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country']]):
             # If Continents, Country in the same place, but not Region or County
             if len(set(region_list)) == 2:
@@ -114,7 +114,7 @@ class GeodescriberService(object):
                 # If location across multiple regions (get the centroid's region)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[-1], 'ttl_2': country_list[0]}
-    
+
         else:
             # If only Continents
             if len(set(country_list)) == 2:
@@ -122,12 +122,12 @@ class GeodescriberService(object):
                 tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, in {ttl_3}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': list(set(country_list))[0], 'ttl_2': list(set(country_list))[1], 'ttl_3': continent_list[0]}
             elif len(set(country_list)) > 2:
-                # If location across multiple countries (get the centroid's country)   
+                # If location across multiple countries (get the centroid's country)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[-1], 'ttl_3': continent_list[0]}
-        
+
         return tmp_config
-        
+
     @staticmethod
     def give_sorted_d(lookup_dic, key, stats):
         """Return a dic with keys as integer percentage of coverage proportion."""
@@ -190,12 +190,12 @@ class GeodescriberService(object):
             {"type": 'land area', "value": land/total_land_sea},
             {"type": 'marine area', "value": sea/total_land_sea},
             {"type": 'inland water', "value": fresh/total_land_sea}]
-            if l['value']], key=lambda k: k['value'], reverse=True) 
-        
+            if l['value']], key=lambda k: k['value'], reverse=True)
+
         logging.info(f'[Geodescriber]: land_sea: {land_sea_list}')
-        
+
         land_sea_sentence = ''
-        
+
         if land_sea_list[0]['value'] > 0.9:
             tmp_config['sentence'] = "The location is predominantly {lsf_0}."
             tmp_config['items'] = {'lsf_0': land_sea_list[0]['type']}
@@ -219,7 +219,7 @@ class GeodescriberService(object):
         else:
             tmp_config['sentence'] = "The location contains a mix of {lsf_0}, {lsf_1} and {lsf_2}."
             tmp_config['items'] = {'lsf_0': land_sea_list[0]['type'], 'lsf_1': land_sea_list[1]['type'], 'lsf_2': land_sea_list[2]['type']}
-        
+
         return tmp_config
 
     @staticmethod
@@ -315,21 +315,21 @@ class GeodescriberService(object):
                 title_ele = ''
         else:
             return None
-        
+
         is_land = stats.get('seaLandFreshwater').get('0', 0)
         is_marine = stats.get('seaLandFreshwater').get('1', 0)
-        is_fresh = stats.get('seaLandFreshwater').get('2', 0) 
-          
+        is_fresh = stats.get('seaLandFreshwater').get('2', 0)
+
         if app == 'gfw':
-            if is_marine and (is_land + is_fresh) / is_marine < 0.01: 
-               tmp_config['sentence'] = "It has a total area of {area_0}." 
+            if is_marine and (is_land + is_fresh) / is_marine < 0.01:
+               tmp_config['sentence'] = "It has a total area of {area_0}."
                tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha'}
-            else:  
+            else:
                 tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
                 tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence, 'area_2': title_ele}
         else:
-            if is_marine and (is_land + is_fresh) / is_marine < 0.01: 
-               tmp_config['sentence'] = "It has a total area of {area_0}. " 
+            if is_marine and (is_land + is_fresh) / is_marine < 0.01:
+               tmp_config['sentence'] = "It has a total area of {area_0}. "
                tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²'}
             else:
                 tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
@@ -356,7 +356,7 @@ class GeodescriberService(object):
                                         'geometry': region,
                                         'bestEffort': True,
                                         }).getInfo()
-            logging.info(f'[Geodescriber]: stats: {stats}')    
+            logging.info(f'[Geodescriber]: stats: {stats}')
         except:
             logging.error('[Geodescriber]: EE failed.')
             stats = {}
@@ -366,7 +366,7 @@ class GeodescriberService(object):
         title = GeodescriberService.create_title(title_elements, land_sea_sentence)
         logging.info(f'[Geodescriber]: title: {title}')
 
-        if any([v != {} for k,v in stats.items() if k != 'intact2016']): 
+        if any([v != {} for k,v in stats.items() if k != 'intact2016']):
 
             ecoregion_sentence = GeodescriberService.gen_ecoregion_sentence(stats)
             if ecoregion_sentence: sentence_config.append(ecoregion_sentence)
@@ -405,7 +405,7 @@ class GeodescriberService(object):
         for el in sentence_config:
             description += f"{el.get('sentence', '')} "
             description_params = {**description_params, **el.get('items')}
-            if lang != 'en':
+            if lang != 'en' and template:
                 translator = Translator()
                 r = translator.translate(text=[title, description], dest=lang, src='en')
                 title = r[0].text
@@ -416,13 +416,13 @@ class GeodescriberService(object):
 
                 title_params = {k:rt[i].text for i,k in enumerate(title_params.keys())}
                 description_params = {k:rd[i].text for i,k in enumerate(description_params.keys())}
-                
+
         if not template:
             for k,v in title_params.items():
                 title = title.replace(f'{{{k}}}', v)
             for k,v in description_params.items():
-                description = description.replace(f'{{{k}}}', v) 
-        
+                description = description.replace(f'{{{k}}}', v)
+
             if lang is not 'en':
                 translator = Translator()
                 r = translator.translate(text=[title, description], dest=lang, src='en')
@@ -433,8 +433,8 @@ class GeodescriberService(object):
             return {
             'title': title,
             'title_params': {},
-            'description':description[:-1], 
-            'description_params': {}, 
+            'description':description[:-1],
+            'description_params': {},
             'lang': lang,
             'stats': stats
             }
@@ -442,8 +442,8 @@ class GeodescriberService(object):
         return {
             'title': title,
             'title_params': title_params,
-            'description':description[:-1], 
-            'description_params': description_params, 
+            'description':description[:-1],
+            'description_params': description_params,
             'lang': lang,
             'stats': stats
             }
