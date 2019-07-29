@@ -86,7 +86,6 @@ class GeodescriberService(object):
         county_list = distinct_locs['county']
         continent_list = distinct_locs['continent']
         region_list = distinct_locs['region']
-        logging.info(f"[Country List]:{country_list}")
 
         if land_sea: land_sea_phrase = f'{land_sea} area'
         else: land_sea_phrase = 'Area'
@@ -108,24 +107,33 @@ class GeodescriberService(object):
 
         elif all([val == True for key, val in truth_dict.items() if key in ['continent', 'country']]):
             # If Continents, Country in the same place, but not Region or County
-            if len(set(region_list)) == 2:
+            if region_list and len(set(region_list)) == 2:
                 tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, {ttl_3}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': list(set(region_list))[0], 'ttl_2': list(set(region_list))[1], 'ttl_3': country_list[0]}
-            elif len(set(region_list)) > 2:
+            elif region_list and len(set(region_list)) > 2:
                 # If location across multiple regions (get the centroid's region)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[-1], 'ttl_2': country_list[0]}
+            else: 
+                tmp_config['sentence'] = '{ttl_0} in {ttl_1}'
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[0]}
 
         else:
             # If only Continents
-            if len(set(country_list)) == 2:
+            if country_list and len(set(country_list)) == 2:
                 # If location across two countries
                 tmp_config['sentence'] = '{ttl_0} between {ttl_1} and {ttl_2}, in {ttl_3}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': list(set(country_list))[0], 'ttl_2': list(set(country_list))[1], 'ttl_3': continent_list[0]}
-            elif len(set(country_list)) > 2:
+            elif country_list and len(set(country_list)) > 2:
                 # If location across multiple countries (get the centroid's country)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[-1], 'ttl_2': continent_list[0]}
+            elif continent_list: 
+                tmp_config['sentence'] = '{ttl_0} in {ttl_1}'
+                tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': continent_list[0]}
+            else: 
+                tmp_config['sentence'] = '{ttl_0} of interest'
+                tmp_config['items'] = {'ttl_0': land_sea_phrase}
 
         return tmp_config
 
@@ -258,13 +266,13 @@ class GeodescriberService(object):
 
         if is_mountain:
             if is_mountain/total_mountain > 0.75:
-                tmp_config['sentence'] = "a mountainous area."
+                tmp_config['sentence'] = "a mountainous area"
             elif is_mountain/total_mountain > 0.5:
-                tmp_config['sentence'] = "a mix of lowland and mountainous areas."
+                tmp_config['sentence'] = "a mix of lowland and mountainous areas"
             else:
-                tmp_config['sentence'] = "a predominanty lowland area."
+                tmp_config['sentence'] = "a predominanty lowland area"
         else:
-            tmp_config['sentence'] = "a lowland area."
+            tmp_config['sentence'] = "a lowland area"
         return tmp_config
 
     @staticmethod
