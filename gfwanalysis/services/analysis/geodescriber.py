@@ -86,6 +86,7 @@ class GeodescriberService(object):
         county_list = distinct_locs['county']
         continent_list = distinct_locs['continent']
         region_list = distinct_locs['region']
+        logging.info(f"[Country List]:{country_list}")
 
         if land_sea: land_sea_phrase = f'{land_sea} area'
         else: land_sea_phrase = 'Area'
