@@ -338,7 +338,7 @@ class GeodescriberService(object):
                 tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence, 'area_2': title_ele}
         else:
             if is_marine and (is_land + is_fresh) / is_marine < 0.01:
-               tmp_config['sentence'] = "It has a total area of {area_0}. "
+               tmp_config['sentence'] = "It has a total area of {area_0}."
                tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²'}
             else:
                 tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
@@ -444,7 +444,7 @@ class GeodescriberService(object):
             return {
             'title': title,
             'title_params': {},
-            'description':description[:-1],
+            'description':description,
             'description_params': {},
             'lang': lang,
             'stats': stats
@@ -453,7 +453,7 @@ class GeodescriberService(object):
         return {
             'title': title,
             'title_params': title_params,
-            'description':description[:-1],
+            'description':description,
             'description_params': description_params,
             'lang': lang,
             'stats': stats
