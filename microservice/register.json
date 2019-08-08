@@ -458,6 +458,22 @@
 			}
 		},
 		{
+			"path": "/v2/nlcd-landcover",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/nlcd-landcover"
+			}
+		},
+		{
+			"path": "/v2/nlcd-landcover",
+			"method": "POST",
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v2/nlcd-landcover"
+			}
+		},
+		{
 			"path": "/v2/biomass-loss",
 			"method": "GET",
 			"redirect": {

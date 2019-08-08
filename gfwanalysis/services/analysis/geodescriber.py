@@ -28,7 +28,7 @@ class GeodescriberService(object):
                 'region': [None]
             }
         parsed_results = []
-
+        logging.info(f"\n\n\n[Geocode results]: {geocode_results}\n\n\n") 
         for result in geocode_results:
             if result:
                 temp_json= result.geojson.get('features')[0].get('properties')
@@ -86,6 +86,10 @@ class GeodescriberService(object):
         county_list = distinct_locs['county']
         continent_list = distinct_locs['continent']
         region_list = distinct_locs['region']
+        logging.info(f"\n\n\n[Country List]: {country_list}\n\n\n")
+        logging.info(f"\n\n\n[County List]: {county_list}\n\n\n")
+        logging.info(f"\n\n\n[Continent List]: {continent_list}\n\n\n")
+        logging.info(f"\n\n\n[Region List]: {region_list}\n\n\n")
 
         if land_sea: land_sea_phrase = f'{land_sea} area'
         else: land_sea_phrase = 'Area'
