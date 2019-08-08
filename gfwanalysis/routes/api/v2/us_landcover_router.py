@@ -12,7 +12,7 @@ from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_w
     get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
 from gfwanalysis.routes.api import error, set_params
 from gfwanalysis.serializers import serialize_nlcd_landcover_v2
-from gfwanalysis.services.analysis.nlcd_landcover_service import NLCDLandcoverService
+from gfwanalysis.services.analysis.nlcd_landcover_service import NLCDLandcover
 from gfwanalysis.validators import validate_geostore
 
 nlcd_landcover_endpoints_v2 = Blueprint('nlcd_landcover_endpoints_v2', __name__)
@@ -26,7 +26,7 @@ def analyze(geojson, area_ha):
 
 
     try:
-        data = NLCDLandcoverService.analyze(
+        data = NLCDLandcover.analyze(
             geojson=geojson)
     except NLCDLandcoverError as e:
         logging.error('[ROUTER]: ' + e.message)
@@ -36,6 +36,7 @@ def analyze(geojson, area_ha):
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
+    logging.info(f'[data]: {data}')
     return jsonify(data=serialize_nlcd_landcover_v2(data, 'nlcd-landcover')), 200
 
 @nlcd_landcover_endpoints_v2.route('/', strict_slashes=False, methods=['GET', 'POST'])

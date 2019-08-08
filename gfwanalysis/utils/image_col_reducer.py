@@ -1,3 +1,5 @@
+import ee
+
 def ImageColIntersect(geom, scale, reducer_type):
     def reducerWrapper(image):
         stats = image.reduceRegion(

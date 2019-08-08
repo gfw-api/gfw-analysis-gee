@@ -12,7 +12,7 @@ from gfwanalysis.errors import NLCDLandcoverError
 from gfwanalysis.utils.geo import get_region
 from gfwanalysis.utils.image_col_reducer import ImageColIntersect
 
-class NLCDLandcoverService(object):
+class NLCDLandcover(object):
     @staticmethod
     def analyze(geojson):
         """
@@ -35,29 +35,33 @@ class NLCDLandcoverService(object):
             landcover_asset = SETTINGS.get('gee').get('assets').get('us_landcover')
             image_list = [ee.Image(f"{landcover_asset}/{year.get('id')}") for year in valid_years]
             us_landcover = ee.ImageCollection(image_list).select(band_name)
-            region = ee.Geometry(geojson)
+            # region = ee.Feature(geojson).geometry()
+            region = get_region(geojson)
             scale = 30
             logging.info(f'[nlcd-landcover-service]: built assets for analysis, using {band_name}')
 
 
             # Calculate landcover with a collection operation method
-            stats = us_landcover.map(ImageColIntersect(region, scale))
+            stats = us_landcover.map(ImageColIntersect(region, scale, ee.Reducer.frequencyHistogram())).getInfo()
+            logging.info(f'[nlcd-landcover-service]: retreived {stats}')
 
             # Format data structure
 
             data = [{
                 'id': d['id'],
-                'stats': { k: v * 30 * 30 * 1e-4 for k,v in d['properties']['stats'].items() }
+                'stats': { k: v * 30 * 30 * 1e-4 for k,v in d['properties'][band_name].items() }
                 }
                 for d in stats['features']]
 
+            tmp = {}
             for el in data:
                 year_id = el['id']
                 year = [y['year'] for y in valid_years if y['id']== year_id][0] 
-                d[year] = el['stats']
+                tmp[year] = el['stats']
 
+            d['nlcd_landcover'] = tmp
             return d
 
         except Exception as error:
             logging.error(str(error))
-            raise NLCDLandcover(message='Error in LandCover Analysis')
+            raise NLCDLandcoverError(message='Error in LandCover Analysis')
