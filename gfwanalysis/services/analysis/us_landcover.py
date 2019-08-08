@@ -1,4 +1,4 @@
-"""Biomass-Loss SERVICE V2"""
+"""NLCD-Landcover SERVICE V2"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -8,20 +8,20 @@ import ee
 import logging
 
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.errors import BiomassLossError
+from gfwanalysis.errors import NLCDLandcoverError
 from gfwanalysis.utils.geo import get_region
 
 
-class BiomassLossService(object):
+class NLCDLandcoverService(object):
 
     @staticmethod
-    def analyze(threshold, geojson, begin, end):
+    def analyze(geojson):
         """
         Takes WHRC Carbon and Hansen loss data and returns amount of biomass, carbon and co2 lost
         by time.
         """
         try:
-            logging.info(f'[biomass-loss-service]: with properties passed: {threshold}, {begin}, {end}')
+            logging.info(f'[nlcd-landcover-service]: with properties passed: {threshold}, {begin}, {end}')
             # hansen tree cover loss by year
             d = {}
             # Extract int years to work with for time range
@@ -35,7 +35,7 @@ class BiomassLossService(object):
             hansen = ee.Image(hansen_asset).select(band_name)
             biomass = ee.ImageCollection(biomass_asset).max()
             region = get_region(geojson)
-            logging.info(f'[biomass-loss-service]: built assets for analysis, using Hansen band {band_name}')
+            logging.info(f'[nlcd-landcover-service]: built assets for analysis, using Hansen band {band_name}')
 
             # Reducer arguments
             reduce_args = {

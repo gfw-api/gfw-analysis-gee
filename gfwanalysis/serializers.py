@@ -193,6 +193,13 @@ def serialize_biomass_table_v1(analysis, type):
         'attributes': rows
     }
 
+def serialize_nlcd_landcover_v2(analysis, type):
+    """Convert the output of the biomass_loss analysis to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': analysis
+    }
 
 def serialize_biomass_v2(analysis, type):
     """Convert the output of the biomass_loss analysis to json"""

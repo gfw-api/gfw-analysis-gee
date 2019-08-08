@@ -20,6 +20,8 @@ class HansenError(Error):
 class GeodescriberError(Error):
     pass
 
+class NLCDLandcoverError(Error):
+    pass
   
 class HistogramError(Error):
     pass
