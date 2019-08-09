@@ -105,7 +105,7 @@ class LandsatTiles(object):
                     if int(year) in [2013, 2014, 2015, 2016, 2017]:
                         image = LandsatTiles.pansharpened_L8_image(year)
                         d['url'], map_object = LandsatTiles.tile_url_gee(image, z, x, y)
-                    elif int(year) in [2012]:
+                    elif int(year) in [2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012]:
                         image = LandsatTiles.pansharpened_L7_image(year)
                         d['url'], map_object = LandsatTiles.tile_url_gee(image, z, x, y)
                     else:
