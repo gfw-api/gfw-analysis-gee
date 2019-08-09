@@ -17,7 +17,7 @@ class NLCDLandcover(object):
     @staticmethod
     def analyze(geojson):
         """
-        
+        Analyze NLCD Landcover
         """
         try:
             logging.info(f'[nlcd-landcover-service]: Initialize analysis')

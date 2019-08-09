@@ -28,7 +28,7 @@ class GeodescriberService(object):
                 'region': [None]
             }
         parsed_results = []
-        logging.info(f"\n\n\n[Geocode results]: {geocode_results}\n\n\n") 
+
         for result in geocode_results:
             if result:
                 temp_json= result.geojson.get('features')[0].get('properties')
