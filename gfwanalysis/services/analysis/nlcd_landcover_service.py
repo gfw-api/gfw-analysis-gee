@@ -11,6 +11,7 @@ from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import NLCDLandcoverError
 from gfwanalysis.utils.geo import get_region
 from gfwanalysis.utils.image_col_reducer import ImageColIntersect
+from gfwanalysis.utils.landcover_lookup import lookup, valid_lulc_codes, get_landcover_types
 
 class NLCDLandcover(object):
     @staticmethod
@@ -55,11 +56,13 @@ class NLCDLandcover(object):
 
             tmp = {}
             for el in data:
-                year_id = el['id']
-                year = [y['year'] for y in valid_years if y['id']== year_id][0] 
-                tmp[year] = el['stats']
+                
+                year = [y['year'] for y in valid_years if y['id']== el['id']][0] 
+                tmp[year] = lookup('nlcd_landcover', el['stats'], False)
+
 
             d['nlcd_landcover'] = tmp
+
             return d
 
         except Exception as error:
