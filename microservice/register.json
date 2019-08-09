@@ -474,6 +474,46 @@
 			}
 		},
 		{
+			"path": "/v2/nlcd-landcover/wdpa/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/nlcd-landcover/wdpa/:id"
+			}
+		},
+		{
+			"path": "/v2/nlcd-landcover/use/:name/:id",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/nlcd-landcover/use/:name/:id"
+			}
+		},
+		{
+			"path": "/v2/nlcd-landcover/admin/:iso",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/nlcd-landcover/admin/:iso"
+			}
+		},
+		{
+			"path": "/v2/nlcd-landcover/admin/:iso/:admin",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/nlcd-landcover/admin/:iso/:admin"
+			}
+		},
+		{
+			"path": "/v2/nlcd-landcover/admin/:iso/:admin/:admin2",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v2/nlcd-landcover/admin/:iso/:admin/:admin2"
+			}
+		},
+		{
 			"path": "/v2/biomass-loss",
 			"method": "GET",
 			"redirect": {
