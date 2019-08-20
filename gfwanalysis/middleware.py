@@ -70,7 +70,6 @@ def get_sentinel_params(func):
 def get_highres_params(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         if request.method == 'GET':
             lat = request.args.get('lat')
             lon = request.args.get('lon')
@@ -90,12 +89,12 @@ def get_highres_params(func):
 def get_recent_params(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         if request.method == 'GET':
             lat = request.args.get('lat')
             lon = request.args.get('lon')
             start = request.args.get('start')
             end = request.args.get('end')
+            sort_by = request.args.get('sort_by', None)
             bmin = request.args.get('min', None)
             bmax = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
@@ -106,6 +105,7 @@ def get_recent_params(func):
         kwargs["lon"] = lon
         kwargs["start"] = start
         kwargs["end"] = end
+        kwargs["sort_by"] = sort_by
         kwargs["bmin"] = bmin
         kwargs["bmax"] = bmax
         kwargs["opacity"] = float(opacity)
