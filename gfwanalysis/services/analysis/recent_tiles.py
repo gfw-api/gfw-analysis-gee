@@ -156,7 +156,7 @@ class RecentTiles(object):
         return col_data
 
     @staticmethod
-    def recent_data(lat, lon, start, end):
+    def recent_data(lat, lon, start, end, sort_by):
         logging.info("[RECENT>DATA] function initiated")
         try:
             point = ee.Geometry.Point(float(lon), float(lat))
@@ -206,7 +206,10 @@ class RecentTiles(object):
                     }
                     data.append(tmp_)
             logging.info('[RECENT>DATA] sorting by cloud cover & date of acquisition')
-            sorted_data = sorted(data, key=lambda k: (k.get('date'), -k.get('cloud_score', 100)), reverse=True)
+            if sort_by and sort_by.lower() == 'cloud_score':
+                sorted_data = sorted(data, key=lambda k: (k.get('cloud_score', 100), k.get('date')), reverse=True)
+            else:
+                sorted_data = sorted(data, key=lambda k: (k.get('date'), -k.get('cloud_score', 100)), reverse=True)
             return sorted_data
         except:
             raise RecentTilesError('Recent Images service failed to return image.')
