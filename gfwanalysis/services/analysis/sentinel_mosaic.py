@@ -66,7 +66,7 @@ class SentinelMosaic(object):
 
                 inner = empty.paint({
                     featureCollection: feat_col,
-                    color: '18c418',
+                    color: 'C0FF24',
                     width: 2
                 }).visualize(bands=["constant"], min=14)
 
