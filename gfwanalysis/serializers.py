@@ -256,6 +256,17 @@ def serialize_sentinel_url(analysis, type):
         }
     }
 
+def serialize_sentinel_mosaic(analysis, type):
+    """Convert output of landsat_tiles to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            "tile_url": analysis.get('tile_url', None),
+            "thumbnail_url": analysis.get('thumb_url', None),
+            "bbox": analysis.get('bbox', None),
+        }
+    }
 
 def serialize_highres_url(analysis, type):
     """Convert output of images to json"""

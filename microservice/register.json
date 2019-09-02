@@ -594,6 +594,14 @@
 			}
 		},
 		{
+			"path": "/v1/sentinel-mosaic/",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/sentinel-mosaic/"
+			}
+		},
+		{
 			"path": "/v1/recent-tiles/",
 			"method": "GET",
 			"redirect": {

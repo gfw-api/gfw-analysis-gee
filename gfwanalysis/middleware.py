@@ -86,6 +86,23 @@ def get_highres_params(func):
 
     return wrapper
 
+def get_sentinel_mosaic_params(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        if request.method == 'GET':
+            start = request.args.get('start', None)
+            end = request.args.get('end', None)
+            cloudscore_thresh = request.args.get('cloudscore_thresh', 10)
+            bounds = request.args.get('bounds', False)
+        kwargs["start"] = start
+        kwargs["end"] = end
+        kwargs["cloudscore_thresh"] = cloudscore_thresh
+        kwargs["bounds"] = bounds
+        return func(*args, **kwargs)
+
+    return wrapper
+
 
 def get_recent_params(func):
     @wraps(func)

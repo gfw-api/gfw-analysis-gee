@@ -62,6 +62,7 @@ app.register_blueprint(recent_tiles_classifier_v1, url_prefix='/api/v1/recent-ti
 app.register_blueprint(composite_service_v1, url_prefix='/api/v1/composite-service')
 app.register_blueprint(geodescriber_endpoints_v1, url_prefix="/api/v1/geodescriber")
 app.register_blueprint(nlcd_landcover_endpoints_v2, url_prefix='/api/v2/nlcd-landcover')
+app.register_blueprint(sentinel_mosaic_endpoints_v1, url_prefix='/api/v1/sentinel-mosaic')
 
 # CT
 info = load_config_json('register')

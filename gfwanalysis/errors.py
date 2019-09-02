@@ -46,6 +46,8 @@ class HighResTilesError(Error):
 class RecentTilesError(Error):
     pass
 
+class SentinelMosaicError(Error):
+    pass
 
 class CompositeError(Error):
     pass    
