@@ -13,7 +13,7 @@ from gfwanalysis.routes.api import error
 from gfwanalysis.serializers import serialize_sentinel_mosaic
 from gfwanalysis.services.analysis.sentinel_mosaic import SentinelMosaic
 
-sentinel_endpoints_v1 = Blueprint('sentinel_endpoints_v1', __name__)
+sentinel_mosaic_endpoints_v1 = Blueprint('sentinel_mosaic_endpoints_v1', __name__)
 
 
 def analyze_sentinel_mosaic(geojson, start, end, cloudscore_thresh, bounds):
@@ -32,7 +32,7 @@ def analyze_sentinel_mosaic(geojson, start, end, cloudscore_thresh, bounds):
     return jsonify(data=serialize_sentinel_mosaic(data, 'sentinel_mosaic')), 200
 
 
-@sentinel_endpoints_v1.route('/', strict_slashes=False, methods=['GET'])
+@sentinel_mosaic_endpoints_v1.route('/', strict_slashes=False, methods=['GET'])
 @get_geo_by_hash
 @get_sentinel_mosaic_params
 def get_by_geostore(geojson, start, end, cloudscore_thresh, bounds):
