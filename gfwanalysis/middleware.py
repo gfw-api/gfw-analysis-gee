@@ -245,6 +245,11 @@ def get_composite_params(func):
                 show_bounds = True
             else:
                 show_bounds = False
+            cloudscore_thresh = request.args.get('cloudscore_thresh', False)
+            if not cloudscore_thresh:
+                cloudscore_thresh = 5
+            else:
+                cloudscore_thresh = int(cloudscore_thresh)
         kwargs['get_stats'] = get_stats
         kwargs['get_dem'] = get_dem
         kwargs['classify'] = classify
@@ -253,6 +258,7 @@ def get_composite_params(func):
         kwargs['instrument'] = instrument
         kwargs['band_viz'] = band_viz
         kwargs['show_bounds'] = show_bounds
+        kwargs['cloudscore_thresh'] = cloudscore_thresh
         return func(*args, **kwargs)
     return wrapper
 

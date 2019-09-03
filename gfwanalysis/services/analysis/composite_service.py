@@ -13,7 +13,7 @@ class CompositeService(object):
     """
     @staticmethod
     def get_composite_image(geojson, instrument, date_range, thumb_size,\
-                        classify, band_viz, get_dem, get_stats, show_bounds):
+                        classify, band_viz, get_dem, get_stats, show_bounds, cloudscore_thresh):
         logging.info(f"[COMPOSITE SERVICE]: Creating composite")
         try:
             features = geojson.get('features')
@@ -37,7 +37,7 @@ class CompositeService(object):
                 ).visualize(bands=["constant"], palette=["C0FF24"], min=14, opacity=1.0)
                 region = buffer_geom(region)
             date_range = CompositeService.get_formatted_date(date_range)
-            sat_img = CompositeService.get_sat_img(instrument, region, date_range)
+            sat_img = CompositeService.get_sat_img(instrument, region, date_range, cloudscore_thresh)
             if classify:
                 result_dic = CompositeService.get_classified_composite(sat_img, instrument, region, thumb_size, get_stats)
             else:
@@ -101,11 +101,11 @@ class CompositeService(object):
         return result_dic
 
     @staticmethod
-    def get_sat_img(instrument, region, date_range):
+    def get_sat_img(instrument, region, date_range, cloudscore_thresh):
         if(instrument == 'landsat'):
-            sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', 3))
+            sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', cloudscore_thresh))
         else:
-            sat_img = ee.ImageCollection('COPERNICUS/S2').filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE', 5))
+            sat_img = ee.ImageCollection('COPERNICUS/S2').filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE', cloudscore_thresh))
         sat_img = sat_img.filterBounds(region).filterDate(date_range[0].strip(), date_range[1].strip())\
                     .median().clip(region)
         if(instrument == 'sentinel'):
