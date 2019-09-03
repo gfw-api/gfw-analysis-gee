@@ -14,7 +14,7 @@ class CompositeService(object):
     @staticmethod
     def get_composite_image(geojson, instrument, date_range, thumb_size,\
                         classify, band_viz, get_dem, get_stats, show_bounds):
-        logging.info(f"[COMPOSITE SERVICE: getting thumb size {thumb_size}]")
+        logging.info(f"[COMPOSITE SERVICE]: Creating composite")
         try:
             features = geojson.get('features')
             region = [ee.Geometry(feature['geometry']) for feature in features][0]
