@@ -33,7 +33,7 @@ class SentinelMosaic(object):
     def sentinel_mosaic_data(geojson, start, end, cloudscore_thresh, bounds):
         """
         """
-        logging.info("[RECENT>DATA] function initiated")
+        logging.info("[SENTIINEL MOSAIC>TILES] function initiated")
         tmp = {}
         try:
             feat_col = get_region(geojson)
@@ -41,6 +41,7 @@ class SentinelMosaic(object):
                 feat = feat_col[0]
             else:
                 return None
+            logging.info("\n\n---------HERE--------\n\n")
 
             buffered_geom = buffer_geom(feat.geometry())
             tmp['bbox'] = buffered_geom.getInfo()

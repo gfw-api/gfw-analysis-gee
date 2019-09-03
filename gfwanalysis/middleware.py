@@ -209,29 +209,42 @@ def get_composite_params(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method in ['GET','POST']:
-            instrument = request.args.get('instrument')
+            instrument = request.args.get('instrument', False)
             if not instrument:
                 instrument = 'landsat'
-            date_range = request.args.get('date_range')
+            date_range = request.args.get('date_range', False)
             if not date_range:
                 date_range = ""
-            thumb_size = request.args.get('thumb_size')
+            thumb_size = request.args.get('thumb_size', False)
             if not thumb_size:
                 thumb_size = [500, 500]
-            classify = request.args.get('classify')
-            if classify == 'False' or not classify:
+            else:
+                thumb_size = [int(size.strip()) for size in thumb_size.replace('[', '').replace(']', '').split(',')]
+            classify = request.args.get('classify', False)
+            if classify and classify.lower() == 'true':
+                classify = True
+            else:
                 classify = False
-            band_viz = request.args.get('band_viz')
+            band_viz = request.args.get('band_viz', False)
             if not band_viz:
                 band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
             else:
                 band_viz = json.loads(band_viz)
-            get_dem = request.args.get('get_dem')
-            if get_dem == 'False' or not get_dem:
+            get_dem = request.args.get('get_dem', False)
+            if get_dem and get_dem.lower() == 'true':
+                get_dem = True
+            else:
                 get_dem = False
-            get_stats = request.args.get('get_stats')
-            if get_stats == 'False' or not get_stats:
+            get_stats = request.args.get('get_stats', False)
+            if get_stats and get_stats.lower() == 'true':
+                get_stats = True
+            else:
                 get_stats = False
+            show_bounds = request.args.get('show_bounds', False)
+            if show_bounds and show_bounds.lower() == 'true':
+                show_bounds = True
+            else:
+                show_bounds = False
         kwargs['get_stats'] = get_stats
         kwargs['get_dem'] = get_dem
         kwargs['classify'] = classify
@@ -239,6 +252,7 @@ def get_composite_params(func):
         kwargs['date_range'] = date_range
         kwargs['instrument'] = instrument
         kwargs['band_viz'] = band_viz
+        kwargs['show_bounds'] = show_bounds
         return func(*args, **kwargs)
     return wrapper
 

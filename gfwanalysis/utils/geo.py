@@ -16,6 +16,10 @@ def loop_future(loop, f, a):
             funct.partial(f, a),
         )
 
+def buffer_geom(geom):
+        buffer_size = geom.bounds(1).area(1).sqrt().multiply(0.5)
+        return geom.buffer(buffer_size).bounds(1)
+
 async def reverse_geocode_a_geostore(loop, shape):
     """ Take a shapely shape object and return geocoding results on the min/max coordinate locations"""
     w, s, e, n = shape.bounds
@@ -47,7 +51,7 @@ def get_clip_vertex_list(geojson):
     Take a geojson object and return a list of geometry vertices that ee can use as an argument to get thumbs
     """
     tmp_poly = []
-    s = GeometryCollection([shape(feature["geometry"]).buffer(0)for feature in geojson.get('features')])
+    s = GeometryCollection([shape(feature["geometry"]).buffer(0) for feature in geojson.get('features')])
     simple = s[0].simplify(tolerance=0.01, preserve_topology=True)
     try:
         for x, y in zip(simple.exterior.coords.xy[0], simple.exterior.coords.xy[1]):

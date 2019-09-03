@@ -20,7 +20,7 @@ def analyze_sentinel_mosaic(geojson, start, end, cloudscore_thresh, bounds):
     """
     ...
     """
-
+    logging.info("[SENTIINEL MOSAIC>ROUTER] function initiated")
     try:
         data = SentinelMosaic.sentinel_mosaic_data(geojson=geojson, start=start, end=end, cloudscore_thresh=cloudscore_thresh, bounds=bounds)
     except SentinelMosaicError as e:
@@ -37,7 +37,7 @@ def analyze_sentinel_mosaic(geojson, start, end, cloudscore_thresh, bounds):
 @get_sentinel_mosaic_params
 def get_by_geostore(geojson, start, end, cloudscore_thresh, bounds):
     """Analyze by geostore"""
-    logging.info('[ROUTER]: Getting mosaic for tiles for Recent Sentinel Images')
+    logging.info('[ROUTER]: Getting mosaic for tiles for Sentinel Images')
     data = analyze_sentinel_mosaic(geojson=geojson, start=start, end=end, cloudscore_thresh=cloudscore_thresh, bounds=bounds)
     return data
 
