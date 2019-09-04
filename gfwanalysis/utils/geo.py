@@ -17,8 +17,8 @@ def loop_future(loop, f, a):
         )
 
 def buffer_geom(geom):
-        buffer_size = geom.bounds(1).area(1).sqrt().multiply(0.5)
-        return geom.buffer(buffer_size).bounds(1)
+        buffer_size = geom.convexHull(1).bounds(1).area(1).sqrt().multiply(0.5)
+        return geom.convexHull(1).buffer(buffer_size).bounds(1)
 
 async def reverse_geocode_a_geostore(loop, shape):
     """ Take a shapely shape object and return geocoding results on the min/max coordinate locations"""

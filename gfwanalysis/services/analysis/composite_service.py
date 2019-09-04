@@ -5,7 +5,7 @@ from shapely.geometry import shape, GeometryCollection
 from datetime import datetime, timedelta
 from gfwanalysis.errors import CompositeError
 from gfwanalysis.services.analysis.classification_service import create_model, add_indices, classify_image, get_classified_image_url
-from gfwanalysis.utils.geo import buffer_geom
+from gfwanalysis.utils.geo import buffer_geom, get_clip_vertex_list
 
 class CompositeService(object):
     """Gets a geostore geometry as input and returns a composite, cloud-free image within the geometry bounds.
@@ -36,6 +36,11 @@ class CompositeService(object):
                     width=2
                 ).visualize(bands=["constant"], palette=["C0FF24"], min=14, opacity=1.0)
                 region = buffer_geom(region)
+            else:
+                region = ee.Geometry({
+                    'type': 'Polygon',
+                    'coordinates': [get_clip_vertex_list(geojson)]
+                })
             date_range = CompositeService.get_formatted_date(date_range)
             sat_img = CompositeService.get_sat_img(instrument, region, date_range, cloudscore_thresh)
             if classify:
