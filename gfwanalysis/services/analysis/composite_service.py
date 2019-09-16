@@ -1,40 +1,63 @@
 import logging
-import asyncio
-import requests
-import functools as funct
 import json
 import ee
 from shapely.geometry import shape, GeometryCollection
 from datetime import datetime, timedelta
 from gfwanalysis.errors import CompositeError
-from gfwanalysis.config import SETTINGS
 from gfwanalysis.services.analysis.classification_service import create_model, add_indices, classify_image, get_classified_image_url
-from gfwanalysis.utils.geo import get_clip_vertex_list
+from gfwanalysis.utils.geo import buffer_geom, get_clip_vertex_list
 
 class CompositeService(object):
     """Gets a geostore geometry as input and returns a composite, cloud-free image within the geometry bounds.
     Note that the URLs from Earth Engine expire every 3 days.
     """
+    @staticmethod
     def get_composite_image(geojson, instrument, date_range, thumb_size,\
-                        classify, band_viz, get_dem, get_stats):
+                        classify, band_viz, get_dem, get_stats, show_bounds, cloudscore_thresh):
+        logging.info(f"[COMPOSITE SERVICE]: Creating composite")
         try:
             features = geojson.get('features')
             region = [ee.Geometry(feature['geometry']) for feature in features][0]
-            polyg_geom = get_clip_vertex_list(geojson)
-            date_range = CompositeService.get_formatted_date(date_range)
-            sat_img = CompositeService.get_sat_img(instrument, region, date_range)
-            if classify:
-                result_dic = CompositeService.get_classified_composite(sat_img, instrument, polyg_geom, thumb_size, get_stats)
+            if show_bounds:
+                empty = ee.Image().byte()
+                fill = empty.paint(
+                    featureCollection=ee.FeatureCollection([region])
+                ).visualize(bands=["constant"], palette=["C0FF24"], min=14, opacity=0.1)
+
+                outer = empty.paint(
+                    featureCollection=ee.FeatureCollection([region]),
+                    color='000000',
+                    width=5
+                ).visualize(bands=["constant"], palette=["000000"], min=14, opacity=1.0)
+
+                inner = empty.paint(
+                    featureCollection=ee.FeatureCollection([region]),
+                    color='C0FF24',
+                    width=2
+                ).visualize(bands=["constant"], palette=["C0FF24"], min=14, opacity=1.0)
+                region = buffer_geom(region)
             else:
-                image = sat_img.visualize(**band_viz)
-                tmp_thumb = image.getThumbUrl({'region':polyg_geom, 'dimensions': thumb_size})
+                region = ee.Geometry({
+                    'type': 'Polygon',
+                    'coordinates': [get_clip_vertex_list(geojson)]
+                })
+            date_range = CompositeService.get_formatted_date(date_range)
+            sat_img = CompositeService.get_sat_img(instrument, region, date_range, cloudscore_thresh)
+            if classify:
+                result_dic = CompositeService.get_classified_composite(sat_img, instrument, region, thumb_size, get_stats)
+            else:
+                if show_bounds:
+                    image = sat_img.visualize(**band_viz).blend(fill).blend(outer).blend(inner)
+                else:
+                    image = sat_img.visualize(**band_viz)
+                tmp_thumb = image.getThumbUrl({'dimensions': thumb_size})
                 tmp_tile = CompositeService.get_image_url(image)
                 result_dic = {'thumb_url': tmp_thumb,
                                'tile_url': tmp_tile}
                 logging.error(f'[Composite Service]: result_dic {result_dic}')
             if get_dem:
                 result_dic['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
-                    clip(region).getThumbUrl({'region':polyg_geom, 'dimensions':thumb_size,\
+                    clip(region).getThumbUrl({'region':region, 'dimensions':thumb_size,\
                         'min':-479, 'max':8859.0})
             return result_dic
         except Exception as error:
@@ -83,17 +106,18 @@ class CompositeService(object):
         return result_dic
 
     @staticmethod
-    def get_sat_img(instrument, region, date_range):
+    def get_sat_img(instrument, region, date_range, cloudscore_thresh):
         if(instrument == 'landsat'):
-            sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', 3))
+            sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', cloudscore_thresh))
         else:
-            sat_img = ee.ImageCollection('COPERNICUS/S2').filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE', 1))
+            sat_img = ee.ImageCollection('COPERNICUS/S2').filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE', cloudscore_thresh))
         sat_img = sat_img.filterBounds(region).filterDate(date_range[0].strip(), date_range[1].strip())\
                     .median().clip(region)
         if(instrument == 'sentinel'):
             sat_img = sat_img.divide(100*100)
         return sat_img
 
+    @staticmethod
     def get_image_url(source):
         """
         Returns a tile url for image
