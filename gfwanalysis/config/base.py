@@ -15,6 +15,7 @@ SETTINGS = {
         'service_account': '390573081381-lm51tabsc8q8b33ik497hc66qcmbj11d@developer.gserviceaccount.com',
         'privatekey_file': BASE_DIR + '/privatekey.pem',
         'assets': {
+            'hansen_optimised': 'projects/wri-datalab/global_forest_change_2018_v1_6_optimised',
             'hansen': 'projects/wri-datalab/HansenComposite_18',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
             'hansen_2017_v1_5':'UMD/hansen/global_forest_change_2017_v1_5',
