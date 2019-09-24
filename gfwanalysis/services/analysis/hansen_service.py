@@ -112,7 +112,8 @@ class HansenService(object):
       treecover2000_image = ee.Image(hansen_optimised.select(treecover2000_band))
       treecover2000_image = treecover2000_image.updateMask(treecover2000_image)
         # returns ee.Number
-      extent2000 = get_extent_fc(treecover2000_image, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
+      extent2000 = get_extent_fc(treecover2000_image, region_fc, method=method, bestEffort=bestEffort,
+                                  scale=False, numPixels=numPixels)
       extent2000 = ee_squaremeters_to_ha(extent2000)
       logging.info(f"Calculated tree cover extent in year 2000: {type(extent2000)}")
 
@@ -121,7 +122,8 @@ class HansenService(object):
       treecover2010_image = ee.Image(hansen_optimised.select(treecover2010_band))
       treecover2010_image = treecover2010_image.updateMask(treecover2010_image)
         # returns ee.Number
-      extent2010 = get_extent_fc(treecover2010_image, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
+      extent2010 = get_extent_fc(treecover2010_image, region_fc, method=method, bestEffort=bestEffort,
+                                  scale=False, numPixels=numPixels)
       extent2010 = ee_squaremeters_to_ha(extent2010)
       logging.info(f"Calculated tree cover extent in year 2010: {type(extent2010)}")
 
