@@ -1,11 +1,9 @@
-"""HANSEN SERVICE"""
-
 import ee
 import logging
 
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import HansenError
-from gfwanalysis.utils.geo import get_region, ee_squaremeters_to_ha, get_extent_fc
+from gfwanalysis.utils.geo import get_region, ee_squaremeters_to_ha, get_extent_fc, divide_geometry
 
 
 class HansenService(object):
@@ -42,21 +40,6 @@ class HansenService(object):
                   matches the data type (after transformation) to avoid errors
                   of upto 20%.
     """
-
-
-  @staticmethod
-  def get_area(f):
-    return ee.Feature(None, {
-                              'area_ha': ee_squaremeters_to_ha(f.geometry().area()),
-                              'px': f.geometry().area().divide(30.0)
-                              })
-
-  @staticmethod
-  def reduceFunction(img):
-      out = get_extent_fc(img, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
-      out = ee_squaremeters_to_ha(out)
-      year = ee.Number(img.get('year')).format('%.0f')
-      return ee.Feature(None, {'year': year, 'loss': out})
 
   @staticmethod
   def analyze(threshold, geojson, begin, end, aggregate_values=True,
@@ -107,6 +90,11 @@ class HansenService(object):
       region_fc = ee.Algorithms.If(n_divisions, region_split, region_nosplit)
       n_features = ee.Number(ee.FeatureCollection(region_fc).size())
       logging.info(f'Number of features is {n_features.getInfo()}')
+      def get_area(f):
+        return ee.Feature(None, {
+                                  'area_ha': ee_squaremeters_to_ha(f.geometry().area()),
+                                  'px': f.geometry().area().divide(30.0)
+                                  })
       area_feature = ee.FeatureCollection(region_fc).map(get_area)
       total_area = area_feature.aggregate_sum('area_ha')
       logging.info(f"Total area (Ha) is {total_area.getInfo()}")
@@ -126,7 +114,7 @@ class HansenService(object):
         # returns ee.Number
       extent2000 = get_extent_fc(treecover2000_image, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
       extent2000 = ee_squaremeters_to_ha(extent2000)
-      logging.info("Calculated tree cover extent in year 2000")
+      logging.info(f"Calculated tree cover extent in year 2000: {type(extent2000)}")
 
       # Identify 2010 tree cover at given threshold
         # returns ee.Image
@@ -135,7 +123,7 @@ class HansenService(object):
         # returns ee.Number
       extent2010 = get_extent_fc(treecover2010_image, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
       extent2010 = ee_squaremeters_to_ha(extent2010)
-      logging.info("Calculated tree cover extent in year 2010")
+      logging.info(f"Calculated tree cover extent in year 2010: {type(extent2010)}")
 
       # Identify tree gain over data collection period
         # returns ee.Image
@@ -146,7 +134,7 @@ class HansenService(object):
         # returns ee.Number
       gain = get_extent_fc(gain20002012_image, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
       gain = ee_squaremeters_to_ha(gain)
-      logging.info("Calculated tree cover gain between 2000 and 2012")
+      logging.info(f"Calculated tree cover gain between 2000 and 2012: {type(gain)}")
 
       # Identify loss
         # returns ee.Image
@@ -175,10 +163,14 @@ class HansenService(object):
               .set({'year': ee.Number(2000).add(year)})
       yearly_loss_collection = ee.ImageCollection(year_list.map(tmp_f))
       logging.info("Created annual biomass loss image collection")
-        # returns ee.FeatureCollection
-
+      # returns ee.FeatureCollection
+      def reduceFunction(img):
+        tmp = get_extent_fc(img, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
+        out = ee_squaremeters_to_ha(tmp)
+        year = ee.Number(img.get('year')).format('%.0f')
+        return ee.Feature(None, {'year': year, 'loss': out})
       output = yearly_loss_collection.map(reduceFunction)
-        # returns ee.Dictionary
+      # returns ee.Dictionary
       loss_years = ee.Dictionary.fromLists( \
           output.aggregate_array('year'), \
           output.aggregate_array('loss'))
@@ -188,7 +180,7 @@ class HansenService(object):
       # Note code for loss_ag OR loss_years is called depending
       # value of Boolean aggregate_values=True
       loss = ee.Algorithms.If(aggregate_values, loss_ag, loss_years)
-
+      logging.info(f"blah: {extent2000}")
       # Create dictionary of results
       # ee.Dictionary
       d = ee.Dictionary({
