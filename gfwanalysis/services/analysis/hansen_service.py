@@ -134,7 +134,7 @@ class HansenService(object):
         # returns ee.Number
       gain = get_extent_fc(gain20002012_image, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
       gain = ee_squaremeters_to_ha(gain)
-      logging.info(f"Calculated tree cover gain between 2000 and 2012: {type(gain)}")
+      logging.info(f"Calculated tree cover gain between 2000 and 2012:")
 
       # Identify loss
         # returns ee.Image
@@ -180,7 +180,6 @@ class HansenService(object):
       # Note code for loss_ag OR loss_years is called depending
       # value of Boolean aggregate_values=True
       loss = ee.Algorithms.If(aggregate_values, loss_ag, loss_years)
-      logging.info(f"blah: {extent2000}")
       # Create dictionary of results
       # ee.Dictionary
       d = ee.Dictionary({
@@ -194,7 +193,8 @@ class HansenService(object):
 
       })
       # Evaluate the dictionary of results
-      return d.getInfo()
+      tmp_d = d.getInfo()
+      return tmp_d
     except Exception as error:
         logging.error(str(error))
         raise HansenError(message='Error in Hansen Analysis')
