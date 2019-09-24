@@ -39,10 +39,11 @@ def analyze(geojson, area_ha):
         logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
     except Exception as e:
-        logging.error('[ROUTER]: ' + str(e))
+        logging.error(f"[ROUTER]: {e}")
         return error(status=500, detail='Generic Error')
 
     data['area_ha'] = area_ha
+    logging.error(f"[ROUTER]: dict returned {data}")
     if table and not aggregate_values:
         return jsonify(data=serialize_table_umd(data, 'umd')), 200
     else:
