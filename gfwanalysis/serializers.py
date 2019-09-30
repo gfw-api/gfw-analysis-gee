@@ -10,8 +10,8 @@ def serialize_umd(analysis, type):
         'attributes': {
             'loss': analysis.get('loss', None),
             'gain': analysis.get('gain', None),
-            'treeExtent': analysis.get('tree_extent', None),
-            'treeExtent2010': analysis.get('tree_extent2010', None),
+            'treeExtent': analysis.get('treeExtent', None),
+            'treeExtent2010': analysis.get('treeExtent2010', None),
             'areaHa': analysis.get('area_ha', None),
             'loss_start_year': analysis.get('loss_start_year', None),
             'loss_end_year': analysis.get('loss_end_year', None)
@@ -34,7 +34,7 @@ def serialize_composite_output(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'thumb_url': analysis.get('thumb_url', None), 
+            'thumb_url': analysis.get('thumb_url', None),
             'tile_url':analysis.get('tile_url', None),
             'dem':analysis.get('dem', None),
             'zonal_stats':analysis.get('zonal_stats', None)
@@ -49,8 +49,8 @@ def serialize_table_umd(analysis, type):
                      'loss': analysis.get('loss', None).get(year),
                      'gain': analysis.get('gain', None),
                      'areaHa': analysis.get('area_ha', None),
-                     'treeExtent': analysis.get('tree_extent', None),
-                     'treeExtent2010': analysis.get('tree_extent2010', None),
+                     'treeExtent': analysis.get('treeExtent', None),
+                     'treeExtent2010': analysis.get('treeExtent2010', None),
                      })
     return {
         'id': None,
