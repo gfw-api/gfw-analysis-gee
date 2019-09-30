@@ -34,12 +34,6 @@ node {
       sh("docker -H :2375 build -t ${dockerUsername}/${appName}:latest .")
     }
 
-    stage ('Run Tests') {
-      sh('docker-compose -H :2375 -f docker-compose-test.yml build')
-      sh('docker-compose -H :2375 -f docker-compose-test.yml run --rm test')
-      sh('docker-compose -H :2375 -f docker-compose-test.yml stop')
-    }
-
     stage('Push Docker') {
       withCredentials([usernamePassword(credentialsId: 'Vizzuality Docker Hub', usernameVariable: 'DOCKER_HUB_USERNAME', passwordVariable: 'DOCKER_HUB_PASSWORD')]) {
         sh("docker -H :2375 login -u ${DOCKER_HUB_USERNAME} -p ${DOCKER_HUB_PASSWORD}")
@@ -56,14 +50,14 @@ node {
         case "develop":
           sh("echo Deploying to STAGING cluster")
           sh("kubectl config use-context gke_${GCLOUD_PROJECT}_${GCLOUD_GCE_ZONE}_${KUBE_STAGING_CLUSTER}")
-          def service = sh([returnStdout: true, script: "kubectl get deploy ${appName} || echo NotFound"]).trim()
+          def service = sh([returnStdout: true, script: "kubectl get deploy ${appName} --namespace=gfw || echo NotFound"]).trim()
           if ((service && service.indexOf("NotFound") > -1) || (forceCompleteDeploy)){
             sh("sed -i -e 's/{name}/${appName}/g' k8s/services/*.yaml")
             sh("sed -i -e 's/{name}/${appName}/g' k8s/staging/*.yaml")
             sh("kubectl apply -f k8s/services/")
             sh("kubectl apply -f k8s/staging/")
           }
-          sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --record")
+          sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --namespace=gfw --record")
           break
 
         // Roll out to production
@@ -89,14 +83,14 @@ node {
           if (userInput == true && !didTimeout){
             sh("echo Deploying to PROD cluster")
             sh("kubectl config use-context gke_${GCLOUD_PROJECT}_${GCLOUD_GCE_ZONE}_${KUBE_PROD_CLUSTER}")
-            def service = sh([returnStdout: true, script: "kubectl get deploy ${appName} || echo NotFound"]).trim()
+            def service = sh([returnStdout: true, script: "kubectl get deploy ${appName} --namespace=gfw || echo NotFound"]).trim()
             if ((service && service.indexOf("NotFound") > -1) || (forceCompleteDeploy)){
               sh("sed -i -e 's/{name}/${appName}/g' k8s/services/*.yaml")
               sh("sed -i -e 's/{name}/${appName}/g' k8s/production/*.yaml")
               sh("kubectl apply -f k8s/services/")
               sh("kubectl apply -f k8s/production/")
             }
-            sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --record")
+            sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --namespace=gfw --record")
           } else {
             sh("echo NOT DEPLOYED")
             currentBuild.result = 'SUCCESS'

@@ -16,13 +16,19 @@ class Error(Exception):
 class HansenError(Error):
     pass
 
+  
 class MCAnalysisError(Error):
     pass
 
+  
 class GeodescriberError(Error):
     pass
 
-
+  
+class NLCDLandcoverError(Error):
+    pass
+  
+  
 class HistogramError(Error):
     pass
 
@@ -46,6 +52,8 @@ class HighResTilesError(Error):
 class RecentTilesError(Error):
     pass
 
+class SentinelMosaicError(Error):
+    pass
 
 class CompositeError(Error):
     pass

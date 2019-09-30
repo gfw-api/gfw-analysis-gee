@@ -10,8 +10,8 @@ def serialize_umd(analysis, type):
         'attributes': {
             'loss': analysis.get('loss', None),
             'gain': analysis.get('gain', None),
-            'treeExtent': analysis.get('tree_extent', None),
-            'treeExtent2010': analysis.get('tree_extent2010', None),
+            'treeExtent': analysis.get('treeExtent', None),
+            'treeExtent2010': analysis.get('treeExtent2010', None),
             'areaHa': analysis.get('area_ha', None),
             'loss_start_year': analysis.get('loss_start_year', None),
             'loss_end_year': analysis.get('loss_end_year', None)
@@ -70,8 +70,8 @@ def serialize_table_umd(analysis, type):
                      'loss': analysis.get('loss', None).get(year),
                      'gain': analysis.get('gain', None),
                      'areaHa': analysis.get('area_ha', None),
-                     'treeExtent': analysis.get('tree_extent', None),
-                     'treeExtent2010': analysis.get('tree_extent2010', None),
+                     'treeExtent': analysis.get('treeExtent', None),
+                     'treeExtent2010': analysis.get('treeExtent2010', None),
                      })
     return {
         'id': None,
@@ -214,6 +214,13 @@ def serialize_biomass_table_v1(analysis, type):
         'attributes': rows
     }
 
+def serialize_nlcd_landcover_v2(analysis, type):
+    """Convert the output of the biomass_loss analysis to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': analysis
+    }
 
 def serialize_biomass_v2(analysis, type):
     """Convert the output of the biomass_loss analysis to json"""
@@ -270,6 +277,17 @@ def serialize_sentinel_url(analysis, type):
         }
     }
 
+def serialize_sentinel_mosaic(analysis, type):
+    """Convert output of landsat_tiles to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            "tile_url": analysis.get('tile_url', None),
+            "thumbnail_url": analysis.get('thumb_url', None),
+            "bbox": analysis.get('bbox', None),
+        }
+    }
 
 def serialize_highres_url(analysis, type):
     """Convert output of images to json"""
