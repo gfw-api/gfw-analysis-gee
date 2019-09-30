@@ -76,7 +76,7 @@ class MCAnalysisService(object):
         #logging.info(f"[MC service] results: {results}")
         return results
 
-    
+
     @staticmethod
     def integrate_fits(anomaly, mu, sigma, anomaly_uncertainty=None):
         """
@@ -90,14 +90,14 @@ class MCAnalysisService(object):
         # anomaly ±uncertainty p values
         if anomaly_uncertainty:
             upper_p = stats.norm.cdf(anomaly_uncertainty + anomaly, mu, sigma)
-            lower_p = stats.norm.cdf(anomaly - anomaly_uncertainty, mu, sigma)    
+            lower_p = stats.norm.cdf(anomaly - anomaly_uncertainty, mu, sigma)
         p_val = 1 - cdf_value
-        if anomaly > 0: 
+        if anomaly > 0:
             change = 'Increase'
         else:
             change = 'Decrease'
-        
-        results['description'] = (f"""{change} of {anomaly:.2g} CO₂e over observation period has an associated p-value of {p_val:3.3f}"""
+
+        results['description'] = (f"""{change} of {anomaly:.2g} over observation period has an associated p-value of {p_val:3.3f}"""
                                 f"""± {upper_p:3.3f} {lower_p:3.3f}.""")
         results['anomaly'] = anomaly
         results['anomaly_uncertainty'] = anomaly_uncertainty
