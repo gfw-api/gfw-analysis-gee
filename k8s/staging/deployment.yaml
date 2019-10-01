@@ -55,7 +55,7 @@ spec:
             valueFrom:
                 secretKeyRef:
                   name: mssecrets
-                  key: EE_PRIVATE_KEY
+                  key: EE_PRIVATE_KEY_JSON
           - name: REDIS_URL
             value: redis://localhost:6379
         ports:
