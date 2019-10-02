@@ -114,7 +114,7 @@ class GeodescriberService(object):
                 # If location across multiple regions (get the centroid's region)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[-1], 'ttl_2': country_list[0]}
-            else: 
+            else:
                 tmp_config['sentence'] = '{ttl_0} in {ttl_1}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[0]}
 
@@ -128,10 +128,10 @@ class GeodescriberService(object):
                 # If location across multiple countries (get the centroid's country)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[-1], 'ttl_2': continent_list[0]}
-            elif continent_list: 
+            elif continent_list:
                 tmp_config['sentence'] = '{ttl_0} in {ttl_1}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': continent_list[0]}
-            else: 
+            else:
                 tmp_config['sentence'] = '{ttl_0} of interest'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase}
 
@@ -161,10 +161,10 @@ class GeodescriberService(object):
         if not proportion_list:
             return None
         elif proportion_list[0] > 75:
-            tmp_config['sentence'] = "The regions habitat is comprised of {eco_0}."
+            tmp_config['sentence'] = "The region's habitat is comprised of {eco_0}."
             tmp_config['items'] = {'eco_0': tmp_d[proportion_list[0]]}
         elif proportion_list[0] > 50:
-            tmp_config['sentence'] = "The majority of the regions habitat is comprised of {eco_0}. It also includes areas of {eco_1}."
+            tmp_config['sentence'] = "The majority of the region's habitat is comprised of {eco_0}. It also includes areas of {eco_1}."
             tmp_config['items'] = {'eco_0': tmp_d[proportion_list[0]], 'eco_1': tmp_d[proportion_list[1]]}
         else:
             tmp_config['sentence'] = "The region is made up of different habitats, including {eco_0}, and {eco_1}."
