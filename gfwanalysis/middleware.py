@@ -133,8 +133,10 @@ def get_recent_tiles(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'POST':
-            data_array = request.get_json().get('source_data')
+            data_array = request.get_json().get('source_data', [])
             bands = request.args.get('bands', None)
+            if not bands:
+                bands = request.get_json().get('bands', None)
             bmin = request.args.get('min', None)
             bmax = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
@@ -157,8 +159,10 @@ def get_recent_thumbs(func):
     def wrapper(*args, **kwargs):
 
         if request.method == 'POST':
-            data_array = request.get_json().get('source_data')
+            data_array = request.get_json().get('source_data', [])
             bands = request.args.get('bands', None)
+            if not bands:
+                bands = request.get_json().get('bands', None)
             bmin = request.args.get('min', None)
             bmax = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
