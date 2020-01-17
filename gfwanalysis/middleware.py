@@ -21,19 +21,16 @@ def exist_tile(func):
             return func(*args, **kwargs)
         else:
             return redirect(url)
-
     return wrapper
 
 
 def exist_mapid(func):
     """Get geodata"""
-
     @wraps(func)
     def wrapper(*args, **kwargs):
         year = kwargs['year']
         kwargs["map_object"] = RedisService.check_year_mapid(year)
         return func(*args, **kwargs)
-
     return wrapper
 
 def get_classification_params(func):
@@ -70,7 +67,6 @@ def get_sentinel_params(func):
 def get_highres_params(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         if request.method == 'GET':
             lat = request.args.get('lat')
             lon = request.args.get('lon')
@@ -86,16 +82,33 @@ def get_highres_params(func):
 
     return wrapper
 
+def get_sentinel_mosaic_params(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        if request.method == 'GET':
+            start = request.args.get('start', None)
+            end = request.args.get('end', None)
+            cloudscore_thresh = request.args.get('cloudscore_thresh', 10)
+            bounds = request.args.get('bounds', False)
+        kwargs["start"] = start
+        kwargs["end"] = end
+        kwargs["cloudscore_thresh"] = cloudscore_thresh
+        kwargs["bounds"] = bounds
+        return func(*args, **kwargs)
+
+    return wrapper
+
 
 def get_recent_params(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         if request.method == 'GET':
             lat = request.args.get('lat')
             lon = request.args.get('lon')
             start = request.args.get('start')
             end = request.args.get('end')
+            sort_by = request.args.get('sort_by', None)
             bmin = request.args.get('min', None)
             bmax = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
@@ -106,6 +119,7 @@ def get_recent_params(func):
         kwargs["lon"] = lon
         kwargs["start"] = start
         kwargs["end"] = end
+        kwargs["sort_by"] = sort_by
         kwargs["bmin"] = bmin
         kwargs["bmax"] = bmax
         kwargs["opacity"] = float(opacity)
@@ -119,8 +133,10 @@ def get_recent_tiles(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'POST':
-            data_array = request.get_json().get('source_data')
+            data_array = request.get_json().get('source_data', [])
             bands = request.args.get('bands', None)
+            if not bands:
+                bands = request.get_json().get('bands', None)
             bmin = request.args.get('min', None)
             bmax = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
@@ -143,8 +159,10 @@ def get_recent_thumbs(func):
     def wrapper(*args, **kwargs):
 
         if request.method == 'POST':
-            data_array = request.get_json().get('source_data')
+            data_array = request.get_json().get('source_data', [])
             bands = request.args.get('bands', None)
+            if not bands:
+                bands = request.get_json().get('bands', None)
             bmin = request.args.get('min', None)
             bmax = request.args.get('max', None)
             opacity = request.args.get('opacity', 1.0)
@@ -157,6 +175,30 @@ def get_recent_thumbs(func):
         kwargs["opacity"] = float(opacity)
         return func(*args, **kwargs)
 
+    return wrapper
+
+
+def get_mc_info(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if request.method == 'POST':
+            data_array = request.get_json().get('timeseries')
+            window = request.args.get('window', None)
+            if window:
+                window = int(window)
+            mc_number = request.args.get('mc_number', None)
+            if mc_number:
+                mc_number = int(mc_number)
+            bin_number = request.args.get('bin_number', None)
+            if bin_number:
+                bin_number = int(bin_number)
+            if not data_array:
+                return error(status=400, detail='[MC] Timeseries is required')
+        kwargs["timeseries"] = data_array
+        kwargs["window"] = window
+        kwargs["mc_number"] = mc_number
+        kwargs["bin_number"] = bin_number
+        return func(*args, **kwargs)
     return wrapper
 
 
@@ -192,29 +234,47 @@ def get_composite_params(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method in ['GET','POST']:
-            instrument = request.args.get('instrument')
+            instrument = request.args.get('instrument', False)
             if not instrument:
                 instrument = 'landsat'
-            date_range = request.args.get('date_range')
+            date_range = request.args.get('date_range', False)
             if not date_range:
                 date_range = ""
-            thumb_size = request.args.get('thumb_size')
+            thumb_size = request.args.get('thumb_size', False)
             if not thumb_size:
                 thumb_size = [500, 500]
-            classify = request.args.get('classify')
-            if classify == 'False' or not classify:
+            else:
+                thumb_size = [int(size.strip()) for size in thumb_size.replace('[', '').replace(']', '').split(',')]
+            classify = request.args.get('classify', False)
+            if classify and classify.lower() == 'true':
+                classify = True
+            else:
                 classify = False
-            band_viz = request.args.get('band_viz')
+            band_viz = request.args.get('band_viz', False)
             if not band_viz:
                 band_viz = {'bands': ['B4', 'B3', 'B2'], 'min': 0, 'max': 0.4}
             else:
                 band_viz = json.loads(band_viz)
-            get_dem = request.args.get('get_dem')
-            if get_dem == 'False' or not get_dem:
+            get_dem = request.args.get('get_dem', False)
+            if get_dem and get_dem.lower() == 'true':
+                get_dem = True
+            else:
                 get_dem = False
-            get_stats = request.args.get('get_stats')
-            if get_stats == 'False' or not get_stats:
+            get_stats = request.args.get('get_stats', False)
+            if get_stats and get_stats.lower() == 'true':
+                get_stats = True
+            else:
                 get_stats = False
+            show_bounds = request.args.get('show_bounds', False)
+            if show_bounds and show_bounds.lower() == 'true':
+                show_bounds = True
+            else:
+                show_bounds = False
+            cloudscore_thresh = request.args.get('cloudscore_thresh', False)
+            if not cloudscore_thresh:
+                cloudscore_thresh = 5
+            else:
+                cloudscore_thresh = int(cloudscore_thresh)
         kwargs['get_stats'] = get_stats
         kwargs['get_dem'] = get_dem
         kwargs['classify'] = classify
@@ -222,6 +282,8 @@ def get_composite_params(func):
         kwargs['date_range'] = date_range
         kwargs['instrument'] = instrument
         kwargs['band_viz'] = band_viz
+        kwargs['show_bounds'] = show_bounds
+        kwargs['cloudscore_thresh'] = cloudscore_thresh
         return func(*args, **kwargs)
     return wrapper
 

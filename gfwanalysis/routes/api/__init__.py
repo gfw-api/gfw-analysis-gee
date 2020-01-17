@@ -21,7 +21,7 @@ def error(status=500, detail='Generic Error'):
 
 def set_params():
     """-"""
-    threshold = request.args.get('thresh', 30)
+    threshold = int(request.args.get('thresh', 30))
     begin = request.args.get('begin', '2000-01-01')
     end = request.args.get('end', '2018-12-31')
     period = request.args.get('period', None)

@@ -5,6 +5,171 @@ import geocoder
 import asyncio
 import functools as funct
 
+def get_extent_fc(image, fc, method='reduce_regions', bestEffort=False, scale=False, numPixels=10000):
+  """ Given an ee.featureCollection (fc) of features each with
+  a single geometry calculate the total extent (area_m2) using
+  a single band binary image. The single band binary image is 
+  multiplied by pixel area, ee.Reducer.sum is applied at the nominal scale
+  of the image to each geometry in the fc, and the total area in meters squared
+  is calculated by summing all feautes in the collection."""
+  im = image.multiply(ee.Image.pixelArea())
+  ns = image.projection().nominalScale()
+  scale = ee.Algorithms.If(scale, scale, ns)
+  bn = im.bandNames().get(0)
+  def get_reduce_regions(fc):
+      res = im.reduceRegions( \
+          reducer = ee.Reducer.sum().unweighted(),\
+          collection = ee.FeatureCollection(fc), \
+          scale = scale, \
+          tileScale = 1) \
+      .aggregate_sum('sum')
+      return ee.FeatureCollection(ee.Feature(None, {'area_m2': res}))
+  def get_reduce_map(f):
+      res = im.reduceRegion( \
+          reducer = ee.Reducer.sum().unweighted(),\
+          geometry = f.geometry(), \
+          scale = scale, \
+          bestEffort = bestEffort, \
+          maxPixels = 1e8, \
+          tileScale = 1) \
+      .get(bn)
+      return ee.Feature(None, {'area_m2': res})  
+  def get_sample(f):
+      fc = image.sample(
+          region = f.geometry(), \
+          numPixels = numPixels, \
+          scale = scale, \
+          tileScale = 1, \
+          dropNulls = False)
+      tc =  fc.filterMetadata(bn, 'equals', 1).aggregate_count(bn)
+      tnc =  fc.size()
+      area = f.geometry().area(1)
+      res = ee.Number(tc).divide(tnc).multiply(area)
+      return ee.Feature(None, {'total_px':tnc, 'yes_px':tc, 'geom_area_m2':area, 'area_m2': res})  
+  out = ee.Dictionary({ \
+                 'reduce_regions': get_reduce_regions(fc),
+                 'reduce_region_map': ee.FeatureCollection(fc).map(get_reduce_map),
+                 'sample_region_map': ee.FeatureCollection(fc).map(get_sample)     
+  })
+  return ee.Number(ee.FeatureCollection(out.get(method)).aggregate_sum('area_m2'))
+
+def reduce_extent_fc(image, fc, bestEffort=False, scale=False):
+  """ Given an ee.featureCollection (fc) of features each with
+  a single geometry calculate the total extent (area_m2) using
+  a single band binary image. The single band binary image is 
+  multiplied by pixel area, ee.Reducer.sum is applied at the nominal scale
+  of the image to each geometry in the fc, and the total area in meters squared
+  is calculated by summing all feautes in the collection."""
+  im = image.multiply(ee.Image.pixelArea())
+  ns = image.projection().nominalScale()
+  scale = ee.Algorithms.If(scale, scale, ns)
+  bn = im.bandNames().get(0)
+  def get_reduce(f):
+      res = im.reduceRegion( \
+          reducer = ee.Reducer.sum().unweighted(),\
+          geometry = f.geometry(), \
+          scale = scale, \
+          bestEffort = bestEffort, \
+          maxPixels = 1e12, \
+          tileScale = 4) \
+      .get(bn)
+      return ee.Feature(None, {'area_m2': res})
+  fcc = ee.FeatureCollection(fc).map(get_reduce)  
+  return ee.Number(fcc.aggregate_sum('area_m2'))
+                             
+def sample_extent_fc(image, fc, numPixels = 5000, scale=False):
+  """ Given an ee.featureCollection (fc) of features each with
+  a single geometry calculate the total extent (area_m2) using
+  a single band binary image. The single band binary image is 
+  sampled at the nominal scale of the image to each geometry in the fc
+  , the proportion of 1s in the geometry is calculated, and the total area in meters squared
+  is calculated by summing all feautes in the collection."""
+  numPixels = ee.Number(numPixels)
+  ns = image.projection().nominalScale()
+  scale = ee.Algorithms.If(scale, scale, ns)
+  bn = image.bandNames().get(0)
+  def get_sample(f):
+      fc = image.sample(
+          region = f.geometry(), \
+          numPixels = numPixels, \
+          scale = scale, \
+          tileScale = 4, \
+          dropNulls = True)
+      tc =  fc.filterMetadata(bn, 'equals', 1).aggregate_count(bn)
+      area = f.geometry().area(1)
+      res = ee.Number(tc).divide(numPixels).multiply(area)
+      return ee.Feature(None, {'total_px':numPixels, 'yes_px':tc, 'geom_area_m2':area, 'area_m2': res})
+  fcc = ee.FeatureCollection(fc).map(get_sample)
+  return ee.Number(fcc.aggregate_sum('area_m2'))
+
+def sample_statistics(image, geom, numPixels, scale):
+  """ Sample within a region of a single band float image,
+  returning a dictionary of statistics:
+  accessed as ["values"]["<stat>"]
+  Note this is an estimate"""
+  bn = image.bandNames().getInfo()[0]
+  fc = image.sample(region=geom, numPixels = numPixels, scale= scale, tileScale= 16, dropNulls=True)
+  return fc.aggregate_stats(bn)
+
+def divide_geometry(feature):
+    """ Divide feature geometry
+    *
+    * Split a features polygon geometry in 4 using its' center point
+    * 
+    * @param {ee.Feature} A feature with a polygon geometry to split.
+    * 
+    * @return {ee.FeatureCollection} Collection with 4 features per input feature.
+    * 
+    * @example aoi = Map.getBounds() fc = divideGeometry(aoi)
+    """
+    # Get coordinates of polygons bounds
+    g = feature.geometry()
+    l2 = g.bounds(1).coordinates().flatten()
+    c2 = g.centroid(1).coordinates().flatten()
+    # Create 4 cells dividing bounds at mid point
+    t0 = ee.Feature(ee.Geometry.Polygon( \
+    [l2.get(0), l2.get(1), \
+    c2.get(0), l2.get(1), \
+    c2.get(0), c2.get(1), \
+    l2.get(0), c2.get(1), \
+    l2.get(0), l2.get(1), \
+    ]), {"name": "t0"})
+    t1 = ee.Feature(ee.Geometry.Polygon( \
+    [c2.get(0), l2.get(3), \
+    l2.get(2), l2.get(3), \
+    l2.get(2), c2.get(1), \
+    c2.get(0), c2.get(1), \
+    c2.get(0), l2.get(3), \
+    ]), {"name": "t1"})
+    t2 = ee.Feature(ee.Geometry.Polygon( \
+    [c2.get(0), c2.get(1), \
+    l2.get(4), c2.get(1), \
+    l2.get(4), l2.get(5), \
+    c2.get(0), l2.get(5), \
+    c2.get(0), c2.get(1), \
+    ]), {"name": "t2"})
+    t3 = ee.Feature(ee.Geometry.Polygon( \
+    [l2.get(0), c2.get(1), \
+    c2.get(0), c2.get(1), \
+    c2.get(0), l2.get(7), \
+    l2.get(6), l2.get(7), \
+    l2.get(0), c2.get(1), \
+    ]), {"name": "t3"})
+    # Make a featureCollection
+    fc = ee.FeatureCollection([t0,t1,t2,t3,])
+    # Map intersection with feature and return cell name
+    def tmp_f(f): 
+        return ee.Feature( \
+        feature.geometry().intersection(f.geometry(),1) \
+        , {"name": f.get("name")})
+    return ee.FeatureCollection(fc.map(tmp_f))
+    
+def ee_squaremeters_to_ha(value):
+    """Converts square meters to hectares, and gives val to 2 decimal places"""
+    tmp = ee.Number(value).divide(10000)
+    tmp1 = ee.Number(ee.Number(tmp).format('%.2f'))
+    return ee.Number.parse(tmp1)
+
 def get_geocode(point):
     result = geocoder.osm(point, method='reverse', lang_code='en')
     if 'ERROR' in str(result): result = None
@@ -15,6 +180,10 @@ def loop_future(loop, f, a):
             None,
             funct.partial(f, a),
         )
+
+def buffer_geom(geom):
+        buffer_size = geom.convexHull(1).bounds(1).area(1).sqrt().multiply(0.5)
+        return geom.convexHull(1).buffer(buffer_size).bounds(1)
 
 async def reverse_geocode_a_geostore(loop, shape):
     """ Take a shapely shape object and return geocoding results on the min/max coordinate locations"""
@@ -47,7 +216,7 @@ def get_clip_vertex_list(geojson):
     Take a geojson object and return a list of geometry vertices that ee can use as an argument to get thumbs
     """
     tmp_poly = []
-    s = GeometryCollection([shape(feature["geometry"]).buffer(0)for feature in geojson.get('features')])
+    s = GeometryCollection([shape(feature["geometry"]).buffer(0) for feature in geojson.get('features')])
     simple = s[0].simplify(tolerance=0.01, preserve_topology=True)
     try:
         for x, y in zip(simple.exterior.coords.xy[0], simple.exterior.coords.xy[1]):
@@ -282,3 +451,4 @@ def admin_1_simplify(iso, admin1):
         simplification = admin_1_dic.get(iso, None).get(admin1, None)
         logging.info(f'[admin_1_simplify]: {simplification}')
     return simplification
+

@@ -18,6 +18,14 @@
 			}
 		},
 		{
+			"path": "/v1/mc-analysis",
+			"method": "POST",
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/mc-analysis"
+			}
+		},
+		{
 			"path": "/v1/composite-service/geom",
 			"method": "POST",
 			"redirect": {

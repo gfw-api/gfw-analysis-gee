@@ -118,7 +118,7 @@ class GeodescriberService(object):
                 # If location across multiple regions (get the centroid's region)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': region_list[-1], 'ttl_2': country_list[0]}
-            else: 
+            else:
                 tmp_config['sentence'] = '{ttl_0} in {ttl_1}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[0]}
 
@@ -132,10 +132,10 @@ class GeodescriberService(object):
                 # If location across multiple countries (get the centroid's country)
                 tmp_config['sentence'] = '{ttl_0} near {ttl_1}, {ttl_2}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': country_list[-1], 'ttl_2': continent_list[0]}
-            elif continent_list: 
+            elif continent_list:
                 tmp_config['sentence'] = '{ttl_0} in {ttl_1}'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase, 'ttl_1': continent_list[0]}
-            else: 
+            else:
                 tmp_config['sentence'] = '{ttl_0} of interest'
                 tmp_config['items'] = {'ttl_0': land_sea_phrase}
 
@@ -165,10 +165,10 @@ class GeodescriberService(object):
         if not proportion_list:
             return None
         elif proportion_list[0] > 75:
-            tmp_config['sentence'] = "The regions habitat is comprised of {eco_0}."
+            tmp_config['sentence'] = "The region's habitat is comprised of {eco_0}."
             tmp_config['items'] = {'eco_0': tmp_d[proportion_list[0]]}
         elif proportion_list[0] > 50:
-            tmp_config['sentence'] = "The majority of the regions habitat is comprised of {eco_0}. It also includes areas of {eco_1}."
+            tmp_config['sentence'] = "The majority of the region's habitat is comprised of {eco_0}. It also includes areas of {eco_1}."
             tmp_config['items'] = {'eco_0': tmp_d[proportion_list[0]], 'eco_1': tmp_d[proportion_list[1]]}
         else:
             tmp_config['sentence'] = "The region is made up of different habitats, including {eco_0}, and {eco_1}."
@@ -337,13 +337,20 @@ class GeodescriberService(object):
             if is_marine and (is_land + is_fresh) / is_marine < 0.01:
                tmp_config['sentence'] = "It has a total area of {area_0}."
                tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha'}
+            elif not title_ele:
+                tmp_config['sentence'] = "Area of {area_0} located in {area_1}."
+                tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence}
             else:
                 tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
                 tmp_config['items'] = {'area_0': f'{human_format(area_ha)}ha', 'area_1': mountain_sentence, 'area_2': title_ele}
+
         else:
             if is_marine and (is_land + is_fresh) / is_marine < 0.01:
                tmp_config['sentence'] = "It has a total area of {area_0}."
                tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²'}
+            elif not title_ele:
+                tmp_config['sentence'] = "Area of {area_0} located in {area_1}."
+                tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²', 'area_1': mountain_sentence}
             else:
                 tmp_config['sentence'] = "Area of {area_0} located in {area_1}{area_2}."
                 tmp_config['items'] = {'area_0': f'{area_ha * 0.01:3,.0f}km²', 'area_1': mountain_sentence, 'area_2': title_ele}

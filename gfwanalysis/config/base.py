@@ -2,7 +2,7 @@
 
 import os
 
-from gfwanalysis.utils.files import BASE_DIR
+from gfwanalysis.utils.files import BASE_DIR, PROJECT_DIR
 
 SETTINGS = {
     'logging': {
@@ -12,9 +12,10 @@ SETTINGS = {
         'port': 4500
     },
     'gee': {
-        'service_account': '390573081381-lm51tabsc8q8b33ik497hc66qcmbj11d@developer.gserviceaccount.com',
-        'privatekey_file': BASE_DIR + '/privatekey.pem',
+        'service_account': 'skydipper@skydipper-196010.iam.gserviceaccount.com',
+        'privatekey_file': BASE_DIR + '/privatekey.json',
         'assets': {
+            'hansen_optimised': 'projects/wri-datalab/global_forest_change_2018_v1_6_optimised',
             'hansen': 'projects/wri-datalab/HansenComposite_18',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
             'hansen_2017_v1_5':'UMD/hansen/global_forest_change_2017_v1_5',
@@ -34,6 +35,7 @@ SETTINGS = {
             'sea-landcover': 'projects/wri-datalab/gfw-api/sea-landcover',
             'forma250GFW': 'projects/wri-datalab/FORMA250',
             'whrc_biomass': 'projects/wri-datalab/WHRC_CARBON',
+            'us_landcover': 'USGS/NLCD',
             'biomassloss_v1': {
                 'hansen_loss_thresh': 'HANSEN/gfw_loss_by_year_threshold_2015',
                 'biomass_2000': 'users/davethau/whrc_carbon_test/carbon'

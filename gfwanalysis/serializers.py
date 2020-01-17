@@ -10,13 +10,34 @@ def serialize_umd(analysis, type):
         'attributes': {
             'loss': analysis.get('loss', None),
             'gain': analysis.get('gain', None),
-            'treeExtent': analysis.get('tree_extent', None),
-            'treeExtent2010': analysis.get('tree_extent2010', None),
+            'treeExtent': analysis.get('treeExtent', None),
+            'treeExtent2010': analysis.get('treeExtent2010', None),
             'areaHa': analysis.get('area_ha', None),
             'loss_start_year': analysis.get('loss_start_year', None),
             'loss_end_year': analysis.get('loss_end_year', None)
         }
     }
+
+
+def serialize_mc(analysis, type):
+    """serialised function for the Monte Carlo Analysis"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            'window': analysis.get('window', None),
+            'mc_number': analysis.get('mc_number', None),
+            'bin_number': analysis.get('bin_number', None),
+            'description': analysis.get('description', None),
+            'anomaly': analysis.get('anomaly', None),
+            'anomaly_uncertainty': analysis.get('anomaly_uncertainty',None),
+            'upper_p': analysis.get('upper_p', None),
+            'p': analysis.get('p', None),
+            'lower_p': analysis.get('lower_p', None)
+
+        }
+    }
+
 
 def serialize_classifier_output(analysis, type):
     """."""
@@ -34,7 +55,7 @@ def serialize_composite_output(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'thumb_url': analysis.get('thumb_url', None), 
+            'thumb_url': analysis.get('thumb_url', None),
             'tile_url':analysis.get('tile_url', None),
             'dem':analysis.get('dem', None),
             'zonal_stats':analysis.get('zonal_stats', None)
@@ -49,8 +70,8 @@ def serialize_table_umd(analysis, type):
                      'loss': analysis.get('loss', None).get(year),
                      'gain': analysis.get('gain', None),
                      'areaHa': analysis.get('area_ha', None),
-                     'treeExtent': analysis.get('tree_extent', None),
-                     'treeExtent2010': analysis.get('tree_extent2010', None),
+                     'treeExtent': analysis.get('treeExtent', None),
+                     'treeExtent2010': analysis.get('treeExtent2010', None),
                      })
     return {
         'id': None,
@@ -193,6 +214,13 @@ def serialize_biomass_table_v1(analysis, type):
         'attributes': rows
     }
 
+def serialize_nlcd_landcover_v2(analysis, type):
+    """Convert the output of the biomass_loss analysis to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': analysis
+    }
 
 def serialize_biomass_v2(analysis, type):
     """Convert the output of the biomass_loss analysis to json"""
@@ -249,6 +277,17 @@ def serialize_sentinel_url(analysis, type):
         }
     }
 
+def serialize_sentinel_mosaic(analysis, type):
+    """Convert output of landsat_tiles to json"""
+    return {
+        'id': None,
+        'type': type,
+        'attributes': {
+            "tile_url": analysis.get('tile_url', None),
+            "thumbnail_url": analysis.get('thumb_url', None),
+            "bbox": analysis.get('bbox', None),
+        }
+    }
 
 def serialize_highres_url(analysis, type):
     """Convert output of images to json"""

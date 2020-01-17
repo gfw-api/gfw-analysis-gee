@@ -19,7 +19,7 @@ from gfwanalysis.services.analysis.recent_tiles import RecentTiles
 recent_tiles_endpoints_v1 = Blueprint('recent_tiles_endpoints_v1', __name__)
 
 
-def analyze_recent_data(lat, lon, start, end, bands, bmin, bmax, opacity):
+def analyze_recent_data(lat, lon, start, end, sort_by, bands, bmin, bmax, opacity):
     """Returns metadata and *first* tile url from GEE for all Sentinel images
        in date range ('start'-'end') that intersect with lat,lon.
     #Example of valid inputs (for area focused on Tenerife)
@@ -31,7 +31,7 @@ def analyze_recent_data(lat, lon, start, end, bands, bmin, bmax, opacity):
     loop = asyncio.new_event_loop()
 
     try:
-        data = RecentTiles.recent_data(lat=lat, lon=lon, start=start, end=end)
+        data = RecentTiles.recent_data(lat=lat, lon=lon, start=start, end=end, sort_by=sort_by)
         data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data, bands, bmin, bmax, opacity, 'first'))
     except RecentTilesError as e:
         logging.error('[ROUTER]: ' + e.message)
@@ -78,10 +78,10 @@ def analyze_recent_thumbs(data_array, bands, bmin, bmax, opacity):
 
 @recent_tiles_endpoints_v1.route('/', strict_slashes=False, methods=['GET'])
 @get_recent_params
-def get_by_geostore(lat, lon, start, end, bands, bmin, bmax, opacity):
+def get_by_geostore(lat, lon, start, end, sort_by, bands, bmin, bmax, opacity):
     """Analyze by geostore"""
     logging.info('[ROUTER]: Getting data for tiles for Recent Sentinel Images')
-    data = analyze_recent_data(lat=lat, lon=lon, start=start, end=end, bands=bands, bmin=bmin, bmax=bmax, opacity=opacity)
+    data = analyze_recent_data(lat=lat, lon=lon, start=start, end=end, sort_by=sort_by, bands=bands, bmin=bmin, bmax=bmax, opacity=opacity)
     return data
 
 
