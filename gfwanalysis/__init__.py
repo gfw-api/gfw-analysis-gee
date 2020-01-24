@@ -64,10 +64,7 @@ app.register_blueprint(soil_carbon_endpoints_v1, url_prefix='/api/v1/soil-carbon
 app.register_blueprint(recent_tiles_classifier_v1, url_prefix='/api/v1/recent-tiles-classifier')
 app.register_blueprint(composite_service_v1, url_prefix='/api/v1/composite-service')
 app.register_blueprint(geodescriber_endpoints_v1, url_prefix="/api/v1/geodescriber")
-<<<<<<< HEAD
-=======
 app.register_blueprint(mc_analysis_endpoints_v1, url_prefix="/api/v1/mc-analysis")
->>>>>>> 0c8ace3bcaadebcae3c14d5f6725260b6be1439f
 app.register_blueprint(nlcd_landcover_endpoints_v2, url_prefix='/api/v2/nlcd-landcover')
 
 # CT
