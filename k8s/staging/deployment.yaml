@@ -3,8 +3,8 @@ kind: Deployment
 metadata:
   namespace: gfw
   labels:
-    name: {name}
-  name: {name}
+    name: analysis-gee
+  name: analysis-gee
 spec:
   revisionHistoryLimit: 0
   template:
@@ -12,11 +12,11 @@ spec:
       annotations:
         chaos.alpha.kubernetes.io/enabled: "true"
       labels:
-        name: {name}
+        name: analysis-gee
     spec:
       containers:
-      - name: {name}
-        image: vizzuality/{name}
+      - name: analysis-gee
+        image: vizzuality/analysis-gee
         imagePullPolicy: Always
         resources:
           requests:
@@ -30,7 +30,7 @@ spec:
           - name: ENVIRONMENT
             value: staging
           - name: LOCAL_URL
-            value: http://{name}.gfw.svc.cluster.local:4500
+            value: http://analysis-gee.gfw.svc.cluster.local:4500
           - name: CT_URL
             valueFrom:
                 secretKeyRef:
