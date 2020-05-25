@@ -23,7 +23,7 @@ def set_params():
     """-"""
     threshold = int(request.args.get('thresh', 30))
     begin = request.args.get('begin', '2000-01-01')
-    end = request.args.get('end', '2018-12-31')
+    end = request.args.get('end', '2019-12-31')
     period = request.args.get('period', None)
     if request.args.get('table', 'false').lower() == 'false':
         table = False
