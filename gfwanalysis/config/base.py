@@ -15,7 +15,7 @@ SETTINGS = {
         'service_account': 'skydipper@skydipper-196010.iam.gserviceaccount.com',
         'privatekey_file': BASE_DIR + '/privatekey.json',
         'assets': {
-            'hansen_optimised': 'projects/wri-datalab/global_forest_change_2018_v1_6_optimised',
+            'hansen_optimised': 'projects/wri-datalab/global_forest_change_2019_v1_1', ##'projects/wri-datalab/global_forest_change_2018_v1_6_optimised',
             'hansen': 'projects/wri-datalab/HansenComposite_18',
             'hansen_2010_extent': 'projects/wri-datalab/HansenTreeCover2010',
             'hansen_2017_v1_5':'UMD/hansen/global_forest_change_2017_v1_5',
