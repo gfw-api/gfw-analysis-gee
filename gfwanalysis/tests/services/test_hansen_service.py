@@ -35,12 +35,14 @@ def test_known_area_loss():
     kwargs = {'geojson': geojson, 'threshold':30, 'begin':'2001-01-01', 'end':'2018-12-31'}
     method_response = HansenService.analyze(**kwargs)
     logging.info(f'[Test example]: umd d={method_response}')
-    verify = {'loss_start_year': 1,
-                'loss_end_year': 18,
-                'tree_extent': 29442.49,
-                'tree_extent2010': 30682.67,
-                'gain': 1121.27,
-                'loss': 3463.48}
+    verify = {
+        'loss_start_year': 1,
+        'loss_end_year': 18,
+        'treeExtent': 29541.53,
+        'treeExtent2010': 30677.14,
+        'gain': 1124.04,
+        'loss': 3469.46
+        }
 
     assert method_response.get('tree_extent') == verify.get('tree_extent')
     assert method_response.get('tree_extent2010') == verify.get('tree_extent2010')
