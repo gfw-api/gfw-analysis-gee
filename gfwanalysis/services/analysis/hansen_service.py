@@ -58,7 +58,7 @@ class HansenService(object):
       lossyear_band = ee.String('lossyear_').cat(threshold.format())
       treecover2000_band = ee.String('treecover2000_').cat(threshold.format())
       treecover2010_band = ee.String('treecover2010_').cat(threshold.format())
-      gain20002012_band = ee.String('gain20002012_').cat(threshold.format())
+      gain20002012_band = ee.String('gain20002012')
       asset_id = ee.String(SETTINGS.get('gee').get('assets').get('hansen_optimised'))
       # Get the feature collection of geometries
       # returns ee.FeatureCollection
@@ -129,7 +129,7 @@ class HansenService(object):
         # returns ee.Image
       # NOTE GAIN IS NOT THRESHOLDED BY TREECOVER2000!
       # FIXME IT MAKES NO SENSE TO EXPORT THRESHOLDED GAIN!
-      gain20002012_image = ee.Image(hansen_optimised.select('gain20002012_0'))
+      gain20002012_image = ee.Image(hansen_optimised.select('gain20002012'))
       gain20002012_image = gain20002012_image.updateMask(gain20002012_image)
         # returns ee.Number
       gain = get_extent_fc(gain20002012_image, region_fc, method=method, bestEffort=bestEffort, scale=False, numPixels=numPixels)
