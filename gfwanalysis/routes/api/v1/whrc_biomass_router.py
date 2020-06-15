@@ -37,7 +37,7 @@ def analyze(geojson, area_ha):
         logging.error('[ROUTER]: ' + str(e))
         return error(status=500, detail='Generic Error')
     data['area_ha'] = area_ha
-    data['biomass_density'] = data['biomass'].get('b1') / area_ha
+    data['biomass_density'] = data['biomass'] / data['tree_cover'] if data['tree_cover'] > 0 else 0
     return jsonify(data=serialize_whrc_biomass(data, 'whrc-biomass')), 200
 
 
