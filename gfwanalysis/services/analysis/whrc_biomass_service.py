@@ -24,11 +24,14 @@ class WHRCBiomassService(object):
                            'geometry': region,
                            'bestEffort': True,
                            'scale': 30}
-            tc_mask = ee.Image(hansen_asset).select('tree_' + str(threshold)).gt(0)
+            tc_mask = ee.Image(hansen_asset).select(['tree_' + str(threshold)], ['tree_cover']).gt(0)
             biomass = ee.ImageCollection(biomass_asset).max().multiply(ee.Image.pixelArea().divide(10000)).mask(tc_mask)
+            tree_cover = tc_mask.multiply(ee.Image.pixelArea().divide(10000)).mask(tc_mask)
             # Identify thresholded biomass value
             biomass_value = biomass.reduceRegion(**reduce_args).getInfo()
-            d['biomass'] = biomass_value
+            tree_cover_value = tree_cover.reduceRegion(**reduce_args).getInfo()
+            d['biomass'] = biomass_value.get('b1', 0)
+            d['tree_cover'] = tree_cover_value.get('tree_cover', 0)
             return d
         except Exception as error:
             logging.error(str(error))
