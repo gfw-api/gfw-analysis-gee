@@ -109,7 +109,7 @@ def serialize_whrc_biomass(analysis, type):
         'id': None,
         'type': type,
         'attributes': {
-            'totalBiomass': analysis.get('biomass', None).get('b1', None),
+            'totalBiomass': analysis.get('biomass', None),
             'biomassDensity': int(analysis.get('biomass_density')),
             'areaHa': analysis.get('area_ha', None)
         }
