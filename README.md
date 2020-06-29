@@ -2,6 +2,12 @@
 
 In progress..
 
+## Dependencies
+
+Dependencies on other Microservices:
+
+- [Geostore](https://github.com/gfw-api/gfw-geostore-api)
+
 ## Getting started
 
 ### Requirements
