@@ -64,7 +64,8 @@ class LandsatTiles(object):
 
     @staticmethod
     def pansharpened_L8_image(year):
-        collection = ee.ImageCollection('LANDSAT/LC8_L1T').filterDate(
+        l8_asset = 'LANDSAT/LC08/C01/T1_RT' if int(year) > 2017 else 'LANDSAT/LC8_L1T'
+        collection = ee.ImageCollection(l8_asset).filterDate(
             "{0}-01-01T00:00".format(year), "{0}-12-31T00:00".format(year))
         composite = ee.Algorithms.Landsat.simpleComposite(collection=collection,
                                                           percentile=50, maxDepth=80, cloudScoreRange=1, asFloat=True)
@@ -102,7 +103,7 @@ class LandsatTiles(object):
             elif int(z) >= 12:
                 if map_object is None:
                     logging.debug('Generating mapid')
-                    if int(year) in [2013, 2014, 2015, 2016, 2017]:
+                    if int(year) in [2013, 2014, 2015, 2016, 2017, 2018, 2019]:
                         image = LandsatTiles.pansharpened_L8_image(year)
                         d['url'], map_object = LandsatTiles.tile_url_gee(image, z, x, y)
                     elif int(year) in [2012]:

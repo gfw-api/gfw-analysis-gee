@@ -11,7 +11,8 @@ def validate_landsat_year(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        years = ['2012', '2013', '2014', '2015', '2016', '2017']
+        end_year = 2019
+        years = [str(y) for y in range(2012, end_year+1)]
         year = kwargs['year']
         if year not in years:
             return error(status=400, detail='Year is not valid')
