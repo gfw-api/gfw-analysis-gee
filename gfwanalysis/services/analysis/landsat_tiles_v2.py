@@ -95,7 +95,9 @@ class LandsatTiles(object):
     def analyze(year, z, x, y, map_object):
         """For a given year, generate a valid url from which to retrieve Landsat
         tiles directly from Earth Engine. This is necessary as the urls expire.
+        end_year is the max possible year
         """
+        end_year = 2019
         try:
             d = {}
             if int(z) < 12:
@@ -103,7 +105,8 @@ class LandsatTiles(object):
             elif int(z) >= 12:
                 if map_object is None:
                     logging.debug('Generating mapid')
-                    if int(year) in [2013, 2014, 2015, 2016, 2017, 2018, 2019]:
+                    years = [str(y) for y in range(2012, end_year+1)]
+                    if int(year) in years:
                         image = LandsatTiles.pansharpened_L8_image(year)
                         d['url'], map_object = LandsatTiles.tile_url_gee(image, z, x, y)
                     elif int(year) in [2012]:
