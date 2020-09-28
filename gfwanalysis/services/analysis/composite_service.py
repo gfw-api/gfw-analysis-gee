@@ -13,71 +13,52 @@ class CompositeService(object):
     """
     @staticmethod
     def get_composite_image(geojson, instrument, date_range, thumb_size,\
-                        classify, band_viz, get_dem, get_stats, show_bounds, cloudscore_thresh):
+                        classify, band_viz, get_dem, get_stats, cloudscore_thresh): ## removes the stats, the classify, the show_bounds and adds bbx and get files
         logging.info(f"[COMPOSITE SERVICE]: Creating composite")
+        result_dic = {}
         try:
             features = geojson.get('features')
             region = [ee.Geometry(feature['geometry']) for feature in features][0]
-            if show_bounds:
-                empty = ee.Image().byte()
-                fill = empty.paint(
-                    featureCollection=ee.FeatureCollection([region])
-                ).visualize(bands=["constant"], palette=["C0FF24"], min=14, opacity=0.1)
-
-                outer = empty.paint(
-                    featureCollection=ee.FeatureCollection([region]),
-                    color='000000',
-                    width=5
-                ).visualize(bands=["constant"], palette=["000000"], min=14, opacity=1.0)
-
-                inner = empty.paint(
-                    featureCollection=ee.FeatureCollection([region]),
-                    color='C0FF24',
-                    width=2
-                ).visualize(bands=["constant"], palette=["C0FF24"], min=14, opacity=1.0)
-                region = buffer_geom(region)
+            clip_region = ee.Geometry({'type': 'Polygon',
+                                       'coordinates': [get_clip_vertex_list(geojson)]
+                                   })
+            clip_bbox = clip_region.bounds()
+            geom_list = geojson.get('features')[0].get('geometry').get('coordinates')
+            logging.info(f"[service GEOM 🤪 {geom_list }")
+            if not date_range:
+                dates = CompositeService.get_last_3months()
             else:
-                region = ee.Geometry({
-                    'type': 'Polygon',
-                    'coordinates': [get_clip_vertex_list(geojson)]
-                })
-            date_range = CompositeService.get_formatted_date(date_range)
-            sat_img = CompositeService.get_sat_img(instrument, region, date_range, cloudscore_thresh)
+                dates = date_range[1:-1].split(',')
+            if instrument.lower() == 'landsat':
+                sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', cloudscore_thresh))
+                sat_img = sat_img.filterDate(dates[0].strip(), dates[1].strip()).median()
+            elif instrument.lower() == 'sentinel':
+                sat_img = ee.ImageCollection('COPERNICUS/S2').filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE', cloudscore_thresh))
+                sat_img = sat_img.filterBounds(region).filterDate(dates[0].strip(), dates[1].strip()).median()
+                sat_img = sat_img.divide(100*100)
             if classify:
-                result_dic = CompositeService.get_classified_composite(sat_img, instrument, region, thumb_size, get_stats)
+                result_dic = CompositeService.get_classified_composite(sat_img, instrument, geom_list, thumb_size, get_stats)
             else:
-                if show_bounds:
-                    image = sat_img.visualize(**band_viz).blend(fill).blend(outer).blend(inner)
-                else:
-                    image = sat_img.visualize(**band_viz)
-                tmp_thumb = image.getThumbUrl({'dimensions': thumb_size})
-                tmp_tile = CompositeService.get_image_url(image)
-                result_dic = {'thumb_url': tmp_thumb,
-                               'tile_url': tmp_tile}
-                logging.error(f'[Composite Service]: result_dic {result_dic}')
+                image = sat_img.clip(clip_region).visualize(**band_viz)
+                result_dic['thumb_url'] = image.getThumbUrl({'dimensions': thumb_size, 'region': geom_list})
+                result_dic['tile_url'] = CompositeService.get_image_url(image)
             if get_dem:
-                result_dic['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
-                    clip(region).getThumbUrl({'region':region, 'dimensions':thumb_size,\
-                        'min':-479, 'max':8859.0})
+                dem_img = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').clip(clip_region)
+                dem_url = dem_img.getThumbUrl({'dimensions':thumb_size, 'min':-479, 'max':8859.0, 'region': geom_list})
+                result_dic['dem'] = dem_url
             return result_dic
         except Exception as error:
             logging.error(str(error))
-            raise CompositeError(message='Error in composite imaging')
+            raise CompositeError(message=f'Error in composite imaging {error}')
+        
 
-    @staticmethod
-    def get_formatted_date(date_range):
-        if not date_range:
-            date_range = CompositeService.get_last_3months()
-        else:
-            date_range = date_range.split(',')
-        return date_range
 
     @staticmethod
     def get_last_3months():
         date_weeks_ago = datetime.now() - timedelta(weeks=21)
         date_weeks_ago = date_weeks_ago.strftime("%Y-%m-%d")
         return [date_weeks_ago, datetime.today().strftime('%Y-%m-%d')]
-
+    
     @staticmethod
     def get_zonal_stats(image):
         #higher tileScale allows inspecting larger areas

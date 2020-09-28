@@ -212,7 +212,7 @@ def get_geo_by_hash(func):
             if not geostore:
                 return error(status=400, detail='Geostore is required')
             try:
-                geojson, area_ha = GeostoreService.get(geostore)
+                d = GeostoreService.get(geostore)
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
         elif request.method == 'POST':
@@ -223,8 +223,7 @@ def get_geo_by_hash(func):
                 logging.info(f"[middleware geo hash] Exception")
                 return error(status=500, detail=str(e))
 
-        kwargs["geojson"] = geojson
-        kwargs["area_ha"] = area_ha
+        kwargs["geojson"] = d[0]
         return func(*args, **kwargs)
 
     return wrapper
@@ -246,6 +245,7 @@ def get_composite_params(func):
             else:
                 thumb_size = [int(size.strip()) for size in thumb_size.replace('[', '').replace(']', '').split(',')]
             classify = request.args.get('classify', False)
+            logging.info(f"[middleware] 🤪 {classify}")
             if classify and classify.lower() == 'true':
                 classify = True
             else:
@@ -265,24 +265,18 @@ def get_composite_params(func):
                 get_stats = True
             else:
                 get_stats = False
-            show_bounds = request.args.get('show_bounds', False)
-            if show_bounds and show_bounds.lower() == 'true':
-                show_bounds = True
-            else:
-                show_bounds = False
             cloudscore_thresh = request.args.get('cloudscore_thresh', False)
             if not cloudscore_thresh:
                 cloudscore_thresh = 5
             else:
                 cloudscore_thresh = int(cloudscore_thresh)
         kwargs['get_stats'] = get_stats
-        kwargs['get_dem'] = get_dem
-        kwargs['classify'] = classify
+        kwargs['get_dem'] = get_dem 
+        kwargs['classify'] = classify       
         kwargs['thumb_size'] = thumb_size
         kwargs['date_range'] = date_range
         kwargs['instrument'] = instrument
         kwargs['band_viz'] = band_viz
-        kwargs['show_bounds'] = show_bounds
         kwargs['cloudscore_thresh'] = cloudscore_thresh
         return func(*args, **kwargs)
     return wrapper
