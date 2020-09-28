@@ -65,6 +65,11 @@ spec:
             secretKeyRef:
               key: EE_PRIVATE_KEY_JSON
               name: mssecrets
+        - name: EE_ACCOUNT
+          valueFrom:
+            secretKeyRef:
+              key: EE_ACCOUNT
+              name: mssecrets
         - name: REDIS_URL
           value: redis://localhost:6379
         image: vizzuality/analysis-gee
