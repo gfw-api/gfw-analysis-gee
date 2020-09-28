@@ -21,25 +21,27 @@ RUN addgroup $USER
 RUN useradd -ms /bin/bash -g $USER $USER
 
 RUN easy_install pip && pip install --upgrade pip
-RUN pip install gunicorn gevent setuptools
+RUN pip install gunicorn gevent setuptools --use-feature=2020-resolver
 
 RUN mkdir -p /opt/$NAME
 RUN cd /opt/$NAME
+COPY tox.ini /opt/$NAME/tox.ini
 COPY requirements.txt /opt/$NAME/requirements.txt
-RUN cd /opt/$NAME && pip install -r requirements.txt
+COPY requirements_dev.txt /opt/$NAME/requirements_dev.txt
+RUN cd /opt/$NAME && pip install -r requirements.txt --use-feature=2020-resolver
+RUN cd /opt/$NAME && pip install -r requirements_dev.txt --use-feature=2020-resolver
 
 
 COPY entrypoint.sh /opt/$NAME/entrypoint.sh
 COPY main.py /opt/$NAME/main.py
 COPY gunicorn.py /opt/$NAME/gunicorn.py
-#COPY privatekey.json /opt/$NAME/privatekey.json
 
 # Copy the application folder inside the container
 WORKDIR /opt/$NAME
 
 COPY ./$NAME /opt/$NAME/$NAME
 COPY ./microservice /opt/$NAME/microservice
-#COPY ./tests /opt/$NAME/tests
+COPY ./tests /opt/$NAME/tests
 RUN chown $USER:$USER /opt/$NAME
 
 # Tell Docker we are going to use this ports

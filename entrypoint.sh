@@ -10,7 +10,7 @@ case "$1" in
     test)
         echo "Running tests"
         echo -e "$EE_PRIVATE_KEY" | base64 -d > privatekey.json
-        exec pytest --cov=gfwanalysis gfwanalysis/tests/
+        exec pytest
         ;;
     start)
         echo "Running Start"

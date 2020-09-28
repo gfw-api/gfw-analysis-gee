@@ -1,9 +1,12 @@
-develop:
-    extends:
-      file: base.yml
-      service: base
+version: "3"
+services:
+  develop:
+    build: .
+    ports:
+      - "4500:4500"
     container_name: gfw-analysis-gee-develop
     environment:
+      PORT: 4500
       CT_REGISTER_MODE: auto
       ENVIRONMENT: dev
       DEBUG: "True"
@@ -18,9 +21,9 @@ develop:
     volumes:
       - ./gfwanalysis:/opt/gfwanalysis/gfwanalysis
     restart: always
-    links:
+    depends_on:
       - redis
-redis:
-  image: redis
-  restart: always
+  redis:
+    image: redis
+    restart: always
 

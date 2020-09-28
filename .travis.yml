@@ -1,0 +1,29 @@
+language: python
+python:
+  - "3.7"
+services:
+  - redis-server
+install:
+    - pip install --upgrade pip
+    - pip install -r requirements.txt --use-feature=2020-resolver
+    - pip install -r requirements_dev.txt --use-feature=2020-resolver
+env:
+  global:
+    - CC_TEST_REPORTER_ID=4af40cead8dc05ea7c5a020df8ff221fa29fd6454c3e3333e70a84b1eb7fc8e1
+    - CT_REGISTER_MODE=False
+    - PORT=5037
+    - API_VERSION=v1
+    - LOCAL_URL=http://127.0.0.1:5037
+    - CT_URL=http://127.0.0.1:9000
+    - CT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
+    - REDIS_URL=redis://localhost:6379
+
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script:
+  - echo -e "$EE_PRIVATE_KEY" | base64 -d > privatekey.json
+  - pytest --cov=geetiles --cov-report=xml
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
