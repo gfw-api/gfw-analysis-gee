@@ -1,12 +1,21 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: gfw
   labels:
     name: analysis-gee
   name: analysis-gee
+  namespace: gfw
 spec:
+  progressDeadlineSeconds: 2147483647
   revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      name: analysis-gee
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -16,67 +25,76 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpressions:
-                  - key: type
-                    operator: In
-                    values:
-                      - gfw
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - gfw
       containers:
-        - name: analysis-gee
-          image: vizzuality/analysis-gee
-          imagePullPolicy: Always
-          resources:
-            requests:
-              memory: "128Mi"
-            limits:
-              memory: "512Mi"
-          args:
-            - start
-          env:
-            - name: PORT
-              value: "4500"
-            - name: ENVIRONMENT
-              value: prod
-            - name: LOCAL_URL
-              value: http://analysis-gee.gfw.svc.cluster.local:4500
-            - name: CT_URL
-              valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: CT_URL
-            - name: CT_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: CT_TOKEN
-            - name: CT_REGISTER_MODE
-              valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: CT_REGISTER_MODE
-            - name: API_VERSION
-              valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: API_VERSION
-            - name: EE_PRIVATE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: mssecrets
-                  key: EE_PRIVATE_KEY_JSON
-
-            - name: REDIS_URL
-              value: redis://localhost:6379
-          ports:
-            - containerPort: 4500
-
-        - name: redis
-          image: redis
-          ports:
-            - containerPort: 6379
-          resources:
-            requests:
-              memory: "0Mi"
-              cpu: "0m"
-
+      - args:
+        - start
+        env:
+        - name: PORT
+          value: "4500"
+        - name: ENVIRONMENT
+          value: prod
+        - name: LOCAL_URL
+          value: http://analysis-gee.gfw.svc.cluster.local:4500
+        - name: CT_URL
+          valueFrom:
+            secretKeyRef:
+              key: CT_URL
+              name: mssecrets
+        - name: CT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: CT_TOKEN
+              name: mssecrets
+        - name: CT_REGISTER_MODE
+          valueFrom:
+            secretKeyRef:
+              key: CT_REGISTER_MODE
+              name: mssecrets
+        - name: API_VERSION
+          valueFrom:
+            secretKeyRef:
+              key: API_VERSION
+              name: mssecrets
+        - name: EE_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              key: EE_PRIVATE_KEY_JSON
+              name: mssecrets
+        - name: REDIS_URL
+          value: redis://localhost:6379
+        image: vizzuality/analysis-gee
+        imagePullPolicy: Always
+        name: analysis-gee
+        ports:
+        - containerPort: 4500
+          protocol: TCP
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - image: redis
+        imagePullPolicy: Always
+        name: redis
+        ports:
+        - containerPort: 6379
+          protocol: TCP
+        resources:
+          requests:
+            cpu: "0"
+            memory: "0"
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
       restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+status: {}
