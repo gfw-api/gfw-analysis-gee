@@ -1,9 +1,10 @@
 """CLASSIFICATION SERVICE"""
 
 import logging
+
 import ee
+
 from gfwanalysis.errors import ClassificationError
-from gfwanalysis.config import SETTINGS
 
 
 class ClassificationService(object):
@@ -19,38 +20,43 @@ class ClassificationService(object):
             model = create_model(instrument)
             # grab the image specified by the ID
             image = get_image(img_id, instrument)
-            # Apply classifer to specified L8 or S2 image
+            # Apply classifier to specified L8 or S2 image
             classified_image = classify_image(image, model, instrument)
             # Generate tile url and return in d['url'] object
             url = get_classified_image_url(classified_image)
-            d = {'url':url}
+            d = {'url': url}
             return d
         except Exception as error:
             logging.error(str(error))
             raise ClassificationError(message='Error in Classification Analysis')
 
+
 def get_instrument(img_id):
-    instrument = ""     #figure out if instrument is sentinel or landsat
+    instrument = ""  # figure out if instrument is sentinel or landsat
     if (img_id.startswith("COPERNICUS")):
         instrument = "sentinel"
     elif (img_id.startswith("LANDSAT")):
         instrument = "landsat"
     return instrument
 
+
 def get_classified_image_url(classified_image):
-    classif_viz_params = {'min': 0, 'max': 5, 'palette': ['yellow', 'blue', 'grey', 'green', 'orange', 'darkgreen'], 'format':'png'}
-    
+    classif_viz_params = {'min': 0, 'max': 5, 'palette': ['yellow', 'blue', 'grey', 'green', 'orange', 'darkgreen'],
+                          'format': 'png'}
+
     d = classified_image.getMapId(classif_viz_params)
     base_url = 'https://earthengine.googleapis.com'
     url = (base_url + '/map/' + d['mapid'] + '/{z}/{x}/{y}?token=' + d['token'])
     return url
 
+
 def classify_image(image, model, instrument):
     bands = ['B2', 'B3', 'B4', 'NDVI', 'NDWI', 'NDBI']
     if (instrument == "sentinel"):
-        return image.select(bands).divide(100*100).classify(model)
+        return image.select(bands).divide(100 * 100).classify(model)
     if (instrument == "landsat"):
         return image.select(bands).classify(model)
+
 
 def create_model(instrument):
     try:
@@ -58,19 +64,20 @@ def create_model(instrument):
         labeled_bands = bands
         labeled_bands.append('cropland')
         if (instrument == 'sentinel'):
-            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/sentinel/sent_glob30Jaxa35k').\
+            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/sentinel/sent_glob30Jaxa35k'). \
                 merge(ee.FeatureCollection('users/nicolaerigheriu/sentinel/sent_usCan_glob30Jaxa5k'))
         elif (instrument == 'landsat'):
-            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/landsat/toa/landsat_glob30_jaxa35k_toa').\
+            trainingPoints = ee.FeatureCollection('users/nicolaerigheriu/landsat/toa/landsat_glob30_jaxa35k_toa'). \
                 merge(ee.FeatureCollection('users/nicolaerigheriu/landsat/toa/landsat_usCan_glob30Jaxa5ktoa'))
-        classifier_args = {'features': trainingPoints, 'classProperty':'cropland',\
-                                    'inputProperties':labeled_bands}
-        randomForest_args = {'numberOfTrees':17}
-        classifier = ee.Classifier.randomForest(**randomForest_args)\
+        classifier_args = {'features': trainingPoints, 'classProperty': 'cropland', \
+                           'inputProperties': labeled_bands}
+        randomForest_args = {'numberOfTrees': 17}
+        classifier = ee.Classifier.randomForest(**randomForest_args) \
             .train(**classifier_args)
         return classifier
     except:
         return None
+
 
 def get_image(img_id, instrument):
     """Check if S2 or L8 image and treat image accordingly"""
@@ -81,6 +88,7 @@ def get_image(img_id, instrument):
     except:
         return None
 
+
 def add_indices(image, instrument):
     if (instrument == 'landsat'):
         rawBands = [['B4', 'B3'], ['B4', 'B5'], ['B6', 'B5']]
@@ -89,6 +97,7 @@ def add_indices(image, instrument):
     rawBands = ee.List(rawBands)
     image = insertBands(image, rawBands)
     return image
+
 
 def insertBands(image, rawBands):
     NDVI = image.addBands(image.normalizedDifference(rawBands.get(0)))

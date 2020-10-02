@@ -1,11 +1,10 @@
 """MC ANALYSIS SERVICE"""
 
-import ee
 import logging
-import pandas as pd
-import numpy as np
-from gfwanalysis.errors import MCAnalysisError
 import random
+
+import numpy as np
+import pandas as pd
 import scipy.stats as stats
 
 
@@ -21,34 +20,34 @@ class MCAnalysisService(object):
             bin_number = 100
         if not mc_number:
             mc_number = 1000
-        #logging.info(f"[MC Service] {timeseries}, {window}, {bin_number}, {mc_number}")
-        #logging.info(f"[MC service] pandas: {pd.__version__}")
-        #logging.info(f"[MC service] window: {type(window)}")
-        d={}
-        d["window"]=window
-        d["bin_number"]=bin_number
-        d["mc_number"]=mc_number
-        df = pd.DataFrame(list(timeseries.values()), index= list(timeseries.keys()), columns = ["carbon_emissions"])
+        # logging.info(f"[MC Service] {timeseries}, {window}, {bin_number}, {mc_number}")
+        # logging.info(f"[MC service] pandas: {pd.__version__}")
+        # logging.info(f"[MC service] window: {type(window)}")
+        d = {}
+        d["window"] = window
+        d["bin_number"] = bin_number
+        d["mc_number"] = mc_number
+        df = pd.DataFrame(list(timeseries.values()), index=list(timeseries.keys()), columns=["carbon_emissions"])
         boxcar = df.rolling(window=window, min_periods=window, win_type="boxcar", center=True).mean()
-        t0_sigma=np.std(df.values[0:window])
+        t0_sigma = np.std(df.values[0:window])
         logging.info(f"[MC service] pandas: {t0_sigma}")
-        tn_sigma=np.std(df.values[-window:])
-        #logging.info(f"[MC service] pandas: {tn_sigma}")
-        cumulative_sigma = np.sqrt(t0_sigma**2 + tn_sigma**2)
-        #logging.info(f"[MC service] pandas: {cumulative_sigma}")
+        tn_sigma = np.std(df.values[-window:])
+        # logging.info(f"[MC service] pandas: {tn_sigma}")
+        cumulative_sigma = np.sqrt(t0_sigma ** 2 + tn_sigma ** 2)
+        # logging.info(f"[MC service] pandas: {cumulative_sigma}")
         boxcar_values = boxcar.carbon_emissions.values
         mask = np.isnan(boxcar_values)
         cleaned_boxcar_values = boxcar_values[mask != True]
         t0 = cleaned_boxcar_values[0]
-        #logging.info(f"[MC service] pandas: {t0}")
+        # logging.info(f"[MC service] pandas: {t0}")
         tn = cleaned_boxcar_values[-1]
-        #logging.info(f"[MC service] pandas: {tn}")
+        # logging.info(f"[MC service] pandas: {tn}")
         anomaly = tn - t0
-        #logging.info(f"[MC service] pandas: {anomaly}")
+        # logging.info(f"[MC service] pandas: {anomaly}")
 
         # Build the Monte Carlo distribution (null cases)
         values = list(df.values.flatten())
-        #logging.info(f"[MC service] pandas: {values}")
+        # logging.info(f"[MC service] pandas: {values}")
 
         mc_pop = []
         for draw in range(mc_number):
@@ -63,19 +62,19 @@ class MCAnalysisService(object):
         step = (bins[1] - bins[0])
         bcenter = [bpos + step for bpos in bins[:-1]]
 
-        #Gaus fit
+        # Gaus fit
 
         mu, sigma = np.mean(mc_pop), np.std(mc_pop)
-        #logging.info(f"[MC service] pandas: {mu}")
-        #logging.info(f"[MC service] pandas: {sigma}")
-        ygauss = stats.norm.pdf(bins, mu, sigma) # a function from matplotlib.mlab.
-        #logging.info(f"[MC service] ygauss: {ygauss}")
-        ynormgauss = ygauss/sum(ygauss) # Normalize distribution so sum is 1.0
-        #logging.info(f"[MC service] ynormgauss: {ynormgauss}")
-        results = MCAnalysisService.integrate_fits(anomaly=anomaly, mu=mu, sigma=sigma, anomaly_uncertainty=cumulative_sigma)
-        #logging.info(f"[MC service] results: {results}")
+        # logging.info(f"[MC service] pandas: {mu}")
+        # logging.info(f"[MC service] pandas: {sigma}")
+        ygauss = stats.norm.pdf(bins, mu, sigma)  # a function from matplotlib.mlab.
+        # logging.info(f"[MC service] ygauss: {ygauss}")
+        ynormgauss = ygauss / sum(ygauss)  # Normalize distribution so sum is 1.0
+        # logging.info(f"[MC service] ynormgauss: {ynormgauss}")
+        results = MCAnalysisService.integrate_fits(anomaly=anomaly, mu=mu, sigma=sigma,
+                                                   anomaly_uncertainty=cumulative_sigma)
+        # logging.info(f"[MC service] results: {results}")
         return results
-
 
     @staticmethod
     def integrate_fits(anomaly, mu, sigma, anomaly_uncertainty=None):
@@ -97,8 +96,9 @@ class MCAnalysisService(object):
         else:
             change = 'Decrease'
 
-        results['description'] = (f"""{change} of {anomaly:.2g} over observation period has an associated p-value of {p_val:3.3f}"""
-                                f"""± {upper_p:3.3f} {lower_p:3.3f}.""")
+        results['description'] = (
+            f"""{change} of {anomaly:.2g} over observation period has an associated p-value of {p_val:3.3f}"""
+            f"""± {upper_p:3.3f} {lower_p:3.3f}.""")
         results['anomaly'] = anomaly
         results['anomaly_uncertainty'] = anomaly_uncertainty
         results['upper_p'] = upper_p

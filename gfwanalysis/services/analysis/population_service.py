@@ -3,9 +3,10 @@
 import logging
 
 import ee
-from gfwanalysis.errors import PopulationError
+
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.geo import get_region, squaremeters_to_ha, admin_0_simplify
+from gfwanalysis.errors import PopulationError
+from gfwanalysis.utils.geo import get_region
 
 
 class PopulationService(object):
@@ -25,10 +26,10 @@ class PopulationService(object):
                            'bestEffort': True,
                            'scale': 30}
             # Convert m2 to ha
-            scale_factor = ee.Number(1e4)               
+            scale_factor = ee.Number(1e4)
             # The number of persons per cell
             population = ee.Image(population_asset)
-            #.multiply(ee.Image.pixelArea().divide(scale_factor))
+            # .multiply(ee.Image.pixelArea().divide(scale_factor))
             # Total population value within region
             population_value = population.reduceRegion(**reduce_args).getInfo()
             d['population'] = population_value

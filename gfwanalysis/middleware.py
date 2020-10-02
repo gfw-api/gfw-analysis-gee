@@ -1,9 +1,11 @@
 """MIDDLEWARE"""
 
-from flask import request
-from functools import wraps
 import json
 import logging
+from functools import wraps
+
+from flask import request
+
 from gfwanalysis.errors import GeostoreNotFound
 from gfwanalysis.routes.api import error
 from gfwanalysis.services.analysis.landsat_tiles_v2 import RedisService
@@ -21,17 +23,21 @@ def exist_tile(func):
             return func(*args, **kwargs)
         else:
             return redirect(url)
+
     return wrapper
 
 
 def exist_mapid(func):
     """Get geodata"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         year = kwargs['year']
         kwargs["map_object"] = RedisService.check_year_mapid(year)
         return func(*args, **kwargs)
+
     return wrapper
+
 
 def get_classification_params(func):
     @wraps(func)
@@ -39,9 +45,11 @@ def get_classification_params(func):
         if request.method == 'GET':
             img_id = request.args.get('img_id')
             if not img_id:
-                return error(status=400, detail='An img_id string is needed (from Landsat-8 or Sentinel-2 collections).')
+                return error(status=400,
+                             detail='An img_id string is needed (from Landsat-8 or Sentinel-2 collections).')
         kwargs["img_id"] = img_id
         return func(*args, **kwargs)
+
     return wrapper
 
 
@@ -82,10 +90,10 @@ def get_highres_params(func):
 
     return wrapper
 
+
 def get_sentinel_mosaic_params(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         if request.method == 'GET':
             start = request.args.get('start', None)
             end = request.args.get('end', None)
@@ -199,6 +207,7 @@ def get_mc_info(func):
         kwargs["mc_number"] = mc_number
         kwargs["bin_number"] = bin_number
         return func(*args, **kwargs)
+
     return wrapper
 
 
@@ -229,11 +238,13 @@ def get_geo_by_hash(func):
 
     return wrapper
 
+
 def get_composite_params(func):
     """Get instrument"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if request.method in ['GET','POST']:
+        if request.method in ['GET', 'POST']:
             instrument = request.args.get('instrument', False)
             if not instrument:
                 instrument = 'landsat'
@@ -285,15 +296,17 @@ def get_composite_params(func):
         kwargs['show_bounds'] = show_bounds
         kwargs['cloudscore_thresh'] = cloudscore_thresh
         return func(*args, **kwargs)
+
     return wrapper
 
 
 def get_geo_by_geom(func):
     """Get geometry data"""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
-            #logging.info(f'[decorater - geom]: Getting area by GET {request}')
+            # logging.info(f'[decorater - geom]: Getting area by GET {request}')
             geojson = request.args.get('geojson')
             if not geojson:
                 return error(status=400, detail='geojson is required')
@@ -306,6 +319,7 @@ def get_geo_by_geom(func):
         kwargs["geojson"] = geojson
         kwargs['area_ha'] = area_ha
         return func(*args, **kwargs)
+
     return wrapper
 
 

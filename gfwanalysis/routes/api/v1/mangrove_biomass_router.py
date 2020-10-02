@@ -6,16 +6,18 @@ from __future__ import print_function
 
 import logging
 
-from flask import jsonify, request, Blueprint
-from gfwanalysis.routes.api import error, set_params
-from gfwanalysis.services.analysis.mangrove_biomass_service import MangroveBiomassService
-from gfwanalysis.validators import validate_geostore
+from flask import jsonify, Blueprint
+
+from gfwanalysis.errors import MangroveBiomassError
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
-from gfwanalysis.errors import MangroveBiomassError
+from gfwanalysis.routes.api import error
 from gfwanalysis.serializers import serialize_mangrove_biomass
+from gfwanalysis.services.analysis.mangrove_biomass_service import MangroveBiomassService
+from gfwanalysis.validators import validate_geostore
 
 mangrove_biomass_endpoints_v1 = Blueprint('_biomass', __name__)
+
 
 def analyze(geojson, area_ha):
     """Analyze Mangrove Biomass"""
@@ -72,6 +74,7 @@ def get_by_subnational(iso, id1, geojson, area_ha):
     """Subnational Endpoint"""
     logging.info('[ROUTER]: Getting biomass loss by admin1')
     return analyze(geojson, area_ha)
+
 
 @mangrove_biomass_endpoints_v1.route('/admin/<iso>/<id1>/<id2>', strict_slashes=False, methods=['GET'])
 @get_geo_by_regional

@@ -1,7 +1,8 @@
 """WHRC BIOMASS SERVICE"""
 
-import ee
 import logging
+
+import ee
 
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import WHRCBiomassError

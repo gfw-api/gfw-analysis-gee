@@ -1,7 +1,8 @@
 """Soil Carbon SERVICE"""
 
-import ee
 import logging
+
+import ee
 
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import soilCarbonError
@@ -25,7 +26,7 @@ class SoilCarbonService(object):
                            'geometry': region,
                            'bestEffort': True,
                            'scale': 30}
-            tc_mask = ee.Image(hansen_asset).select('tree_'+ str(threshold)).gt(0)
+            tc_mask = ee.Image(hansen_asset).select('tree_' + str(threshold)).gt(0)
             sc = ee.Image(soil_carbon_asset).multiply(ee.Image.pixelArea().divide(10000)).mask(tc_mask)
             # Identify soil carbon value
             sc_value = sc.reduceRegion(**reduce_args).getInfo()

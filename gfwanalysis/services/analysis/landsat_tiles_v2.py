@@ -1,8 +1,9 @@
 """EE LANDSAT TILE URL SERVICE"""
 
-import ee
 import json
 import logging
+
+import ee
 import redis
 
 from gfwanalysis.config import SETTINGS

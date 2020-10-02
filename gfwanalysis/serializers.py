@@ -30,7 +30,7 @@ def serialize_mc(analysis, type):
             'bin_number': analysis.get('bin_number', None),
             'description': analysis.get('description', None),
             'anomaly': analysis.get('anomaly', None),
-            'anomaly_uncertainty': analysis.get('anomaly_uncertainty',None),
+            'anomaly_uncertainty': analysis.get('anomaly_uncertainty', None),
             'upper_p': analysis.get('upper_p', None),
             'p': analysis.get('p', None),
             'lower_p': analysis.get('lower_p', None)
@@ -49,6 +49,7 @@ def serialize_classifier_output(analysis, type):
         }
     }
 
+
 def serialize_composite_output(analysis, type):
     """."""
     return {
@@ -56,11 +57,12 @@ def serialize_composite_output(analysis, type):
         'type': type,
         'attributes': {
             'thumb_url': analysis.get('thumb_url', None),
-            'tile_url':analysis.get('tile_url', None),
-            'dem':analysis.get('dem', None),
-            'zonal_stats':analysis.get('zonal_stats', None)
+            'tile_url': analysis.get('tile_url', None),
+            'dem': analysis.get('dem', None),
+            'zonal_stats': analysis.get('zonal_stats', None)
         }
     }
+
 
 def serialize_table_umd(analysis, type):
     """ Convert the aggregate_values=false Hansen response into a table"""
@@ -79,6 +81,7 @@ def serialize_table_umd(analysis, type):
         'attributes': rows
     }
 
+
 def serialize_population(analysis, type):
     """."""
     return {
@@ -91,6 +94,7 @@ def serialize_population(analysis, type):
         }
     }
 
+
 def serialize_mangrove_biomass(analysis, type):
     """."""
     return {
@@ -102,6 +106,7 @@ def serialize_mangrove_biomass(analysis, type):
             'areaHa': analysis.get('area_ha', None)
         }
     }
+
 
 def serialize_whrc_biomass(analysis, type):
     """."""
@@ -214,6 +219,7 @@ def serialize_biomass_table_v1(analysis, type):
         'attributes': rows
     }
 
+
 def serialize_nlcd_landcover_v2(analysis, type):
     """Convert the output of the biomass_loss analysis to json"""
     return {
@@ -221,6 +227,7 @@ def serialize_nlcd_landcover_v2(analysis, type):
         'type': type,
         'attributes': analysis
     }
+
 
 def serialize_biomass_v2(analysis, type):
     """Convert the output of the biomass_loss analysis to json"""
@@ -277,6 +284,7 @@ def serialize_sentinel_url(analysis, type):
         }
     }
 
+
 def serialize_sentinel_mosaic(analysis, type):
     """Convert output of landsat_tiles to json"""
     return {
@@ -288,6 +296,7 @@ def serialize_sentinel_mosaic(analysis, type):
             "bbox": analysis.get('bbox', None),
         }
     }
+
 
 def serialize_highres_url(analysis, type):
     """Convert output of images to json"""
