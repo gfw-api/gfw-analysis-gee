@@ -44,13 +44,13 @@ class HansenService(object):
 
     @staticmethod
     def analyze(threshold, geojson, begin, end, aggregate_values=True,
-                n_divisions='n4', method='reduce_regions', numPixels=10000, bestEffort=False):
+                n_divisions='n4', method='reduce_regions', num_pixels=10000, best_effort=False):
         try:
             # logging.info("Starting hansen analysis")
             # Set constants for the analysis
             # make all objects SERVER
             # returns ee.Number
-            numPixels = ee.Number(numPixels).long()
+            num_pixels = ee.Number(num_pixels).long()
             threshold = ee.Number(threshold)
             begin = ee.Number.parse(ee.Date(begin).format('yy').slice(0, 2))
             end = ee.Number.parse(ee.Date(end).format('yy').slice(0, 2))
@@ -106,7 +106,7 @@ class HansenService(object):
             # logging.info(f"Area (Ha) per feature is {area_feature.aggregate_array('area_ha').getInfo()}")
             # logging.info(f"Pixels per feature is {area_feature.aggregate_array('px').getInfo()}")
             # if split_geometry divide numPixels by number of splits
-            numPixels = ee.Algorithms.If(n_divisions, ee.Number(numPixels).divide(n_features).long(), numPixels)
+            num_pixels = ee.Algorithms.If(n_divisions, ee.Number(num_pixels).divide(n_features).long(), num_pixels)
             # logging.info("Divided the feature collection of geometries")
             # Get the optimised hansen asset
             # these are all binary bands, except lossyear
@@ -117,8 +117,8 @@ class HansenService(object):
             treecover2000_image = ee.Image(hansen_optimised.select(treecover2000_band))
             treecover2000_image = treecover2000_image.updateMask(treecover2000_image)
             # returns ee.Number
-            extent2000 = get_extent_fc(treecover2000_image, region_fc, method=method, bestEffort=bestEffort,
-                                       scale=False, numPixels=numPixels)
+            extent2000 = get_extent_fc(treecover2000_image, region_fc, method=method, bestEffort=best_effort,
+                                       scale=False, numPixels=num_pixels)
             extent2000 = ee_squaremeters_to_ha(extent2000)
             # logging.info(f"Calculated tree cover extent in year 2000: {type(extent2000)}")
             # Identify 2010 tree cover at given threshold
@@ -126,8 +126,8 @@ class HansenService(object):
             treecover2010_image = ee.Image(hansen_optimised.select(treecover2010_band))
             treecover2010_image = treecover2010_image.updateMask(treecover2010_image)
             # returns ee.Number
-            extent2010 = get_extent_fc(treecover2010_image, region_fc, method=method, bestEffort=bestEffort,
-                                       scale=False, numPixels=numPixels)
+            extent2010 = get_extent_fc(treecover2010_image, region_fc, method=method, bestEffort=best_effort,
+                                       scale=False, numPixels=num_pixels)
             extent2010 = ee_squaremeters_to_ha(extent2010)
             # logging.info(f"Calculated tree cover extent in year 2010: {type(extent2010)}")
             # Identify tree gain over data collection period
@@ -137,8 +137,8 @@ class HansenService(object):
             gain20002012_image = ee.Image(hansen_optimised.select('gain20002012'))
             gain20002012_image = gain20002012_image.updateMask(gain20002012_image)
             # returns ee.Number
-            gain = get_extent_fc(gain20002012_image, region_fc, method=method, bestEffort=bestEffort, scale=False,
-                                 numPixels=numPixels)
+            gain = get_extent_fc(gain20002012_image, region_fc, method=method, bestEffort=best_effort, scale=False,
+                                 numPixels=num_pixels)
             gain = ee_squaremeters_to_ha(gain)
             # logging.info(f"Calculated tree cover gain between 2000 and 2012:")
             # Identify loss
@@ -149,8 +149,8 @@ class HansenService(object):
             # returns ee.Image
             loss_image_ag = lossyear_image.gte(begin).And(lossyear_image.lte(end))
             # returns ee.Number
-            loss_ag = get_extent_fc(loss_image_ag, region_fc, method=method, bestEffort=bestEffort, scale=False,
-                                    numPixels=numPixels)
+            loss_ag = get_extent_fc(loss_image_ag, region_fc, method=method, bestEffort=best_effort, scale=False,
+                                    numPixels=num_pixels)
             loss_ag = ee_squaremeters_to_ha(loss_ag)
             # logging.info("Calculated aggregated tree cover loss in period")
             # logging.info("Begin calculating yearly tree cover loss during period")
@@ -173,8 +173,8 @@ class HansenService(object):
             # logging.info("Created annual biomass loss image collection")
             # returns ee.FeatureCollection
             def reduceFunction(img):
-                tmp = get_extent_fc(img, region_fc, method=method, bestEffort=bestEffort, scale=False,
-                                    numPixels=numPixels)
+                tmp = get_extent_fc(img, region_fc, method=method, bestEffort=best_effort, scale=False,
+                                    numPixels=num_pixels)
                 out = ee_squaremeters_to_ha(tmp)
                 year = ee.Number(img.get('year')).format('%.0f')
                 return ee.Feature(None, {'year': year, 'loss': out})

@@ -17,8 +17,6 @@ services:
       REDIS_URL: redis://redis:6379
       CARTODB_USER: wri-01
     command: test
-    volumes:
-      - ./gfwanalysis:/opt/gfwanalysis/gfwanalysis
     depends_on:
       - redis
   redis:

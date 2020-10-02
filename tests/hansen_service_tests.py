@@ -1,5 +1,3 @@
-import logging
-
 from gfwanalysis.serializers import serialize_umd
 from gfwanalysis.services.analysis.hansen_service import HansenService
 
@@ -36,7 +34,6 @@ def test_known_area_loss():
                'type': 'FeatureCollection'}
     kwargs = {'geojson': geojson, 'threshold': 30, 'begin': '2001-01-01', 'end': '2018-12-31'}
     method_response = HansenService.analyze(**kwargs)
-    logging.info(f'[Test example]: umd d={method_response}')
     verify = {
         'loss_start_year': 1,
         'loss_end_year': 18,
