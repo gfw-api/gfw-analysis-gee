@@ -7,7 +7,7 @@ services:
     container_name: gfw-analysis-gee-test
     environment:
       PORT: 4500
-      CT_REGISTER_MODE: auto
+      CT_REGISTER_MODE: "False"
       DEBUG: "True"
       CT_URL: http://mymachine:9000
       CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
