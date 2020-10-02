@@ -12,7 +12,7 @@ SETTINGS = {
         'port': 4500
     },
     'gee': {
-        'service_account': 'skydipper@skydipper-196010.iam.gserviceaccount.com',
+        'service_account': os.getenv('EE_ACCOUNT'),
         'privatekey_file': BASE_DIR + '/privatekey.json',
         'assets': {
             'hansen_optimised': 'projects/wri-datalab/global_forest_change_2019_v1_1',
