@@ -1,7 +1,8 @@
 """FORMA250GFW SERVICE"""
 
-import ee
 import logging
+
+import ee
 
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import FormaError
@@ -14,16 +15,16 @@ class Forma250Service(object):
     def analyze(geojson, start_date, end_date):
         """Forma250 microservice class. This service uses the latest image in
         'projects/wri-datalab/FormaGlobalGFW' image collection. The bands of
-        that image contain 'alert_delta': the percent of clearing per pixel that occured
+        that image contain 'alert_delta': the percent of clearing per pixel that occurred
         within the last 3 months, 'alert_near_term_delta': the percent of clearing
-        which occured within the last 1 month, 'alert_date': the first date when
+        which occurred within the last 1 month, 'alert_date': the first date when
         the delta passed a threshold of an ecogroup. 'alert_clearing': the %
         clearing in pixel over the past year, and 'alert_accuracy': the error of
         clearing based on historical performance.
         We use the alert_date to identify pixels of alert_delta that correspond
         to a specific date range. Mask out the rest. And then calculate both a
         weighted area in ha (weighted by the fractional percent alert_delta), and also
-        a simple count of pixels where clearing occured over a date range.
+        a simple count of pixels where clearing occurred over a date range.
         """
         try:
             region = get_region(geojson)
@@ -68,7 +69,7 @@ class Forma250Service(object):
             latest_im = ic.toList(ic.size()).get(-1).getInfo()
             latest_date = latest_im['properties']['date']
 
-            logging.info('Retreiving latest date: ')
+            logging.info('Retrieving latest date: ')
             logging.info(latest_date)
 
             return {'latest': latest_date}

@@ -5,8 +5,8 @@ from __future__ import division
 from __future__ import print_function
 
 import asyncio
-
 import logging
+
 from flask import jsonify, Blueprint
 
 from gfwanalysis.errors import RecentTilesError
@@ -32,7 +32,8 @@ def analyze_recent_data(lat, lon, start, end, sort_by, bands, bmin, bmax, opacit
 
     try:
         data = RecentTiles.recent_data(lat=lat, lon=lon, start=start, end=end, sort_by=sort_by)
-        data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data, bands, bmin, bmax, opacity, 'first'))
+        data = loop.run_until_complete(
+            RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data, bands, bmin, bmax, opacity, 'first'))
     except RecentTilesError as e:
         logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
@@ -50,7 +51,8 @@ def analyze_recent_tiles(data_array, bands, bmin, bmax, opacity):
     loop = asyncio.new_event_loop()
 
     try:
-        data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data_array, bands, bmin, bmax, opacity))
+        data = loop.run_until_complete(
+            RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data_array, bands, bmin, bmax, opacity))
     except RecentTilesError as e:
         logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
@@ -66,7 +68,8 @@ def analyze_recent_thumbs(data_array, bands, bmin, bmax, opacity):
     """
     loop = asyncio.new_event_loop()
     try:
-        data = loop.run_until_complete(RecentTiles.async_fetch(loop, RecentTiles.recent_thumbs, data_array, bands, bmin, bmax, opacity))
+        data = loop.run_until_complete(
+            RecentTiles.async_fetch(loop, RecentTiles.recent_thumbs, data_array, bands, bmin, bmax, opacity))
     except RecentTilesError as e:
         logging.error('[ROUTER]: ' + e.message)
         return error(status=500, detail=e.message)
@@ -81,7 +84,8 @@ def analyze_recent_thumbs(data_array, bands, bmin, bmax, opacity):
 def get_by_geostore(lat, lon, start, end, sort_by, bands, bmin, bmax, opacity):
     """Analyze by geostore"""
     logging.info('[ROUTER]: Getting data for tiles for Recent Sentinel Images')
-    data = analyze_recent_data(lat=lat, lon=lon, start=start, end=end, sort_by=sort_by, bands=bands, bmin=bmin, bmax=bmax, opacity=opacity)
+    data = analyze_recent_data(lat=lat, lon=lon, start=start, end=end, sort_by=sort_by, bands=bands, bmin=bmin,
+                               bmax=bmax, opacity=opacity)
     return data
 
 

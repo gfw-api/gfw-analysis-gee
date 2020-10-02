@@ -5,12 +5,13 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+
 from flask import jsonify, Blueprint
 
 from gfwanalysis.errors import NLCDLandcoverError
 from gfwanalysis.middleware import get_geo_by_hash, get_geo_by_use, get_geo_by_wdpa, \
     get_geo_by_national, get_geo_by_subnational, get_geo_by_regional
-from gfwanalysis.routes.api import error, set_params
+from gfwanalysis.routes.api import error
 from gfwanalysis.serializers import serialize_nlcd_landcover_v2
 from gfwanalysis.services.analysis.nlcd_landcover_service import NLCDLandcover
 from gfwanalysis.validators import validate_geostore
@@ -23,7 +24,6 @@ def analyze(geojson, area_ha):
     logging.info('[ROUTER]: Getting nlcd landcover v2')
     if not geojson:
         return error(status=400, detail='Geojson is required')
-
 
     try:
         data = NLCDLandcover.analyze(
@@ -38,6 +38,7 @@ def analyze(geojson, area_ha):
     data['area_ha'] = area_ha
     logging.info(f'[data]: {data}')
     return jsonify(data=serialize_nlcd_landcover_v2(data, 'nlcd-landcover')), 200
+
 
 @nlcd_landcover_endpoints_v2.route('/', strict_slashes=False, methods=['GET', 'POST'])
 @validate_geostore

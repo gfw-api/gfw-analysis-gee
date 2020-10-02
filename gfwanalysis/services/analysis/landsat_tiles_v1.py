@@ -1,7 +1,8 @@
 """EE LANDSAT TILE URL SERVICE"""
 
-import ee
 import logging
+
+import ee
 
 from gfwanalysis.errors import LandsatTilesError
 

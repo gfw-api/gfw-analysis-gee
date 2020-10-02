@@ -4,8 +4,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import ee
 import logging
+
+import ee
 
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import BiomassLossError

@@ -1,10 +1,10 @@
 """EE SENTINEL TILE URL SERVICE"""
 
 import asyncio
-import requests
 import functools as funct
-import ee
 import logging
+
+import ee
 
 from gfwanalysis.errors import RecentTilesError
 
@@ -64,7 +64,8 @@ class RecentTiles(object):
     def pansharpened_L8_image(image, bands, bmin, bmax, opacity):
         hsv2 = image.select(bands).rgbToHsv()
         sharpened = ee.Image.cat([hsv2.select('hue'), hsv2.select('saturation'),
-        image.select('B8')]).hsvToRgb().visualize(min=bmin, max=bmax, gamma=[1.3, 1.3, 1.3], opacity=opacity)
+                                  image.select('B8')]).hsvToRgb().visualize(min=bmin, max=bmax, gamma=[1.3, 1.3, 1.3],
+                                                                            opacity=opacity)
         return sharpened
 
     @staticmethod
@@ -115,7 +116,8 @@ class RecentTiles(object):
 
         if 'COPERNICUS' in col_data.get('source'):
             if not bmax: bmax = 0.3
-            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax,
+                                                                      opacity=opacity)
         elif 'LANDSAT' in col_data.get('source'):
             if not bmax: bmax = 0.2
             tmp_im = ee.Image(col_data['source'])
@@ -142,7 +144,8 @@ class RecentTiles(object):
 
         if 'COPERNICUS' in col_data.get('source'):
             if not bmax: bmax = 0.3
-            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
+            im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax,
+                                                                      opacity=opacity)
 
         elif 'LANDSAT' in col_data.get('source'):
             if not bmax: bmax = 0.2
@@ -160,8 +163,8 @@ class RecentTiles(object):
         logging.info("[RECENT>DATA] function initiated")
         try:
             point = ee.Geometry.Point(float(lon), float(lat))
-            S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start,end).filterBounds(point)
-            L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(start,end).filterBounds(point)
+            S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start, end).filterBounds(point)
+            L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(start, end).filterBounds(point)
             collection = S2.toList(52).cat(L8.toList(52)).getInfo()
             data = []
             for c in collection:
@@ -172,18 +175,18 @@ class RecentTiles(object):
                     date_time = f"{date_info[0:4]}-{date_info[4:6]}-{date_info[6:8]} {date_info[9:11]}:{date_info[11:13]}:{date_info[13:15]}Z"
                     bbox = c['properties']['system:footprint']['coordinates']
                     tmp_ = {
-                                'source': c['id'],
-                                'cloud_score': c['properties']['CLOUDY_PIXEL_PERCENTAGE'],
-                                'bbox': {
-                                        "geometry": {
-                                        "type": "Polygon",
-                                        "coordinates": bbox
-                                        }
-                                    },
-                                'spacecraft': c['properties']['SPACECRAFT_NAME'],
-                                'product_id': c['properties']['PRODUCT_ID'],
-                                'date': date_time
+                        'source': c['id'],
+                        'cloud_score': c['properties']['CLOUDY_PIXEL_PERCENTAGE'],
+                        'bbox': {
+                            "geometry": {
+                                "type": "Polygon",
+                                "coordinates": bbox
                             }
+                        },
+                        'spacecraft': c['properties']['SPACECRAFT_NAME'],
+                        'product_id': c['properties']['PRODUCT_ID'],
+                        'date': date_time
+                    }
                     data.append(tmp_)
                     logging.info(f"[RECENT>TILE] [Sentinel]:{sentinel_image} {date_time}")
                 elif landsat_image:

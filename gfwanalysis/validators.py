@@ -1,7 +1,8 @@
 """VALIDATORS"""
 
-from flask import request
 from functools import wraps
+
+from flask import request
 
 from gfwanalysis.routes.api import error
 

@@ -1,19 +1,22 @@
 import logging
-import json
-import ee
-from shapely.geometry import shape, GeometryCollection
 from datetime import datetime, timedelta
+
+import ee
+
 from gfwanalysis.errors import CompositeError
-from gfwanalysis.services.analysis.classification_service import create_model, add_indices, classify_image, get_classified_image_url
+from gfwanalysis.services.analysis.classification_service import create_model, add_indices, classify_image, \
+    get_classified_image_url
 from gfwanalysis.utils.geo import buffer_geom, get_clip_vertex_list
+
 
 class CompositeService(object):
     """Gets a geostore geometry as input and returns a composite, cloud-free image within the geometry bounds.
     Note that the URLs from Earth Engine expire every 3 days.
     """
+
     @staticmethod
-    def get_composite_image(geojson, instrument, date_range, thumb_size,\
-                        classify, band_viz, get_dem, get_stats, show_bounds, cloudscore_thresh):
+    def get_composite_image(geojson, instrument, date_range, thumb_size, \
+                            classify, band_viz, get_dem, get_stats, show_bounds, cloudscore_thresh):
         logging.info(f"[COMPOSITE SERVICE]: Creating composite")
         try:
             features = geojson.get('features')
@@ -44,7 +47,8 @@ class CompositeService(object):
             date_range = CompositeService.get_formatted_date(date_range)
             sat_img = CompositeService.get_sat_img(instrument, region, date_range, cloudscore_thresh)
             if classify:
-                result_dic = CompositeService.get_classified_composite(sat_img, instrument, region, thumb_size, get_stats)
+                result_dic = CompositeService.get_classified_composite(sat_img, instrument, region, thumb_size,
+                                                                       get_stats)
             else:
                 if show_bounds:
                     image = sat_img.visualize(**band_viz).blend(fill).blend(outer).blend(inner)
@@ -53,12 +57,12 @@ class CompositeService(object):
                 tmp_thumb = image.getThumbUrl({'dimensions': thumb_size})
                 tmp_tile = CompositeService.get_image_url(image)
                 result_dic = {'thumb_url': tmp_thumb,
-                               'tile_url': tmp_tile}
+                              'tile_url': tmp_tile}
                 logging.error(f'[Composite Service]: result_dic {result_dic}')
             if get_dem:
-                result_dic['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE').\
-                    clip(region).getThumbUrl({'region':region, 'dimensions':thumb_size,\
-                        'min':-479, 'max':8859.0})
+                result_dic['dem'] = ee.Image('JAXA/ALOS/AW3D30_V1_1').select('AVE'). \
+                    clip(region).getThumbUrl({'region': region, 'dimensions': thumb_size, \
+                                              'min': -479, 'max': 8859.0})
             return result_dic
         except Exception as error:
             logging.error(str(error))
@@ -80,13 +84,13 @@ class CompositeService(object):
 
     @staticmethod
     def get_zonal_stats(image):
-        #higher tileScale allows inspecting larger areas
-        reduce_args = {'reducer':ee.Reducer.frequencyHistogram(),
-                        'geometry':image.geometry(),
-                        'tileScale':2,
-                        'scale':30,
-                        'maxPixels':1e13,
-                        'bestEffort':True}
+        # higher tileScale allows inspecting larger areas
+        reduce_args = {'reducer': ee.Reducer.frequencyHistogram(),
+                       'geometry': image.geometry(),
+                       'tileScale': 2,
+                       'scale': 30,
+                       'maxPixels': 1e13,
+                       'bestEffort': True}
         stats = image.reduceRegion(**reduce_args).getInfo()
         return stats
 
@@ -95,26 +99,29 @@ class CompositeService(object):
         model = create_model(instrument)
         indices_image = add_indices(sat_img, instrument)
         classified_image = classify_image(indices_image, model, instrument)
-        classif_viz_params = {'min': 0, 'max': 5, 'palette': ['yellow', 'blue', 'grey', 'green', 'orange', 'darkgreen'], 'format':'png'}
+        classif_viz_params = {'min': 0, 'max': 5, 'palette': ['yellow', 'blue', 'grey', 'green', 'orange', 'darkgreen'],
+                              'format': 'png'}
         classif_viz_params['region'] = polyg_geom
         classif_viz_params['dimensions'] = thumb_size
         thumb_url = classified_image.getThumbUrl(classif_viz_params)
         classified_url = get_classified_image_url(classified_image)
-        result_dic = {'thumb_url':thumb_url, 'tile_url':classified_url}
+        result_dic = {'thumb_url': thumb_url, 'tile_url': classified_url}
         if get_stats:
             result_dic['zonal_stats'] = CompositeService.get_zonal_stats(classified_image)
         return result_dic
 
     @staticmethod
     def get_sat_img(instrument, region, date_range, cloudscore_thresh):
-        if(instrument == 'landsat'):
-            sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(ee.Filter.lte('CLOUD_COVER', cloudscore_thresh))
+        if (instrument == 'landsat'):
+            sat_img = ee.ImageCollection("LANDSAT/LC08/C01/T1_TOA").filter(
+                ee.Filter.lte('CLOUD_COVER', cloudscore_thresh))
         else:
-            sat_img = ee.ImageCollection('COPERNICUS/S2').filter(ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE', cloudscore_thresh))
-        sat_img = sat_img.filterBounds(region).filterDate(date_range[0].strip(), date_range[1].strip())\
-                    .median().clip(region)
-        if(instrument == 'sentinel'):
-            sat_img = sat_img.divide(100*100)
+            sat_img = ee.ImageCollection('COPERNICUS/S2').filter(
+                ee.Filter.lte('CLOUDY_PIXEL_PERCENTAGE', cloudscore_thresh))
+        sat_img = sat_img.filterBounds(region).filterDate(date_range[0].strip(), date_range[1].strip()) \
+            .median().clip(region)
+        if (instrument == 'sentinel'):
+            sat_img = sat_img.divide(100 * 100)
         return sat_img
 
     @staticmethod

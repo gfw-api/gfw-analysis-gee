@@ -1,7 +1,8 @@
 """EE SENTINEL TILE URL SERVICE"""
 
-import ee
 import logging
+
+import ee
 
 
 class SentinelTiles(object):

@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import print_function
 
 import logging
+
 from flask import jsonify, request, Blueprint
 
 from gfwanalysis.errors import HansenError
@@ -22,7 +23,7 @@ def analyze(geojson, area_ha):
     if not geojson:
         return error(status=400, detail='Geojson is required')
     threshold, begin, end, table = set_params()
-    #logging.info(f'[ROUTER]: umd params thresh={threshold}, {begin}, {end}, {table}')
+    # logging.info(f'[ROUTER]: umd params thresh={threshold}, {begin}, {end}, {table}')
     if request.args.get('aggregate_values', '').lower() == 'false':
         aggregate_values = False
     else:

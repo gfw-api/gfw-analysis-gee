@@ -4,14 +4,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import ee
 import logging
+
+import ee
 
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import NLCDLandcoverError
 from gfwanalysis.utils.geo import get_region
 from gfwanalysis.utils.image_col_reducer import ImageColIntersect
-from gfwanalysis.utils.landcover_lookup import lookup, valid_lulc_codes, get_landcover_types
+from gfwanalysis.utils.landcover_lookup import lookup
+
 
 class NLCDLandcover(object):
     @staticmethod
@@ -25,11 +27,11 @@ class NLCDLandcover(object):
             d = {}
             # Extract int years to work with for time range
             valid_years = [
-                {'id':'NLCD2001', 'year': 2001},
-                {'id':'NLCD2006', 'year': 2006},
-                {'id':'NLCD2011', 'year': 2011},
-                {'id':'NLCD2016', 'year': 2016}
-          ]
+                {'id': 'NLCD2001', 'year': 2001},
+                {'id': 'NLCD2006', 'year': 2006},
+                {'id': 'NLCD2011', 'year': 2011},
+                {'id': 'NLCD2016', 'year': 2016}
+            ]
 
             # Gather assets
             band_name = 'landcover'
@@ -41,7 +43,6 @@ class NLCDLandcover(object):
             scale = 30
             logging.info(f'[nlcd-landcover-service]: built assets for analysis, using {band_name}')
 
-
             # Calculate landcover with a collection operation method
             stats = us_landcover.map(ImageColIntersect(region, scale, ee.Reducer.frequencyHistogram())).getInfo()
             logging.info(f'[nlcd-landcover-service]: retreived {stats}')
@@ -50,16 +51,14 @@ class NLCDLandcover(object):
 
             data = [{
                 'id': d['id'],
-                'stats': { k: v * 30 * 30 * 1e-4 for k,v in d['properties'][band_name].items() }
-                }
+                'stats': {k: v * 30 * 30 * 1e-4 for k, v in d['properties'][band_name].items()}
+            }
                 for d in stats['features']]
 
             tmp = {}
             for el in data:
-                
-                year = [y['year'] for y in valid_years if y['id']== el['id']][0] 
+                year = [y['year'] for y in valid_years if y['id'] == el['id']][0]
                 tmp[year] = lookup('nlcd_landcover', el['stats'], False)
-
 
             d['nlcd_landcover'] = tmp
 

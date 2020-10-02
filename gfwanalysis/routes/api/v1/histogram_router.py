@@ -1,6 +1,7 @@
 """API ROUTER"""
 
 import logging
+
 from flask import jsonify, Blueprint
 
 from gfwanalysis.middleware import get_geo_by_hash

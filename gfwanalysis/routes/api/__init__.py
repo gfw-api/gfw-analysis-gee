@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 
 import datetime
+
 from flask import jsonify, request
 
 from gfwanalysis.utils.landcover_lookup import get_landcover_types

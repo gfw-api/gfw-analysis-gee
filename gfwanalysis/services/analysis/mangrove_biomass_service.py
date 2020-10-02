@@ -3,9 +3,10 @@
 import logging
 
 import ee
-from gfwanalysis.errors import MangroveBiomassError
+
 from gfwanalysis.config import SETTINGS
-from gfwanalysis.utils.geo import get_region, squaremeters_to_ha, admin_0_simplify
+from gfwanalysis.errors import MangroveBiomassError
+from gfwanalysis.utils.geo import get_region
 
 
 class MangroveBiomassService(object):
@@ -17,7 +18,7 @@ class MangroveBiomassService(object):
         """
         try:
             d = {}
-            biomass_asset= SETTINGS.get('gee').get('assets').get('mangrove_biomass')
+            biomass_asset = SETTINGS.get('gee').get('assets').get('mangrove_biomass')
             region = get_region(geojson)
             reduce_args = {'reducer': ee.Reducer.sum().unweighted(),
                            'geometry': region,
