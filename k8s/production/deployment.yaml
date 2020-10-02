@@ -63,7 +63,7 @@ spec:
         - name: EE_PRIVATE_KEY
           valueFrom:
             secretKeyRef:
-              key: EE_PRIVATE_KEY_JSON
+              key: EE_PRIVATE_KEY
               name: mssecrets
         - name: EE_ACCOUNT
           valueFrom:
