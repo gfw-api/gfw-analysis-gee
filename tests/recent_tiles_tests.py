@@ -3,6 +3,7 @@ from gfwanalysis.services.analysis.recent_tiles import RecentTiles
 
 import ee
 
+
 def test_serialize_recent_data():
     """Test the Recent Tiles data Serializer."""
     response_data = [{
@@ -59,7 +60,7 @@ def test_recent_data_type():
         'end': end,
         'sort_by': None
     }
-    
+
     method_response = RecentTiles.recent_data(**kwargs)
     first_tile = method_response[0]
 
@@ -83,16 +84,16 @@ def test_recent_tile_url():
 
     kwargs = {
         'col_data': col_data,
-        'bands':None,
-        'bmin':None,
-        'bmax':None,
-        'opacity':None
+        'bands': None,
+        'bmin': None,
+        'bmax': None,
+        'opacity': None
     }
 
     method_response = RecentTiles.recent_tiles(**kwargs)
     tile_url = method_response.get('tile_url', '')
     source = method_response.get('source', '')
-    
+
     assert 'source' in method_response
     assert source in col_data['source']
     assert 'tile_url' in method_response
@@ -114,7 +115,8 @@ def test_asset_number():
 
     point = ee.Geometry.Point(float(kwargs['lon']), float(kwargs['lat']))
     s2_size = ee.ImageCollection('COPERNICUS/S2').filterDate(kwargs['start'], kwargs['end']).filterBounds(point).size()
-    l8_size = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(kwargs['start'], kwargs['end']).filterBounds(point).size()
+    l8_size = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(kwargs['start'], kwargs['end']).filterBounds(
+        point).size()
     expected_size = s2_size.getInfo() + l8_size.getInfo()
 
     tiles_data = RecentTiles.recent_data(**kwargs)
