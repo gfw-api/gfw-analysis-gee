@@ -1,10 +1,10 @@
-from gfwanalysis.serializers import serialize_recent_url, serialize_recent_data
+from gfwanalysis.serializers import serialize_recent_data
 from gfwanalysis.services.analysis.recent_tiles import RecentTiles
 
 
-def test_serialize_recent_tiles_data():
+def test_serialize_recent_data():
     """Test the Recent Tiles data Serializer."""
-    d = [{
+    response_data = [{
         'spacecraft': 'a1',
         'source': 'a2',
         'cloud_score': 'a3',
@@ -23,25 +23,23 @@ def test_serialize_recent_tiles_data():
     }]
 
     id_type = 'recent_tiles_data'
-    s_obj = serialize_recent_data(d, id_type)
-    assert s_obj.get('type') == id_type
-    assert len(s_obj.get('tiles', [])) == 2
-    assert s_obj.get('tiles')[0].get('attributes').get(
-        'instrument') == d[0]['spacecraft']
-    assert s_obj.get('tiles')[0].get(
-        'attributes').get('source') == d[0]['source']
-    assert s_obj.get('tiles')[0].get('attributes').get(
-        'cloud_score') == d[0]['cloud_score']
-    assert s_obj.get('tiles')[0].get(
-        'attributes').get('date_time') == d[0]['date']
-    assert s_obj.get('tiles')[0].get('attributes').get(
-        'tile_url') == d[0]['tile_url']
-    assert s_obj.get('tiles')[0].get('attributes').get('bbox') == d[0]['bbox']
-    assert s_obj.get('tiles')[0].get('attributes').get(
-        'thumbnail_url') == d[0]['thumb_url']
+    serialized_object = serialize_recent_data(response_data, id_type)
+
+    assert serialized_object.get('type') == id_type
+    assert len(serialized_object.get('tiles', [])) == 2
+
+    serialized_object_attribute = serialized_object.get('tiles')[0].get('attributes')
+
+    assert serialized_object_attribute.get('instrument') == response_data[0]['spacecraft']
+    assert serialized_object_attribute.get('source') == response_data[0]['source']
+    assert serialized_object_attribute.get('cloud_score') == response_data[0]['cloud_score']
+    assert serialized_object_attribute.get('date_time') == response_data[0]['date']
+    assert serialized_object_attribute.get('tile_url') == response_data[0]['tile_url']
+    assert serialized_object_attribute.get('bbox') == response_data[0]['bbox']
+    assert serialized_object_attribute.get('thumbnail_url') == response_data[0]['thumb_url']
 
 
-def test_recent_tile_data_type():
+def test_recent_data_type():
     """
     Test a known region gives back expected types.
     """
@@ -56,12 +54,16 @@ def test_recent_tile_data_type():
     kwargs = {'lat': lat, 'lon': lon,
               'start': start, 'end': end, 'sort_by': None}
     method_response = RecentTiles.recent_data(**kwargs)
+    first_tile = method_response[0]
 
-    spacecraft = ['COPERNICUS', 'LANDSAT']
+    spacecraft_list = ['Sentinel', 'Landsat']
+
     assert len(method_response) > 1
-    assert type(method_response[0].get('bbox')) == dict
-    assert type(method_response[0].get('source')) == str
-    assert 0 <= method_response[0].get('cloud_score') <= 100
-    assert type(method_response[0].get('spacecraft')) == str
-    assert any([s in method_response[0].get('spacecraft') for s in spacecraft])
-    assert type(method_response[0].get('date')) == str
+    assert type(first_tile.get('bbox')) == dict
+    assert type(first_tile.get('source')) == str
+    assert 0 <= first_tile.get('cloud_score') <= 100
+    assert type(first_tile.get('spacecraft')) == str
+    assert any([spacecraft in first_tile.get('spacecraft') for spacecraft in spacecraft_list])
+    assert type(first_tile.get('date')) == str
+
+

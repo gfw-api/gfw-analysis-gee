@@ -41,9 +41,10 @@ Run the tests via docker with:
 ./gfwanalysis.sh test
 ```
 
-Or nativley via:
+Or natively via:
 ```ssh
-pip install -r requirements.txt
+pip install -r requirements.txt  --use-feature=2020-resolver
+pip install -r requirements_dev.txt  --use-feature=2020-resolver
 pytest --cov=gfwanalysis gfwanalysis/tests/
 ```
 
