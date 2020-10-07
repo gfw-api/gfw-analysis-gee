@@ -98,7 +98,6 @@ class RecentTiles(object):
         for response in await asyncio.gather(*futures):
             pass
 
-        return_results = []
         for f in range(0, len(futures)):
             data_array[f] = futures[f].result()
 
@@ -111,20 +110,26 @@ class RecentTiles(object):
         logging.info(f"[RECENT>TILE] {col_data.get('source')}")
 
         validated_bands = ["B4", "B3", "B2"]
-        if bands: validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
-        if not bmin: bmin = 0
+        if bands:
+            validated_bands = RecentTiles.validate_bands(bands, col_data.get('source'))
+        if not bmin:
+            bmin = 0
 
         if 'COPERNICUS' in col_data.get('source'):
-            if not bmax: bmax = 0.3
+            if not bmax:
+                bmax = 0.3
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax,
                                                                       opacity=opacity)
         elif 'LANDSAT' in col_data.get('source'):
-            if not bmax: bmax = 0.2
+            if not bmax:
+                bmax = 0.2
             tmp_im = ee.Image(col_data['source'])
             im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, bmin, bmax, opacity)
 
         m_id = im.getMapId()
-        url = m_id['tile_fetcher'].url_format
+        # url = m_id['tile_fetcher'].url_format
+        base_url = 'https://earthengine.googleapis.com'
+        url = (base_url + '/map/' + m_id['mapid'] + '/{z}/{x}/{y}?token=' + m_id['token'])
 
         col_data['tile_url'] = url
         logging.info(f'[RECENT>TILE] Tile url retrieved: {url}.')
@@ -141,12 +146,14 @@ class RecentTiles(object):
         if not bmin: bmin = 0
 
         if 'COPERNICUS' in col_data.get('source'):
-            if not bmax: bmax = 0.3
+            if not bmax:
+                bmax = 0.3
             im = ee.Image(col_data['source']).divide(10000).visualize(bands=validated_bands, min=bmin, max=bmax,
                                                                       opacity=opacity)
 
         elif 'LANDSAT' in col_data.get('source'):
-            if not bmax: bmax = 0.2
+            if not bmax:
+                bmax = 0.2
             tmp_im = ee.Image(col_data['source'])
             im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, bmin, bmax, opacity)
 
