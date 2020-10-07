@@ -48,6 +48,8 @@ pip install -r requirements_dev.txt  --use-feature=2020-resolver
 pytest --cov=gfwanalysis gfwanalysis/tests/
 ```
 
+Testing requires a local Redis instance running with a `REDIS_URL` environment variable.
+
 ### Code structure
 
 The API has been packed in a Python module (gfwanalysis). It creates and exposes a WSGI application. The core functionality
