@@ -41,7 +41,7 @@ def test_serialize_recent_data():
 
 def test_recent_data_type():
     """
-    Test a known region gives back expected types.
+    Test a known lat, lon iniput gives back expected metadata response.
     """
 
     # Canaries Test
@@ -67,3 +67,26 @@ def test_recent_data_type():
     assert type(first_tile.get('date')) == str
 
 
+def test_recent_tile_url():
+    """
+    Test a known source returns expected tile url.
+    """
+
+    col_data = {'source': 'COPERNICUS/S2/20200530T115219_20200530T115220_T28RCS'}
+
+    kwargs = {  
+        'col_data': col_data,
+        'bands':None,
+        'bmin':None,
+        'bmax':None,
+        'opacity':None
+    }
+
+    method_response = RecentTiles.recent_tiles(**kwargs)
+    tile_url = method_response.get('tile_url', '')
+    source = method_response.get('source', '')
+    
+    assert 'source' in method_response
+    assert source in col_data['source']
+    assert 'tile_url' in method_response
+    assert 'https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/' in tile_url
