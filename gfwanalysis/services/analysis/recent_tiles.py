@@ -127,9 +127,7 @@ class RecentTiles(object):
             im = RecentTiles.pansharpened_L8_image(tmp_im, validated_bands, bmin, bmax, opacity)
 
         m_id = im.getMapId()
-        # url = m_id['tile_fetcher'].url_format
-        base_url = 'https://earthengine.googleapis.com'
-        url = (base_url + '/map/' + m_id['mapid'] + '/{z}/{x}/{y}?token=' + m_id['token'])
+        url = m_id['tile_fetcher'].url_format
 
         col_data['tile_url'] = url
         logging.info(f'[RECENT>TILE] Tile url retrieved: {url}.')
