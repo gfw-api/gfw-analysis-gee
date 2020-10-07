@@ -322,7 +322,7 @@ def serialize_highres_url(analysis, type):
 
 
 def serialize_recent_data(analysis, type):
-    logging.info("[SERIALISER] initiating...")
+    logging.info("[SERIALIZER] initiating...")
     """Convert output of images to json"""
     output = []
 
