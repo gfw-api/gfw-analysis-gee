@@ -168,7 +168,12 @@ class RecentTiles(object):
             point = ee.Geometry.Point(float(lon), float(lat))
             S2 = ee.ImageCollection('COPERNICUS/S2').filterDate(start, end).filterBounds(point)
             L8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(start, end).filterBounds(point)
-            collection = S2.toList(52).cat(L8.toList(52)).getInfo()
+
+            s2_size = S2.size().getInfo()
+            l8_size = S2.size().getInfo()
+
+            collection = S2.toList(s2_size).cat(L8.toList(l8_size)).getInfo()
+                        
             data = []
             for c in collection:
                 sentinel_image = c.get('properties').get('SPACECRAFT_NAME', None)
