@@ -1,6 +1,7 @@
 from gfwanalysis.serializers import serialize_recent_data
 from gfwanalysis.services.analysis.recent_tiles import RecentTiles
 
+import ee
 
 def test_serialize_recent_data():
     """Test the Recent Tiles data Serializer."""
@@ -51,8 +52,14 @@ def test_recent_data_type():
     start = '2020-01-01'
     end = '2020-02-01'
 
-    kwargs = {'lat': lat, 'lon': lon,
-              'start': start, 'end': end, 'sort_by': None}
+    kwargs = {
+        'lat': lat,
+        'lon': lon,
+        'start': start,
+        'end': end,
+        'sort_by': None
+    }
+    
     method_response = RecentTiles.recent_data(**kwargs)
     first_tile = method_response[0]
 
@@ -74,7 +81,7 @@ def test_recent_tile_url():
 
     col_data = {'source': 'COPERNICUS/S2/20200530T115219_20200530T115220_T28RCS'}
 
-    kwargs = {  
+    kwargs = {
         'col_data': col_data,
         'bands':None,
         'bmin':None,
@@ -90,3 +97,25 @@ def test_recent_tile_url():
     assert source in col_data['source']
     assert 'tile_url' in method_response
     assert 'https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/maps/' in tile_url
+
+
+def test_asset_number():
+    """
+    Test a known source returns expected number of tile urls.
+    """
+
+    kwargs = {
+        'lat': -9.23750030205276,
+        'lon': -49.0543414324293,
+        'start': '2019-01-02',
+        'end': '2020-01-01',
+        'sort_by': None
+    }
+
+    point = ee.Geometry.Point(float(kwargs['lon']), float(kwargs['lat']))
+    s2_size = ee.ImageCollection('COPERNICUS/S2').filterDate(kwargs['start'], kwargs['end']).filterBounds(point).size()
+    l8_size = ee.ImageCollection('LANDSAT/LC08/C01/T1_RT_TOA').filterDate(kwargs['start'], kwargs['end']).filterBounds(point).size()
+    expected_size = s2_size.getInfo() + l8_size.getInfo()
+
+    tiles_data = RecentTiles.recent_data(**kwargs)
+    assert len(tiles_data) == expected_size
