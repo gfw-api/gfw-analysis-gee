@@ -1,6 +1,6 @@
-# 1.0.0
+# 1.1.0
 
-## 12/11/2020
+## 17/11/2020
 
 - Updated recent-tiles service to assure correct number of images returned.
   
