@@ -1,6 +1,6 @@
 # GFW GEE Analysis
 
-[![Build Status](https://travis-ci.org/gfw-api/gfw-analysis-gee.svg?branch=dev)](https://travis-ci.org/gfw-api/gfw-analysis-gee)
+[![Build Status](https://travis-ci.com/gfw-api/gfw-analysis-gee.svg?branch=dev)](https://travis-ci.com/gfw-api/gfw-analysis-gee)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/2d03ef51b43e72eae7e1/test_coverage)](https://codeclimate.com/github/gfw-api/gfw-analysis-gee/test_coverage)
 
 ## Dependencies

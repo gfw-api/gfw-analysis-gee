@@ -1,6 +1,6 @@
 """Geostore SERVICE"""
 
-from CTRegisterMicroserviceFlask import request_to_microservice
+from RWAPIMicroservicePython import request_to_microservice
 
 from gfwanalysis.errors import GeostoreNotFound
 from gfwanalysis.utils.geo import admin_0_simplify, admin_1_simplify
