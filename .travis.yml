@@ -5,8 +5,8 @@ services:
   - redis-server
 install:
     - pip install --upgrade pip
-    - pip install -r requirements.txt --use-feature=2020-resolver
-    - pip install -r requirements_dev.txt --use-feature=2020-resolver
+    - pip install -r requirements.txt
+    - pip install -r requirements_dev.txt
 env:
   global:
     - CC_TEST_REPORTER_ID=70b61d7fc0179e87033f671e32f3402b8201bc97400dda66f45e286c060182e6

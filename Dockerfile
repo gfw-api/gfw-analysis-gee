@@ -21,15 +21,15 @@ RUN addgroup $USER
 RUN useradd -ms /bin/bash -g $USER $USER
 
 RUN easy_install pip && pip install --upgrade pip
-RUN pip install gunicorn gevent setuptools --use-feature=2020-resolver
+RUN pip install gunicorn gevent setuptools
 
 RUN mkdir -p /opt/$NAME
 RUN cd /opt/$NAME
 COPY tox.ini /opt/$NAME/tox.ini
 COPY requirements.txt /opt/$NAME/requirements.txt
 COPY requirements_dev.txt /opt/$NAME/requirements_dev.txt
-RUN cd /opt/$NAME && pip install -r requirements.txt --use-feature=2020-resolver
-RUN cd /opt/$NAME && pip install -r requirements_dev.txt --use-feature=2020-resolver
+RUN cd /opt/$NAME && pip install -r requirements.txt
+RUN cd /opt/$NAME && pip install -r requirements_dev.txt
 
 
 COPY entrypoint.sh /opt/$NAME/entrypoint.sh
