@@ -179,9 +179,9 @@
 		},
 		{
 			"path": "/v1/mangrove-biomass",
-			"method": "GET",
+			"method": "POST",
 			"redirect": {
-				"method": "GET",
+				"method": "POST",
 				"path": "/api/v1/mangrove-biomass"
 			}
 		},
@@ -235,9 +235,9 @@
 		},
 		{
 			"path": "/v1/population",
-			"method": "GET",
+			"method": "POST",
 			"redirect": {
-				"method": "GET",
+				"method": "POST",
 				"path": "/api/v1/population"
 			}
 		},
@@ -466,6 +466,38 @@
 			}
 		},
 		{
+			"path": "/v1/sentinel-tiles/",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/sentinel-tiles/"
+			}
+		},
+		{
+			"path": "/v1/recent-tiles/",
+			"method": "GET",
+			"redirect": {
+				"method": "GET",
+				"path": "/api/v1/recent-tiles/"
+			}
+		},
+		{
+			"path": "/v1/recent-tiles/tiles",
+			"method": "POST",
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/recent-tiles/tiles"
+			}
+		},
+		{
+			"path": "/v1/recent-tiles/thumbs",
+			"method": "POST",
+			"redirect": {
+				"method": "POST",
+				"path": "/api/v1/recent-tiles/thumbs"
+			}
+		},
+		{
 			"path": "/v2/nlcd-landcover",
 			"method": "GET",
 			"redirect": {
@@ -591,38 +623,6 @@
 			"redirect": {
 				"method": "GET",
 				"path": "/api/v2/landsat-tiles/:year/:z/:x/:y"
-			}
-		},
-		{
-			"path": "/v1/sentinel-tiles/",
-			"method": "GET",
-			"redirect": {
-				"method": "GET",
-				"path": "/api/v1/sentinel-tiles/"
-			}
-		},
-		{
-			"path": "/v1/recent-tiles/",
-			"method": "GET",
-			"redirect": {
-				"method": "GET",
-				"path": "/api/v1/recent-tiles/"
-			}
-		},
-		{
-			"path": "/v1/recent-tiles/tiles",
-			"method": "POST",
-			"redirect": {
-				"method": "POST",
-				"path": "/api/v1/recent-tiles/tiles"
-			}
-		},
-		{
-			"path": "/v1/recent-tiles/thumbs",
-			"method": "POST",
-			"redirect": {
-				"method": "POST",
-				"path": "/api/v1/recent-tiles/thumbs"
 			}
 		}
 	]
