@@ -1,3 +1,7 @@
+## 06/03/2021
+
+- Update `RWAPIMicroservicePython` to fix issue with requests to other microservices.
+
 ## 22/01/2021
 
 - Replace CT integration library
