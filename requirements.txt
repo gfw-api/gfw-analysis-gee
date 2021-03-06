@@ -14,3 +14,4 @@ redis==2.10.6
 requests==2.22.0
 scipy==1.5.2
 shapely==1.7a1
+google-api-python-client==1.12.8

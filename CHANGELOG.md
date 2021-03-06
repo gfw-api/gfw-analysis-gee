@@ -1,6 +1,7 @@
 ## 06/03/2021
 
 - Update `RWAPIMicroservicePython` to fix issue with requests to other microservices.
+- Fix issue when loading google metadata on startup.
 
 ## 22/01/2021
 
