@@ -1,3 +1,7 @@
+## 31/05/2021
+
+- Update `RWAPIMicroservicePython` to add CORS support.
+
 ## 06/03/2021
 
 - Update `RWAPIMicroservicePython` to fix issue with requests to other microservices.

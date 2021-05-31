@@ -1,4 +1,4 @@
-RWAPIMicroservicePython==0.3.0
+RWAPIMicroservicePython==0.4.0
 Flask==1.1.1
 earthengine-api==0.1.232
 geocoder==1.38.1
