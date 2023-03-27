@@ -10,7 +10,7 @@ pandas==0.25.3
 pycrypto==2.6.1
 pyproj==1.9.6
 python-dotenv==0.11.0
-redis==2.10.6
+redis==4.5.3
 requests==2.22.0
 scipy==1.5.2
 shapely==1.7a1
