@@ -1,5 +1,5 @@
 RWAPIMicroservicePython==0.4.0
-Flask==1.1.1
+Flask==2.3.2
 earthengine-api==0.1.232
 geocoder==1.38.1
 google-cloud==0.34.0
