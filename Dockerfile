@@ -1,4 +1,4 @@
-FROM python:3.7.4-stretch
+FROM python:3.7.12-slim-buster
 MAINTAINER Vizzuality info@vizzuality.com
 
 ENV NAME gfwanalysis
@@ -14,13 +14,14 @@ RUN apt-get update -qqy && apt-get install -qqy \
    musl-dev\
    libgeos-dev\
    build-essential\
-   python-dev
+   python-dev \
+   python-pip
 
 RUN addgroup $USER
 # RUN adduser --shell /bin/bash --disabled-password --ingroup $USER
 RUN useradd -ms /bin/bash -g $USER $USER
 
-RUN easy_install pip && pip install --upgrade pip
+RUN pip install --upgrade pip
 RUN pip install gunicorn gevent setuptools
 
 RUN mkdir -p /opt/$NAME
