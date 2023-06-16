@@ -7,10 +7,9 @@ services:
     container_name: gfw-analysis-gee-test
     environment:
       PORT: 4500
-      CT_REGISTER_MODE: "False"
       DEBUG: "True"
-      CT_URL: http://mymachine:9000
-      CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
+      GATEWAY_URL: http://mymachine:9000
+      MICROSERVICE_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
       LOCAL_URL: http://mymachine:4500
       EE_PRIVATE_KEY: ${EE_PRIVATE_KEY}
       API_VERSION: v1
