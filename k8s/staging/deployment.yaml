@@ -40,20 +40,15 @@ spec:
           value: staging
         - name: LOCAL_URL
           value: http://analysis-gee.gfw.svc.cluster.local:4500
-        - name: CT_URL
+        - name: GATEWAY_URL
           valueFrom:
             secretKeyRef:
-              key: CT_URL
+              key: GATEWAY_URL
               name: mssecrets
-        - name: CT_TOKEN
+        - name: MICROSERVICE_TOKEN
           valueFrom:
             secretKeyRef:
-              key: CT_TOKEN
-              name: mssecrets
-        - name: CT_REGISTER_MODE
-          valueFrom:
-            secretKeyRef:
-              key: CT_REGISTER_MODE
+              key: MICROSERVICE_TOKEN
               name: mssecrets
         - name: API_VERSION
           valueFrom:
