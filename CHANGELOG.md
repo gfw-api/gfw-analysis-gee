@@ -1,3 +1,8 @@
+## 06/31/2023
+
+- Add Landsat 8 Collection 2 tiles
+- Replace Control Tower with API Gateway
+
 ## 31/05/2021
 
 - Update `RWAPIMicroservicePython` to add CORS support.
