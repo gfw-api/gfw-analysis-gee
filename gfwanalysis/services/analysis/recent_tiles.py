@@ -156,22 +156,20 @@ class RecentTiles(object):
         """Takes collection data array and fetches tiles"""
         logging.info(f"[RECENT>TILE] {col_data.get('source')}")
 
-        validated_bands = RecentTiles.validate_bands(
-            ["B4", "B3", "B2"], col_data.get("source")
-        )
+        source = col_data["source"]
+        validated_bands = RecentTiles.validate_bands(["B4", "B3", "B2"], source)
         if bands:
-            validated_bands = RecentTiles.validate_bands(bands, col_data.get("source"))
+            validated_bands = RecentTiles.validate_bands(bands, source)
         if not bmin:
             bmin = 0
 
-        source = col_data.get("source")
         if (
             "LANDSAT" in source
             and source.split("/")[2] == LANDSAT8_C01_SOURCE.split("/")[2]
         ):
             if not bmax:
                 bmax = 0.2
-            tmp_im = ee.Image(col_data["source"])
+            tmp_im = ee.Image(source)
             im = RecentTiles.pansharpened_L8_image(
                 tmp_im, validated_bands, bmin, bmax, opacity
             )
@@ -179,7 +177,7 @@ class RecentTiles(object):
             if not bmax:
                 bmax = 0.3
             im = (
-                ee.Image(col_data["source"])
+                ee.Image(source)
                 .divide(10000)
                 .visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
             )
