@@ -8,6 +8,8 @@ import ee
 
 from gfwanalysis.errors import RecentTilesError
 
+LANDSAT8_C01_SOURCE = "LANDSAT/LC08/C01/T1_RT_TOA"
+LANDSAT8_C02_SOURCE = "LANDSAT/LC08/C02/T1_L2"
 SENTINEL_BANDS = [
     "B1",
     "B2",
@@ -23,7 +25,7 @@ SENTINEL_BANDS = [
     "B11",
     "B12",
 ]
-S2_TO_L8_DICT = {
+S2_TO_L8_C01_DICT = {
     "B12": "B7",
     "B11": "B6",
     "B10": None,
@@ -36,6 +38,21 @@ S2_TO_L8_DICT = {
     "B4": "B4",
     "B3": "B3",
     "B2": "B2",
+}
+
+S2_TO_L8_C02_DICT = {
+    "B12": "SR_B7",
+    "B11": "SR_B6",
+    "B10": None,
+    "B9": None,
+    "B8": "SR_B5",
+    "B8A": "SR_B5",
+    "B7": None,
+    "B6": None,
+    "B5": None,
+    "B4": "SR_B4",
+    "B3": "SR_B3",
+    "B2": "SR_B2",
 }
 
 # Landsat 8 collection 2 start date
@@ -68,6 +85,11 @@ class RecentTiles(object):
 
         # Convert if Landsat
         if "LANDSAT" in instrument:
+            S2_TO_L8_DICT = (
+                S2_TO_L8_C02_DICT
+                if LANDSAT8_C02_SOURCE.split("/")[2] == instrument.split("/")[2]
+                else S2_TO_L8_C01_DICT
+            )
             parsed_bands = [S2_TO_L8_DICT[b] for b in parsed_bands]
 
         logging.info(f"[RECENT>BANDS] parsed bands: {parsed_bands}")
@@ -134,26 +156,30 @@ class RecentTiles(object):
         """Takes collection data array and fetches tiles"""
         logging.info(f"[RECENT>TILE] {col_data.get('source')}")
 
-        validated_bands = ["B4", "B3", "B2"]
+        source = col_data["source"]
+        validated_bands = RecentTiles.validate_bands(["B4", "B3", "B2"], source)
         if bands:
-            validated_bands = RecentTiles.validate_bands(bands, col_data.get("source"))
+            validated_bands = RecentTiles.validate_bands(bands, source)
         if not bmin:
             bmin = 0
 
-        if "COPERNICUS" in col_data.get("source"):
+        if (
+            "LANDSAT" in source
+            and source.split("/")[2] == LANDSAT8_C01_SOURCE.split("/")[2]
+        ):
+            if not bmax:
+                bmax = 0.2
+            tmp_im = ee.Image(source)
+            im = RecentTiles.pansharpened_L8_image(
+                tmp_im, validated_bands, bmin, bmax, opacity
+            )
+        else:
             if not bmax:
                 bmax = 0.3
             im = (
-                ee.Image(col_data["source"])
+                ee.Image(source)
                 .divide(10000)
                 .visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
-            )
-        elif "LANDSAT" in col_data.get("source"):
-            if not bmax:
-                bmax = 0.2
-            tmp_im = ee.Image(col_data["source"])
-            im = RecentTiles.pansharpened_L8_image(
-                tmp_im, validated_bands, bmin, bmax, opacity
             )
 
         m_id = im.getMapId()
@@ -209,13 +235,13 @@ class RecentTiles(object):
             )
             if start > LC2_START_DATE:
                 L8 = (
-                    ee.ImageCollection("LANDSAT/LC08/C02/T1_L2")
+                    ee.ImageCollection(LANDSAT8_C02_SOURCE)
                     .filterDate(start, end)
                     .filterBounds(point)
                 )
             else:
                 L8 = (
-                    ee.ImageCollection("LANDSAT/LC08/C01/T1_RT_TOA")
+                    ee.ImageCollection(LANDSAT8_C01_SOURCE)
                     .filterDate(start, end)
                     .filterBounds(point)
                 )
