@@ -41,7 +41,6 @@ COPY gunicorn.py /opt/$NAME/gunicorn.py
 WORKDIR /opt/$NAME
 
 COPY ./$NAME /opt/$NAME/$NAME
-COPY ./microservice /opt/$NAME/microservice
 COPY ./tests /opt/$NAME/tests
 RUN chown $USER:$USER /opt/$NAME
 
