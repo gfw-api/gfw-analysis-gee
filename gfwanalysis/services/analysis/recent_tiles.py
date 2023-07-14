@@ -207,9 +207,10 @@ class RecentTiles(object):
         source = col_data["source"]
         logging.info(f"[RECENT>THUMB] {source}")
 
-        validated_bands = ["B4", "B3", "B2"]
+        validated_bands = RecentTiles.validate_bands(["B4", "B3", "B2"], source)
+
         if bands:
-            validated_bands = RecentTiles.validate_bands(bands, col_data.get("source"))
+            validated_bands = RecentTiles.validate_bands(bands, source)
         if not bmin:
             bmin = 0
 
@@ -239,11 +240,10 @@ class RecentTiles(object):
             if not bmax:
                 bmax = 0.3
             im = (
-                ee.Image(col_data["source"])
+                ee.Image(source)
                 .divide(10000)
                 .visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
             )
-
         thumbnail = im.getThumbURL({"dimensions": [250, 250]})
 
         col_data["thumb_url"] = thumbnail
