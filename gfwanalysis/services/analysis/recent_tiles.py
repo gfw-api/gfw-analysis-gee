@@ -173,6 +173,18 @@ class RecentTiles(object):
             im = RecentTiles.pansharpened_L8_image(
                 tmp_im, validated_bands, bmin, bmax, opacity
             )
+        elif (
+            "LANDSAT" in source
+            and source.split("/")[2] == LANDSAT8_C02_SOURCE.split("/")[2]
+        ):
+            if not bmax:
+                bmax = 0.2
+            im = ee.Image(source)
+            # applying scaling factor: https://www.usgs.gov/faqs/how-do-i-use-a-scale-factor-landsat-level-2-science-products
+            optical_bands = im.select("SR_B.").multiply(0.0000275).add(-0.2)
+            im = ee.Image(optical_bands).visualize(
+                bands=validated_bands, min=0, max=0.2
+            )
         else:
             if not bmax:
                 bmax = 0.3
@@ -192,7 +204,8 @@ class RecentTiles(object):
     @staticmethod
     def recent_thumbs(col_data, bands, bmin, bmax, opacity):
         """Takes collection data array and fetches thumbs"""
-        logging.info(f"[RECENT>THUMB] {col_data.get('source')}")
+        source = col_data["source"]
+        logging.info(f"[RECENT>THUMB] {source}")
 
         validated_bands = ["B4", "B3", "B2"]
         if bands:
@@ -200,21 +213,35 @@ class RecentTiles(object):
         if not bmin:
             bmin = 0
 
-        if "COPERNICUS" in col_data.get("source"):
+        if (
+            "LANDSAT" in source
+            and source.split("/")[2] == LANDSAT8_C01_SOURCE.split("/")[2]
+        ):
+            if not bmax:
+                bmax = 0.2
+            tmp_im = ee.Image(source)
+            im = RecentTiles.pansharpened_L8_image(
+                tmp_im, validated_bands, bmin, bmax, opacity
+            )
+        elif (
+            "LANDSAT" in source
+            and source.split("/")[2] == LANDSAT8_C02_SOURCE.split("/")[2]
+        ):
+            if not bmax:
+                bmax = 0.2
+            im = ee.Image(source)
+            # applying scaling factor: https://www.usgs.gov/faqs/how-do-i-use-a-scale-factor-landsat-level-2-science-products
+            optical_bands = im.select("SR_B.").multiply(0.0000275).add(-0.2)
+            im = ee.Image(optical_bands).visualize(
+                bands=validated_bands, min=0, max=0.2
+            )
+        else:
             if not bmax:
                 bmax = 0.3
             im = (
                 ee.Image(col_data["source"])
                 .divide(10000)
                 .visualize(bands=validated_bands, min=bmin, max=bmax, opacity=opacity)
-            )
-
-        elif "LANDSAT" in col_data.get("source"):
-            if not bmax:
-                bmax = 0.2
-            tmp_im = ee.Image(col_data["source"])
-            im = RecentTiles.pansharpened_L8_image(
-                tmp_im, validated_bands, bmin, bmax, opacity
             )
 
         thumbnail = im.getThumbURL({"dimensions": [250, 250]})
