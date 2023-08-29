@@ -1,12 +1,16 @@
 """EE SENTINEL TILE URL SERVICE"""
 
 import asyncio
+import collections
 import functools as funct
 import logging
 
 import ee
 
 from gfwanalysis.errors import RecentTilesError
+
+if not hasattr(collections, "Iterable"):
+    collections.Iterable = collections.abc.Iterable
 
 LANDSAT8_C01_SOURCE = "LANDSAT/LC08/C01/T1_RT_TOA"
 LANDSAT8_C02_SOURCE = "LANDSAT/LC08/C02/T1_L2"
