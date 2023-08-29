@@ -16,6 +16,9 @@ services:
       API_VERSION: v1
       REDIS_URL: redis://redis:6379
       CARTODB_USER: wri-01
+      AWS_REGION: "us-east-1"
+      REQUIRE_API_KEY: "True"
+      AWS_CLOUD_WATCH_LOGGING_ENABLED: "False"
     command: develop
     volumes:
       - ./gfwanalysis:/opt/gfwanalysis/gfwanalysis

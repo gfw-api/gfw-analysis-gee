@@ -67,6 +67,16 @@ spec:
               name: mssecrets
         - name: REDIS_URL
           value: redis://localhost:6379
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              key: AWS_REGION
+              name: mssecrets
+        - name: REQUIRE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: REQUIRE_API_KEY
+              name: mssecrets
         image: gfwdockerhub/analysis-gee
         imagePullPolicy: Always
         name: analysis-gee
