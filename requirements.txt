@@ -12,7 +12,7 @@ numpy==1.23.2
 oauth2client==3.0.0
 pandas==1.5.3
 cryptography==39.0.0
-pyproj
+pyproj==3.6.0
 python-dotenv==0.11.0
 redis==2.10.6
 requests==2.22.0
