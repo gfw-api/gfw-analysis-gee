@@ -31,12 +31,6 @@ class GeostoreService(object):
         return geojson, area_ha
 
     @staticmethod
-    def create(geojson, api_key):
-        return GeostoreService.execute(
-            "/v2/geostore", api_key, body=geojson, method="POST"
-        )
-
-    @staticmethod
     def get(geostore, api_key):
         uri = f"/v2/geostore/{geostore}"
         return GeostoreService.execute(uri, api_key)
