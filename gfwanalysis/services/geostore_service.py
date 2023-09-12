@@ -32,7 +32,7 @@ class GeostoreService(object):
 
     @staticmethod
     def get(geostore, api_key):
-        uri = f"/v2/geostore/{geostore}"
+        uri = f"/v1/geostore/{geostore}"
         return GeostoreService.execute(uri, api_key)
 
     @staticmethod
@@ -65,10 +65,10 @@ class GeostoreService(object):
 
     @staticmethod
     def get_use(name, use_id, api_key):
-        uri = f"/v2/geostore/use/{name}/{use_id}"
+        uri = f"/v1/geostore/use/{name}/{use_id}"
         return GeostoreService.execute(uri, api_key)
 
     @staticmethod
     def get_wdpa(wdpa_id, api_key):
-        uri = f"/v2/geostore/wdpa/{wdpa_id}"
+        uri = f"/v1/geostore/wdpa/{wdpa_id}"
         return GeostoreService.execute(uri, api_key)
