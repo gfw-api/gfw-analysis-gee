@@ -15,7 +15,7 @@ case "$1" in
     start)
         echo "Running Start"
         echo -e "$EE_PRIVATE_KEY" | base64 -d > privatekey.json
-        exec gunicorn -c gunicorn.py gfwanalysis:app
+        exec gunicorn -c gunicorn.py gfwanalysis.app:app
         ;;
     *)
         exec "$@"
