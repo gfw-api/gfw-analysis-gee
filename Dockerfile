@@ -1,4 +1,4 @@
-FROM python:3.7.12-slim-buster
+FROM python:3.11-bullseye
 MAINTAINER Vizzuality info@vizzuality.com
 
 ENV NAME gfwanalysis
@@ -10,12 +10,11 @@ RUN apt-get update -qqy && apt-get install -qqy \
    libssl-dev\
    libffi-dev\
    gcc\
-   python-dev\
    musl-dev\
    libgeos-dev\
    build-essential\
-   python-dev \
-   python-pip
+   python3-dev \
+   python3-pip
 
 RUN addgroup $USER
 # RUN adduser --shell /bin/bash --disabled-password --ingroup $USER
