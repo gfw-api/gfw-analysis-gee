@@ -275,9 +275,10 @@ class RecentTiles(object):
 
             s2_size = S2.size().getInfo()
             l8_size = S2.size().getInfo()
+            if s2_size == 0 and l8_size == 0:
+                return []
 
             collection = S2.toList(s2_size).cat(L8.toList(l8_size)).getInfo()
-
             data = []
             for c in collection:
                 sentinel_image = c.get("properties").get("SPACECRAFT_NAME", None)

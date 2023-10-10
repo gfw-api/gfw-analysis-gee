@@ -32,6 +32,8 @@ def analyze_recent_data(lat, lon, start, end, sort_by, bands, bmin, bmax, opacit
 
     try:
         data = RecentTiles.recent_data(lat=lat, lon=lon, start=start, end=end, sort_by=sort_by)
+        if len(data) == 0:
+            return jsonify(data=serialize_recent_data(data, 'recent_tiles_data')), 200
         data = loop.run_until_complete(
             RecentTiles.async_fetch(loop, RecentTiles.recent_tiles, data, bands, bmin, bmax, opacity, 'first'))
     except RecentTilesError as e:
