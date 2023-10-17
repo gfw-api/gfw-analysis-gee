@@ -1,10 +1,13 @@
 import logging
-
+import inspect
 import ee
 
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.errors import HansenError
 from gfwanalysis.utils.geo import get_region, ee_squaremeters_to_ha, get_extent_fc, divide_geometry
+
+if not hasattr(inspect, "getargspec"):
+    inspect.getargspec = inspect.getfullargspec
 
 
 class HansenService(object):
