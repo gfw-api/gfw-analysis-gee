@@ -10,97 +10,65 @@ class GeostoreService(object):
     """."""
 
     @staticmethod
-    def execute(config):
+    def execute(uri, api_key, method="GET", body=None):
         try:
-            response = request_to_microservice(config)
+            response = request_to_microservice(
+                uri=uri, api_key=api_key, method=method, body=body
+            )
         except Exception as e:
             raise Exception(str(e))
-        if response.get('errors'):
-            error = response.get('errors')[0]
-            if error.get('status') == 404:
-                raise GeostoreNotFound(message='')
+        if response.get("errors"):
+            error = response.get("errors")[0]
+            if error.get("status") == 404:
+                raise GeostoreNotFound(message="")
             else:
-                raise Exception(error.get('detail'))
+                raise Exception(error.get("detail"))
 
-        geostore = response.get('data', None).get('attributes', None)
-        geojson = geostore.get('geojson', None)
-        area_ha = geostore.get('areaHa', None)
+        geostore = response.get("data", None).get("attributes", None)
+        geojson = geostore.get("geojson", None)
+        area_ha = geostore.get("areaHa", None)
 
         return geojson, area_ha
 
     @staticmethod
-    def create(geojson):
-        config = {
-            'uri': '/geostore',
-            'method': 'POST',
-            'body': {
-                'geojson': geojson
-            }
-        }
-        return GeostoreService.execute(config)
+    def get(geostore, api_key):
+        uri = f"/v1/geostore/{geostore}"
+        return GeostoreService.execute(uri, api_key)
 
     @staticmethod
-    def get(geostore):
-        config = {
-            'uri': '/geostore/' + geostore,
-            'method': 'GET'
-        }
-        return GeostoreService.execute(config)
-
-    @staticmethod
-    def get_national(iso):
+    def get_national(iso, api_key):
         # Lookup table here to reduce complexity
         # logging.info('[geostore service]: in get_national function')
         simplification = admin_0_simplify(iso)
         # logging.info(f'[geostore service]: simplification={simplification}')
         if simplification:
-            url = f'/v2/geostore/admin/{iso}?simplify={simplification}'
+            url = f"/v2/geostore/admin/{iso}?simplify={simplification}"
         else:
-            url = f'/v2/geostore/admin/{iso}'
-        config = {
-            'uri': url,
-            'method': 'GET',
-            'ignore_version': True
-        }
-        return GeostoreService.execute(config)
+            url = f"/v2/geostore/admin/{iso}"
+        return GeostoreService.execute(url, api_key)
 
     @staticmethod
-    def get_subnational(iso, id1):
+    def get_subnational(iso, id1, api_key):
         # logging.info('[geostore service]: in get_subnational function')
         simplification = admin_1_simplify(iso, id1)
         # logging.info(f'[geostore service]: simplification={simplification}')
         if simplification:
-            url = f'/v2/geostore/admin/{iso}/{id1}?simplify={simplification}'
+            url = f"/v2/geostore/admin/{iso}/{id1}?simplify={simplification}"
         else:
-            url = f'/v2/geostore/admin/{iso}/{id1}'
-        config = {
-            'uri': url,
-            'method': 'GET',
-            'ignore_version': True
-        }
-        return GeostoreService.execute(config)
+            url = f"/v2/geostore/admin/{iso}/{id1}"
+        return GeostoreService.execute(url, api_key)
 
     @staticmethod
-    def get_regional(iso, id1, id2):
-        config = {
-            'uri': '/v2/geostore/admin/' + iso + '/' + id1 + '/' + id2,
-            'method': 'GET',
-            'ignore_version': True
-        }
-        return GeostoreService.execute(config)
+    def get_regional(iso, id1, id2, api_key):
+        uri = f"/v2/geostore/admin/{iso}/{id1}/{id2}"
+        return GeostoreService.execute(uri, api_key)
 
     @staticmethod
-    def get_use(name, use_id):
-        config = {
-            'uri': '/geostore/use/' + name + '/' + use_id,
-            'method': 'GET'
-        }
-        return GeostoreService.execute(config)
+    def get_use(name, use_id, api_key):
+        uri = f"/v1/geostore/use/{name}/{use_id}"
+        return GeostoreService.execute(uri, api_key)
 
     @staticmethod
-    def get_wdpa(wdpa_id):
-        config = {
-            'uri': '/geostore/wdpa/' + wdpa_id,
-            'method': 'GET'
-        }
-        return GeostoreService.execute(config)
+    def get_wdpa(wdpa_id, api_key):
+        uri = f"/v1/geostore/wdpa/{wdpa_id}"
+        return GeostoreService.execute(uri, api_key)

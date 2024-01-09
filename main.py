@@ -2,7 +2,7 @@
 
 import os
 from dotenv import load_dotenv
-from gfwanalysis import app
+from gfwanalysis.app import app
 
 
 # This is only used when running locally. When running live, Gunicorn runs

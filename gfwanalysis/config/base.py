@@ -9,6 +9,7 @@ SETTINGS = {
         'level': 'DEBUG'
     },
     'service': {
+        'name': 'GFW GEE Analysis',
         'port': 4500
     },
     'gee': {
