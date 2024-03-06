@@ -9,7 +9,7 @@ import os
 
 import RWAPIMicroservicePython
 import ee
-from flask import Flask
+from flask import Flask, jsonify
 
 from gfwanalysis.config import SETTINGS
 from gfwanalysis.routes.api import error
@@ -61,6 +61,13 @@ else:
 
 # Flask App
 app = Flask(__name__)
+
+
+# Health check
+@app.route("/healthcheck", methods=["GET"])
+def health_check():
+    return jsonify({"status": "ok"}), 200
+
 
 # Routing
 app.register_blueprint(hansen_endpoints_v1, url_prefix="/api/v1/umd-loss-gain")
