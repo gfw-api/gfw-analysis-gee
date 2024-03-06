@@ -4,7 +4,7 @@ import json
 import logging
 from functools import wraps
 
-from flask import request
+from flask import request, redirect
 
 from gfwanalysis.errors import GeostoreNotFound
 from gfwanalysis.routes.api import error
@@ -221,7 +221,7 @@ def get_geo_by_hash(func):
             if not geostore:
                 return error(status=400, detail='Geostore is required')
             try:
-                geojson, area_ha = GeostoreService.get(geostore)
+                geojson, area_ha = GeostoreService.get(geostore, request.headers.get("x-api-key"))
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
         elif request.method == 'POST':
@@ -306,7 +306,7 @@ def get_geo_by_geom(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if request.method == 'GET':
-            # logging.info(f'[decorater - geom]: Getting area by GET {request}')
+            # logging.info(f'[decorator - geom]: Getting area by GET {request}')
             geojson = request.args.get('geojson')
             if not geojson:
                 return error(status=400, detail='geojson is required')
@@ -331,7 +331,7 @@ def get_geo_by_national(func):
         if request.method == 'GET':
             try:
                 iso = request.view_args.get('iso')
-                geojson, area_ha = GeostoreService.get_national(iso)
+                geojson, area_ha = GeostoreService.get_national(iso, request.headers.get("x-api-key"))
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
             kwargs["geojson"] = geojson
@@ -350,7 +350,7 @@ def get_geo_by_subnational(func):
             try:
                 iso = request.view_args.get('iso')
                 id1 = request.view_args.get('id1')
-                geojson, area_ha = GeostoreService.get_subnational(iso, id1)
+                geojson, area_ha = GeostoreService.get_subnational(iso, id1, request.headers.get("x-api-key"))
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
             kwargs["geojson"] = geojson
@@ -370,7 +370,7 @@ def get_geo_by_regional(func):
                 iso = request.view_args.get('iso')
                 id1 = request.view_args.get('id1')
                 id2 = request.view_args.get('id2')
-                geojson, area_ha = GeostoreService.get_regional(iso, id1, id2)
+                geojson, area_ha = GeostoreService.get_regional(iso, id1, id2, request.headers.get("x-api-key"))
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
             kwargs["geojson"] = geojson
@@ -389,7 +389,7 @@ def get_geo_by_use(func):
             try:
                 name = request.view_args.get('name')
                 use_id = request.view_args.get('id')
-                geojson, area_ha = GeostoreService.get_use(name, use_id)
+                geojson, area_ha = GeostoreService.get_use(name, use_id, request.headers.get("x-api-key"))
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
             kwargs["geojson"] = geojson
@@ -407,7 +407,7 @@ def get_geo_by_wdpa(func):
         if request.method == 'GET':
             try:
                 wdpa_id = request.view_args.get('id')
-                geojson, area_ha = GeostoreService.get_wdpa(wdpa_id)
+                geojson, area_ha = GeostoreService.get_wdpa(wdpa_id, request.headers.get("x-api-key"))
             except GeostoreNotFound:
                 return error(status=404, detail='Geostore not found')
             kwargs["geojson"] = geojson

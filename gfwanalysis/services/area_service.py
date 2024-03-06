@@ -30,8 +30,8 @@ class AreaService(object):
                 pyproj.Proj(init='EPSG:4326'),
                 pyproj.Proj(
                     proj='aea',
-                    lat1=geom.bounds[1],
-                    lat2=geom.bounds[3])),
+                    lat_1=geom.bounds[1],
+                    lat_2=geom.bounds[3])),
             geom)
         # return area in ha
         return geom_area.area / 10000.

@@ -39,7 +39,7 @@ def analyze_recent_data(lat, lon, start, end, sort_by, bands, bmin, bmax, opacit
         return error(status=500, detail=e.message)
     except Exception as e:
         logging.error('[ROUTER]: ' + str(e))
-        return error(status=500, detail='Generic Error')
+        return error(status=500, detail=str(e))
     return jsonify(data=serialize_recent_data(data, 'recent_tiles_data')), 200
 
 
